@@ -1,0 +1,41 @@
+RENKAI KUROGAKE DISTRICT V2 - PRODUCTION NOTES
+==============================================
+
+MAP IDENTITY:
+- 5v5 tactical FPS bomb plant map.
+- A Site: açık neon shrine courtyard.
+- B Site: daha kapalı neon alley / reactor.
+- Mid: büyük Kurogate shrine market.
+- Ana fark: iki adet Kurogate teleport rotası.
+
+COMPETITIVE GOALS:
+- İlk temas: 8-12 saniye.
+- A Main uzun ama kırık görüş açılı.
+- B Main daha yakın mesafe ve köşe temizleme ağırlıklı.
+- Mid'i alan takım iki site'a baskı kurar, ama Mid ücretsiz değildir.
+- Kurogate geçitleri sesli, gecikmeli ve sabit çıkışlıdır.
+
+ART PASS V3 İÇİN DEĞİŞTİRİLECEKLER:
+- Primitive cube wall -> modular cyberpunk Japanese wall mesh.
+- Placeholder roofs -> Blender/asset store shrine roof modules.
+- Cover boxes -> sci-fi crates / stone shrine covers.
+- Neon signs -> proper mesh + texture neon signage.
+- Portal disc -> Shader Graph + particle system.
+- Sakura tree placeholder -> optimized tree model.
+- Wet floor -> PBR wet stone material + reflection probes.
+- Lighting -> baked GI, light probes, reflection probes, occlusion culling.
+
+PERFORMANCE TARGET:
+- PC demo 60+ FPS.
+- Static batching enabled.
+- Mesh collider only for large simple surfaces; use box colliders for cover.
+- LOD groups for buildings/props.
+- Occlusion culling after final layout.
+
+NEXT SPRINT:
+1. Open project in Unity.
+2. Generate scene from menu.
+3. Walk through with FPS controller.
+4. Screenshot top-down and first-person.
+5. Decide which areas feel too narrow/wide.
+6. Replace first 10 primitive architecture pieces with real modular assets.

@@ -1,0 +1,41 @@
+V2.2.1 - Compile Fix
+- Missing CreateRespawnPoint method eklendi.
+- Scene generator V2.2.1 olarak güncellendi.
+- Menü: Renkai > Create Kurogake District V2.2.1 Compile Fix Scene
+
+V2.2 - Movement & Combat Fix
+- Sol tık ateş için görünür tracer eklendi.
+- V tuşu alternatif ateş testi olarak eklendi.
+- Muzzle flash eklendi.
+- HIT feedback yazısı eklendi.
+- C ve Left Ctrl crouch eklendi.
+- Haritadan düşme için killY respawn eklendi.
+- R manuel respawn eklendi.
+- Invisible safety floor eklendi.
+- Scene generator menüsü güncellendi.
+
+V2.1.1 - Pink Material Fix
+- Shader pipeline uyumsuzluğu düzeltildi.
+- Built-in pipeline ise Standard shader kullanılır.
+- URP aktifse URP/Lit shader kullanılır.
+- Renkai > Fix Pink Materials In Current Scene menüsü eklendi.
+- Yeni scene generator: Renkai > Create Kurogake District V2.1.1 Pink Fix Scene
+
+RENKAI CHANGELOG
+================
+
+V2.1 - Combat Update
+- Yeni menü: Renkai > Create Kurogake District V2.1 Combat Scene
+- Raycast rifle eklendi.
+- Hedef dummyleri eklendi.
+- Health/damage sistemi eklendi.
+- Crosshair + round timer HUD eklendi.
+- Kontrol bilgisi HUD'a eklendi.
+- Scene adı V2_1_Combat olarak güncellendi.
+
+V2.0 - Playable Map Starter
+- Kurogake District procedural scene generator.
+- A Site / B Site / Mid layout.
+- Kurogate teleport.
+- Bomb plant trigger.
+- Neon lighting, fog, 3D walls, covers, shrine structures.
