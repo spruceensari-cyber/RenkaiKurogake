@@ -12,7 +12,7 @@ namespace Renkai.Kurokage
         [SerializeField] private float pistolReadyDelay = 0.105f;
         [SerializeField] private float bladeReadyDelay = 0.08f;
 
-        public bool WeaponReady => weapon != null && weapon.enabled && Time.time >= readyAt;
+        public bool WeaponReady => weapon != null && !weapon.IsFireLocked && Time.time >= readyAt;
         public float Ready01
         {
             get
@@ -35,15 +35,25 @@ namespace Renkai.Kurokage
             if (player == null) player = GetComponent<RenkaiRoundPlayer>();
         }
 
+        private void OnDisable()
+        {
+            if (weapon != null)
+                weapon.SetExternalFireLock(false);
+        }
+
         private void Update()
         {
             if (fps == null || weapon == null) return;
-            if (player != null && !player.isAlive) return;
+            if (player != null && !player.isAlive)
+            {
+                weapon.SetExternalFireLock(true);
+                return;
+            }
 
             bool sprinting = fps.IsSprinting;
             if (sprinting)
             {
-                if (weapon.enabled) weapon.enabled = false;
+                weapon.SetExternalFireLock(true);
                 wasSprinting = true;
                 return;
             }
@@ -55,8 +65,7 @@ namespace Renkai.Kurokage
                 wasSprinting = false;
             }
 
-            if (!weapon.enabled && Time.time >= readyAt)
-                weapon.enabled = true;
+            weapon.SetExternalFireLock(Time.time < readyAt);
         }
 
         public void ResetGate()
@@ -64,8 +73,8 @@ namespace Renkai.Kurokage
             readyAt = 0f;
             lastReadyDelay = 0f;
             wasSprinting = false;
-            if (weapon != null && (player == null || player.isAlive))
-                weapon.enabled = true;
+            if (weapon != null)
+                weapon.SetExternalFireLock(false);
         }
 
         private float ResolveDelay()
