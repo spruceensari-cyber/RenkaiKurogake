@@ -70,6 +70,7 @@ public static class KurokageAgentVisualInstaller
         visualRoot.transform.SetParent(roundPlayer.transform, false);
         visualRoot.transform.localPosition = Vector3.zero;
         visualRoot.transform.localRotation = Quaternion.identity;
+        visualRoot.transform.localScale = new Vector3(1.055f, 1f, 1.035f);
 
         Object spawned = PrefabUtility.InstantiatePrefab(asset);
         GameObject instance = spawned as GameObject;
@@ -85,7 +86,7 @@ public static class KurokageAgentVisualInstaller
         instance.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         instance.transform.localScale = Vector3.one;
 
-        NormalizeVisual(instance.transform, 1.8f);
+        NormalizeVisual(instance.transform, 1.82f);
 
         Animator animator = instance.GetComponentInChildren<Animator>();
         if (animator != null)
@@ -95,10 +96,12 @@ public static class KurokageAgentVisualInstaller
             c.enabled = false;
 
         Color accent = roundPlayer.team == RenkaiTeam.Attackers
-            ? new Color(0.12f, 0.42f, 1f, 1f)
-            : new Color(0.78f, 0.35f, 0.95f, 1f);
+            ? new Color(0.14f, 0.50f, 1f, 1f)
+            : new Color(0.62f, 0.32f, 0.92f, 1f);
 
-        ApplyAccent(instance, accent);
+        KurokageAgentReadabilityPresenter readability = visualRoot.GetComponent<KurokageAgentReadabilityPresenter>();
+        if (readability == null) readability = visualRoot.AddComponent<KurokageAgentReadabilityPresenter>();
+        readability.Configure(accent, 0.18f);
 
         if (visualRoot.GetComponent<KurokageAgentAnimationDriver>() == null)
             visualRoot.AddComponent<KurokageAgentAnimationDriver>();
@@ -131,27 +134,5 @@ public static class KurokageAgentVisualInstaller
         float parentY = visual.parent.position.y;
         float offset = parentY - bounds.min.y;
         visual.position += Vector3.up * offset;
-    }
-
-    private static void ApplyAccent(GameObject root, Color accent)
-    {
-        foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>(true))
-        {
-            Material[] mats = renderer.sharedMaterials;
-            for (int i = 0; i < mats.Length; i++)
-            {
-                Material source = mats[i];
-                if (source == null) continue;
-
-                Material clone = new Material(source);
-                if (clone.HasProperty("_EmissionColor"))
-                {
-                    clone.EnableKeyword("_EMISSION");
-                    clone.SetColor("_EmissionColor", accent * 0.22f);
-                }
-                mats[i] = clone;
-            }
-            renderer.sharedMaterials = mats;
-        }
     }
 }
