@@ -36,14 +36,16 @@ namespace Renkai.Kurokage
                 if (renderer == null || renderer.sharedMaterial == null) continue;
                 if (!renderer.sharedMaterial.HasProperty("_EmissionColor")) continue;
 
-                Color source = Color.white;
-                if (renderer.sharedMaterial.HasProperty("_EmissionColor"))
-                    source = renderer.sharedMaterial.GetColor("_EmissionColor");
+                Color source = renderer.sharedMaterial.GetColor("_EmissionColor");
                 if (source.maxColorComponent <= 0.001f)
                     source = new Color(0.16f, 0.58f, 1f, 1f);
 
+                float maxComponent = Mathf.Max(0.001f, source.maxColorComponent);
+                Color normalizedSource = source / maxComponent;
+                normalizedSource.a = 1f;
+
                 renderer.GetPropertyBlock(block);
-                block.SetColor(EmissionColorId, source.normalized * intensity);
+                block.SetColor(EmissionColorId, normalizedSource * intensity);
                 renderer.SetPropertyBlock(block);
             }
         }
