@@ -66,6 +66,7 @@ namespace Renkai.Kurokage
             if (weapon != null)
             {
                 weapon.ShotFired += OnShotFired;
+                weapon.EmptyTriggered += OnEmptyTriggered;
                 weapon.ReloadStarted += OnReloadStarted;
                 weapon.ReloadFinished += OnReloadFinished;
                 weapon.HitConfirmed += OnHitConfirmed;
@@ -81,6 +82,7 @@ namespace Renkai.Kurokage
             if (weapon != null)
             {
                 weapon.ShotFired -= OnShotFired;
+                weapon.EmptyTriggered -= OnEmptyTriggered;
                 weapon.ReloadStarted -= OnReloadStarted;
                 weapon.ReloadFinished -= OnReloadFinished;
                 weapon.HitConfirmed -= OnHitConfirmed;
@@ -100,6 +102,7 @@ namespace Renkai.Kurokage
             else Play(bladeSlash);
         }
 
+        private void OnEmptyTriggered() => Play(emptyClick);
         private void OnReloadStarted() => Play(reloadStart);
         private void OnReloadFinished() => Play(reloadFinish);
 
