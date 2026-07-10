@@ -84,20 +84,43 @@ namespace Renkai.Kurogake
 
         public void TakeDamage(float amount, RenkaiRoundPlayer attacker = null)
         {
-            if (!isAlive) return;
+            KurokageDamageInfo info = new KurokageDamageInfo(
+                amount,
+                attacker,
+                transform.position,
+                Vector3.up,
+                KurokageDamageType.Ballistic,
+                KurokageHitZoneType.Torso,
+                "LEGACY_DIRECT_DAMAGE"
+            );
+            ApplyDamage(info);
+        }
+
+        public float ApplyDamage(KurokageDamageInfo info)
+        {
+            if (!isAlive) return 0f;
 
             if (armor == null) armor = GetComponent<KurokageArmor>();
-            float healthDamage = armor != null ? armor.AbsorbDamage(amount) : amount;
+
+            float armorBefore = armor != null ? armor.CurrentArmor : 0f;
+            float healthDamage = armor != null ? armor.AbsorbDamage(info.Amount) : info.Amount;
+            float armorAfter = armor != null ? armor.CurrentArmor : 0f;
 
             health = Mathf.Max(0f, health - healthDamage);
-            Debug.Log(agentName + " took " + amount + " incoming damage. Health damage: " + healthDamage + ". HP: " + health);
+            Debug.Log(agentName + " took " + info.Amount + " " + info.DamageType + " damage from " + info.SourceId + ". Health damage: " + healthDamage + ". HP: " + health);
+
+            KurokageGameEvents.RaiseDamageApplied(this, info, healthDamage);
+            if (armorBefore > 0f && armorAfter <= 0f)
+                KurokageGameEvents.RaiseArmorBroken(this, info);
 
             RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null && isHumanPlayer)
                 hud.SetPlayerHP(Mathf.CeilToInt(health), Mathf.CeilToInt(maxHealth));
 
             if (health <= 0f)
-                Die(attacker);
+                Die(info.Attacker);
+
+            return healthDamage;
         }
 
         public void Die(RenkaiRoundPlayer killer = null)
