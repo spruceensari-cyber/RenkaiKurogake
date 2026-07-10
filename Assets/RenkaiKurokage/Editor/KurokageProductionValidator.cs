@@ -31,6 +31,7 @@ public static class KurokageProductionValidator
         ValidateCount<RenkaiRoundManager>("Round manager", 1, ref errors, report);
         ValidateCount<ZodiacCoreRuntime>("Zodiac Core runtime", 1, ref errors, report);
         ValidateCount<KurokageZodiacObjectiveController>("Zodiac objective controller", 1, ref errors, report);
+        ValidateCount<KurokageZodiacVfxPresenter>("Zodiac VFX presenter", 1, ref errors, report);
         ValidateCount<KairiAbilityController>("Kairi ability controller", 1, ref errors, report);
         ValidateCount<KurokageBladeCombatController>("Blade combat controller", 1, ref errors, report);
         ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
@@ -57,11 +58,14 @@ public static class KurokageProductionValidator
         int attackers = 0;
         int defenders = 0;
         int visibleRootRenderers = 0;
+        int tacticalBots = 0;
 
         foreach (RenkaiRoundPlayer player in players)
         {
             if (player == null) continue;
             if (player.isHumanPlayer) humans++;
+            else if (player.GetComponent<RenkaiTacticalBotAI>() != null) tacticalBots++;
+
             if (player.team == RenkaiTeam.Attackers) attackers++;
             else defenders++;
 
@@ -85,6 +89,7 @@ public static class KurokageProductionValidator
         ValidateExact("Human player", humans, 1, ref errors, report);
         ValidateExact("Attackers", attackers, 5, ref errors, report);
         ValidateExact("Defenders", defenders, 5, ref errors, report);
+        ValidateExact("Tactical bots", tacticalBots, 9, ref errors, report);
 
         if (visibleRootRenderers > 0)
         {
@@ -121,6 +126,7 @@ public static class KurokageProductionValidator
         else
         {
             report.AppendLine("PASS  ZODIAC_CORE object present");
+            ValidateZodiacCoreArt(core.transform, ref errors, report);
         }
 
         string[] requiredRoots =
@@ -153,10 +159,36 @@ public static class KurokageProductionValidator
         report.AppendLine("Errors: " + errors);
         report.AppendLine("Warnings: " + warnings);
         report.AppendLine(errors == 0 ? "RESULT: STRUCTURE VALIDATION PASSED" : "RESULT: STRUCTURE VALIDATION FAILED");
-        report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, navigation, or visual validation.");
+        report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, navigation, audio asset, or visual validation.");
 
         reportText = report.ToString();
         return errors == 0;
+    }
+
+    private static void ValidateZodiacCoreArt(Transform core, ref int errors, StringBuilder report)
+    {
+        string[] paths =
+        {
+            "ZODIAC_CORE_ART/CORE_INNER_ENERGY",
+            "ZODIAC_CORE_ART/CORE_SHELL_STRUCTURE",
+            "ZODIAC_CORE_ART/CORE_RING_A",
+            "ZODIAC_CORE_ART/CORE_RING_B",
+            "ZODIAC_CORE_ART/CORE_HALO_OUTER",
+            "ZODIAC_CORE_ART/CORE_CELESTIAL_SPINES"
+        };
+
+        foreach (string path in paths)
+        {
+            if (core.Find(path) == null)
+            {
+                errors++;
+                report.AppendLine("ERROR Missing Zodiac Core art layer: " + path);
+            }
+            else
+            {
+                report.AppendLine("PASS  Zodiac Core art layer: " + path);
+            }
+        }
     }
 
     private static void ValidateEnvironmentIdentity(ref int errors, ref int warnings, StringBuilder report)
