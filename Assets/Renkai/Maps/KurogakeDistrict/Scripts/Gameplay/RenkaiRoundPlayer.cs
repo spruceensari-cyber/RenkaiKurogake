@@ -69,6 +69,9 @@ namespace Renkai.Kurogake
             RenkaiBotAI bot = GetComponent<RenkaiBotAI>();
             if (bot != null) bot.enabled = true;
 
+            RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
+            if (tacticalBot != null) tacticalBot.enabled = true;
+
             RenkaiWorldHealthBar bar = GetComponentInChildren<RenkaiWorldHealthBar>(true);
             if (bar != null) bar.RefreshNow();
         }
@@ -77,7 +80,7 @@ namespace Renkai.Kurogake
         {
             if (!isAlive) return;
 
-            health -= amount;
+            health = Mathf.Max(0f, health - amount);
             Debug.Log(agentName + " took " + amount + " damage. HP: " + health);
 
             RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
@@ -102,7 +105,6 @@ namespace Renkai.Kurogake
             if (hud != null)
             {
                 hud.AddKillFeed(killerName + " eliminated " + agentName);
-
                 if (isHumanPlayer)
                     hud.SetStatus("YOU ARE DOWN - WAIT FOR ROUND END");
             }
@@ -119,6 +121,9 @@ namespace Renkai.Kurogake
             {
                 RenkaiBotAI bot = GetComponent<RenkaiBotAI>();
                 if (bot != null) bot.enabled = false;
+
+                RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
+                if (tacticalBot != null) tacticalBot.enabled = false;
 
                 foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
                     r.enabled = false;
