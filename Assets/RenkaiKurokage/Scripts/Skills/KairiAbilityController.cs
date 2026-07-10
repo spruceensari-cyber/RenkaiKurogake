@@ -38,6 +38,7 @@ namespace Renkai.Kurokage
         public float CCooldown01 => Cooldown01(nextC, leapCooldown);
         public float XCooldown01 => Cooldown01(nextX, ultimateCooldown);
         public bool UltimateActive => ultimateActive;
+        public bool MovementAbilityActive => movementAbilityActive;
 
         private CharacterController controller;
         private RenkaiFPSController fps;
@@ -50,6 +51,8 @@ namespace Renkai.Kurokage
         private float originalWalk;
         private float originalSprint;
         private float originalCrouch;
+        private Coroutine movementRoutine;
+        private Coroutine ultimateRoutine;
 
         private void Awake()
         {
@@ -67,6 +70,11 @@ namespace Renkai.Kurokage
             }
         }
 
+        private void OnEnable()
+        {
+            ResetAbilityState(false);
+        }
+
         private void Update()
         {
             if (roundPlayer != null && !roundPlayer.isAlive) return;
@@ -74,7 +82,7 @@ namespace Renkai.Kurokage
             if (Input.GetKeyDown(KeyCode.Q) && Time.time >= nextQ && !movementAbilityActive)
             {
                 nextQ = Time.time + dashCooldown;
-                StartCoroutine(DashRoutine());
+                movementRoutine = StartCoroutine(DashRoutine());
             }
 
             if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextE)
@@ -86,13 +94,44 @@ namespace Renkai.Kurokage
             if (Input.GetKeyDown(KeyCode.C) && Time.time >= nextC && !movementAbilityActive)
             {
                 nextC = Time.time + leapCooldown;
-                StartCoroutine(MomentumLeapRoutine());
+                movementRoutine = StartCoroutine(MomentumLeapRoutine());
             }
 
             if (Input.GetKeyDown(KeyCode.X) && Time.time >= nextX && !ultimateActive)
             {
                 nextX = Time.time + ultimateCooldown;
-                StartCoroutine(UltimateRoutine());
+                ultimateRoutine = StartCoroutine(UltimateRoutine());
+            }
+        }
+
+        public void ResetAbilityState(bool resetCooldowns = true)
+        {
+            if (movementRoutine != null) StopCoroutine(movementRoutine);
+            if (ultimateRoutine != null) StopCoroutine(ultimateRoutine);
+            movementRoutine = null;
+            ultimateRoutine = null;
+            movementAbilityActive = false;
+            ultimateActive = false;
+
+            if (fps != null)
+            {
+                fps.walkSpeed = originalWalk;
+                fps.sprintSpeed = originalSprint;
+                fps.crouchSpeed = originalCrouch;
+            }
+
+            if (resetCooldowns)
+            {
+                nextQ = 0f;
+                nextE = 0f;
+                nextC = 0f;
+                nextX = 0f;
+            }
+
+            for (int i = KurokageDecoyRuntime.Active.Count - 1; i >= 0; i--)
+            {
+                KurokageDecoyRuntime decoy = KurokageDecoyRuntime.Active[i];
+                if (decoy != null) decoy.DissolveAndDestroy();
             }
         }
 
@@ -111,12 +150,16 @@ namespace Renkai.Kurokage
             while (elapsed < dashDuration)
             {
                 if (controller != null && controller.enabled)
-                    controller.Move(input * speed * Time.deltaTime);
+                {
+                    CollisionFlags flags = controller.Move(input * speed * Time.deltaTime);
+                    if ((flags & CollisionFlags.Sides) != 0) break;
+                }
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
             movementAbilityActive = false;
+            movementRoutine = null;
         }
 
         private IEnumerator MomentumLeapRoutine()
@@ -132,8 +175,10 @@ namespace Renkai.Kurokage
             while (elapsed < leapDuration)
             {
                 float t = elapsed / leapDuration;
+                float forwardCurve = Mathf.Lerp(1f, 0.35f, t);
                 float vertical = Mathf.Lerp(leapUpSpeed, -3.2f, t);
-                Vector3 motion = forward * leapForwardSpeed + Vector3.up * vertical;
+                Vector3 redirect = transform.right * Input.GetAxisRaw("Horizontal") * 2.2f;
+                Vector3 motion = forward * leapForwardSpeed * forwardCurve + redirect + Vector3.up * vertical;
                 if (controller != null && controller.enabled)
                     controller.Move(motion * Time.deltaTime);
                 elapsed += Time.deltaTime;
@@ -141,6 +186,7 @@ namespace Renkai.Kurokage
             }
 
             movementAbilityActive = false;
+            movementRoutine = null;
         }
 
         private void SpawnDecoy()
@@ -167,12 +213,7 @@ namespace Renkai.Kurokage
             }
             else
             {
-                GameObject fallback = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-                fallback.name = "HOLOGRAM_FALLBACK";
-                fallback.transform.SetParent(decoyRoot.transform, false);
-                Collider c = fallback.GetComponent<Collider>();
-                if (c != null) Object.Destroy(c);
-                ApplyHologramMaterial(fallback);
+                Debug.LogWarning("Kairi decoy spawned without AGENT_VISUAL. Decoy visual skipped.");
             }
 
             KurokageDecoyRuntime runtime = decoyRoot.AddComponent<KurokageDecoyRuntime>();
@@ -185,6 +226,7 @@ namespace Renkai.Kurokage
             Color holo = new Color(0.10f, 0.55f, 1f, 0.68f);
             Shader shader = Shader.Find("Universal Render Pipeline/Lit");
             if (shader == null) shader = Shader.Find("Standard");
+            if (shader == null) shader = Shader.Find("Diffuse");
 
             foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
             {
@@ -228,33 +270,21 @@ namespace Renkai.Kurokage
             }
 
             ultimateActive = false;
+            ultimateRoutine = null;
         }
 
         private void SpawnBurstTrail(Color color, float life, Vector3? overridePosition = null)
         {
-            GameObject burst = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            burst.name = "KAIRI_ABILITY_BURST";
-            Object.Destroy(burst.GetComponent<Collider>());
-            burst.transform.position = overridePosition ?? transform.position + Vector3.up * 1f;
-            burst.transform.localScale = Vector3.one * 0.45f;
-
-            Renderer r = burst.GetComponent<Renderer>();
-            if (r != null)
-            {
-                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-                if (shader == null) shader = Shader.Find("Standard");
-                Material m = new Material(shader);
-                if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", color);
-                if (m.HasProperty("_Color")) m.SetColor("_Color", color);
-                if (m.HasProperty("_EmissionColor"))
-                {
-                    m.EnableKeyword("_EMISSION");
-                    m.SetColor("_EmissionColor", color * 3f);
-                }
-                r.sharedMaterial = m;
-            }
-
-            Object.Destroy(burst, life);
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Sphere,
+                "KAIRI_ABILITY_BURST",
+                overridePosition ?? transform.position + Vector3.up * 1f,
+                Quaternion.identity,
+                Vector3.one * 0.45f,
+                color,
+                3f,
+                life
+            );
         }
 
         private static float Cooldown01(float nextReadyTime, float duration)
