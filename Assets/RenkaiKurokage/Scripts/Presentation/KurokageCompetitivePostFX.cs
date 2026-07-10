@@ -6,6 +6,9 @@ namespace Renkai.Kurokage
     [RequireComponent(typeof(Camera))]
     public sealed class KurokageCompetitivePostFX : MonoBehaviour
     {
+        [Header("Shader")]
+        [SerializeField] private Shader gradeShader;
+
         [Header("Competitive Grade")]
         [SerializeField, Range(-1f, 1f)] private float exposure = 0.18f;
         [SerializeField, Range(0.8f, 1.4f)] private float contrast = 1.08f;
@@ -22,7 +25,6 @@ namespace Renkai.Kurokage
 
         private const string ShaderName = "Hidden/Renkai/CompetitiveGrade";
         private Material material;
-        private Shader gradeShader;
 
         private void OnEnable()
         {
@@ -59,8 +61,14 @@ namespace Renkai.Kurokage
             Graphics.Blit(source, destination, material);
         }
 
-        public void ConfigureCompetitivePreset()
+        public void ConfigureCompetitivePreset(Shader shaderReference = null)
         {
+            if (shaderReference != null && shaderReference != gradeShader)
+            {
+                gradeShader = shaderReference;
+                ReleaseMaterial();
+            }
+
             exposure = 0.18f;
             contrast = 1.08f;
             saturation = 1.03f;
