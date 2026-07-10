@@ -35,6 +35,7 @@ public static class KurokageFinalUpgradeInstaller
             "- hitmarker + headshot + reload progress HUD\n" +
             "- world/body/armor/headshot impact VFX\n" +
             "- unified recoil ownership\n" +
+            "- premium movement camera presentation\n" +
             "- round banners and kill feed\n" +
             "- event-driven gameplay audio hooks\n" +
             "- Zodiac Core objective + VFX\n" +
@@ -53,6 +54,7 @@ public static class KurokageFinalUpgradeInstaller
         KurokageFiveVFiveInstaller.Install();
         KurokageAgentVisualInstaller.Install();
         EnsureArmorAudioAndCombatVfx();
+        EnsureMovementPresentation();
         EnsureEliteHud();
         EnsureCombatFeedbackHud();
         EnsureMatchPresentationHud();
@@ -95,6 +97,16 @@ public static class KurokageFinalUpgradeInstaller
                 if (player.GetComponent<KurokageCombatVfxPresenter>() == null)
                     player.gameObject.AddComponent<KurokageCombatVfxPresenter>();
             }
+        }
+    }
+
+    private static void EnsureMovementPresentation()
+    {
+        foreach (RenkaiRoundPlayer player in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
+        {
+            if (!player.isHumanPlayer) continue;
+            if (player.GetComponent<KurokageMovementPresentation>() == null)
+                player.gameObject.AddComponent<KurokageMovementPresentation>();
         }
     }
 
