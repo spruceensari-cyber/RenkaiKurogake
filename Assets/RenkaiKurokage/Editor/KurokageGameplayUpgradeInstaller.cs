@@ -41,8 +41,11 @@ public static class KurokageGameplayUpgradeInstaller
             viewRoot = root.transform;
         }
 
-        KurokageWeaponSway sway = viewRoot.GetComponent<KurokageWeaponSway>();
-        if (sway == null) viewRoot.gameObject.AddComponent<KurokageWeaponSway>();
+        if (viewRoot.GetComponent<KurokageWeaponSway>() == null)
+            viewRoot.gameObject.AddComponent<KurokageWeaponSway>();
+
+        if (viewRoot.GetComponent<KurokageViewmodelAnimator>() == null)
+            viewRoot.gameObject.AddComponent<KurokageViewmodelAnimator>();
 
         weapon.rifleView = BuildRifleView(viewRoot);
         weapon.pistolView = BuildPistolView(viewRoot);
@@ -64,7 +67,7 @@ public static class KurokageGameplayUpgradeInstaller
 
         EditorUtility.DisplayDialog(
             "Renkai",
-            "Gun feel upgrade bağlandı:\n- viewmodel\n- weapon sway\n- dynamic crosshair\n- health/ammo HUD\n- rifle/pistol/blade görünümü\n\nCtrl+S ile kaydet ve Play'e bas.",
+            "Gun feel upgrade bağlandı:\n- richer viewmodels\n- weapon sway\n- procedural reload\n- visible magazine movement\n- ADS presentation\n- dynamic crosshair\n- health/ammo HUD\n\nCtrl+S ile kaydet ve Play'e bas.",
             "OK"
         );
     }
@@ -79,12 +82,16 @@ public static class KurokageGameplayUpgradeInstaller
 
         Material dark = MakeMaterial(new Color(0.055f, 0.065f, 0.085f), 0.55f, 0f);
         Material accent = MakeMaterial(new Color(0.06f, 0.42f, 0.95f), 0.45f, 0.5f);
+        Material light = MakeMaterial(new Color(0.58f, 0.62f, 0.70f), 0.42f, 0f);
 
         Part("Receiver", holder.transform, new Vector3(0f, 0f, 0.28f), new Vector3(0.18f, 0.16f, 0.58f), dark);
+        Part("UpperReceiver", holder.transform, new Vector3(0f, 0.075f, 0.34f), new Vector3(0.13f, 0.06f, 0.34f), light);
         Part("Barrel", holder.transform, new Vector3(0f, 0.015f, 0.78f), new Vector3(0.055f, 0.055f, 0.55f), dark);
+        Part("Handguard", holder.transform, new Vector3(0f, 0f, 0.60f), new Vector3(0.12f, 0.11f, 0.26f), light);
         Part("Grip", holder.transform, new Vector3(0.02f, -0.16f, 0.22f), new Vector3(0.09f, 0.25f, 0.11f), dark, new Vector3(12f, 0f, 0f));
+        Part("Magazine", holder.transform, new Vector3(0f, -0.14f, 0.30f), new Vector3(0.075f, 0.22f, 0.12f), light, new Vector3(8f, 0f, 0f));
         Part("Stock", holder.transform, new Vector3(0f, -0.015f, -0.14f), new Vector3(0.14f, 0.12f, 0.30f), dark);
-        Part("BlueRail", holder.transform, new Vector3(0f, 0.10f, 0.35f), new Vector3(0.035f, 0.025f, 0.52f), accent);
+        Part("BlueRail", holder.transform, new Vector3(0f, 0.115f, 0.35f), new Vector3(0.035f, 0.025f, 0.52f), accent);
         return holder;
     }
 
@@ -99,9 +106,13 @@ public static class KurokageGameplayUpgradeInstaller
 
         Material light = MakeMaterial(new Color(0.48f, 0.52f, 0.58f), 0.5f, 0f);
         Material dark = MakeMaterial(new Color(0.05f, 0.055f, 0.07f), 0.4f, 0f);
+        Material accent = MakeMaterial(new Color(0.70f, 0.34f, 0.96f), 0.55f, 0.40f);
 
         Part("Slide", holder.transform, new Vector3(0f, 0f, 0.20f), new Vector3(0.14f, 0.12f, 0.42f), light);
+        Part("Barrel", holder.transform, new Vector3(0f, -0.01f, 0.42f), new Vector3(0.05f, 0.04f, 0.18f), dark);
         Part("Grip", holder.transform, new Vector3(0f, -0.17f, 0.05f), new Vector3(0.10f, 0.26f, 0.13f), dark, new Vector3(10f, 0f, 0f));
+        Part("Magazine", holder.transform, new Vector3(0f, -0.14f, 0.30f), new Vector3(0.055f, 0.16f, 0.07f), dark, new Vector3(7f, 0f, 0f));
+        Part("Accent", holder.transform, new Vector3(0f, 0.05f, 0.16f), new Vector3(0.08f, 0.025f, 0.15f), accent);
         return holder;
     }
 
@@ -119,6 +130,7 @@ public static class KurokageGameplayUpgradeInstaller
         Material grip = MakeMaterial(new Color(0.035f, 0.04f, 0.055f), 0.3f, 0f);
 
         Part("Blade", holder.transform, new Vector3(0f, 0.02f, 0.58f), new Vector3(0.055f, 0.025f, 1.0f), blade);
+        Part("EnergyCore", holder.transform, new Vector3(0f, 0.025f, 0.42f), new Vector3(0.018f, 0.035f, 0.48f), blade);
         Part("Grip", holder.transform, new Vector3(0f, -0.03f, -0.05f), new Vector3(0.09f, 0.09f, 0.28f), grip);
         return holder;
     }
