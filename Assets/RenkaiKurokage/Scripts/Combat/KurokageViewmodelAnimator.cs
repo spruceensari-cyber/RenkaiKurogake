@@ -6,6 +6,7 @@ namespace Renkai.Kurokage
     public sealed class KurokageViewmodelAnimator : MonoBehaviour
     {
         [SerializeField] private RenkaiWeaponController weapon;
+        [SerializeField] private KurokageWeaponSway sway;
         [SerializeField] private float smooth = 13f;
         [SerializeField] private float adsPositionX = -0.11f;
         [SerializeField] private float adsPositionY = 0.045f;
@@ -15,69 +16,38 @@ namespace Renkai.Kurokage
 
         private Vector3 baseLocalPosition;
         private Quaternion baseLocalRotation;
-        private float reloadStart;
-        private float reloadDuration;
-        private bool visualReloading;
         private float shotKick;
         private float shotRot;
-        private int lastRifleAmmo;
-        private int lastPistolAmmo;
 
         private void Awake()
         {
             if (weapon == null) weapon = GetComponentInParent<RenkaiWeaponController>();
+            if (sway == null) sway = GetComponent<KurokageWeaponSway>();
             baseLocalPosition = transform.localPosition;
             baseLocalRotation = transform.localRotation;
-
-            if (weapon != null)
-            {
-                lastRifleAmmo = weapon.rifleAmmo;
-                lastPistolAmmo = weapon.pistolAmmo;
-            }
         }
 
-        private void Update()
+        private void OnEnable()
+        {
+            if (weapon == null) weapon = GetComponentInParent<RenkaiWeaponController>();
+            if (weapon != null) weapon.ShotFired += OnShotFired;
+        }
+
+        private void OnDisable()
+        {
+            if (weapon != null) weapon.ShotFired -= OnShotFired;
+        }
+
+        private void LateUpdate()
         {
             if (weapon == null) return;
-
-            DetectShotKick();
-            DetectReloadVisual();
             AnimateViewmodel();
         }
 
-        private void DetectShotKick()
+        private void OnShotFired()
         {
-            bool rifleShot = weapon.rifleAmmo < lastRifleAmmo;
-            bool pistolShot = weapon.pistolAmmo < lastPistolAmmo;
-
-            if (rifleShot || pistolShot)
-            {
-                shotKick = shotKickDistance;
-                shotRot = shotKickRotation;
-            }
-
-            lastRifleAmmo = weapon.rifleAmmo;
-            lastPistolAmmo = weapon.pistolAmmo;
-        }
-
-        private void DetectReloadVisual()
-        {
-            if (Input.GetKeyDown(KeyCode.R) && weapon.slot != RenkaiWeaponSlot.Sword)
-            {
-                bool canReload = weapon.slot == RenkaiWeaponSlot.Rifle
-                    ? weapon.rifleAmmo < 30 && weapon.rifleReserve > 0
-                    : weapon.pistolAmmo < 12 && weapon.pistolReserve > 0;
-
-                if (canReload)
-                {
-                    visualReloading = true;
-                    reloadStart = Time.time;
-                    reloadDuration = weapon.slot == RenkaiWeaponSlot.Rifle ? weapon.rifleReloadTime : weapon.pistolReloadTime;
-                }
-            }
-
-            if (visualReloading && Time.time - reloadStart >= reloadDuration)
-                visualReloading = false;
+            shotKick = shotKickDistance;
+            shotRot = shotKickRotation;
         }
 
         private void AnimateViewmodel()
@@ -85,20 +55,29 @@ namespace Renkai.Kurokage
             Vector3 targetPos = baseLocalPosition;
             Quaternion targetRot = baseLocalRotation;
 
-            bool aiming = weapon.slot != RenkaiWeaponSlot.Sword && Input.GetMouseButton(1) && !visualReloading;
-            if (aiming)
+            if (sway != null)
+            {
+                targetPos += sway.PositionOffset;
+                targetRot *= sway.RotationOffset;
+            }
+
+            if (weapon.IsAiming && !weapon.IsReloading)
             {
                 targetPos += new Vector3(adsPositionX, adsPositionY, adsPositionZ);
                 targetRot *= Quaternion.Euler(-1.5f, -4f, 0f);
             }
 
-            if (visualReloading)
+            if (weapon.IsReloading)
             {
-                float t = Mathf.Clamp01((Time.time - reloadStart) / Mathf.Max(0.01f, reloadDuration));
+                float t = weapon.ReloadNormalized;
                 float arc = Mathf.Sin(t * Mathf.PI);
                 targetPos += new Vector3(0.075f * arc, -0.13f * arc, -0.07f * arc);
                 targetRot *= Quaternion.Euler(25f * arc, 7f * arc, -18f * arc);
                 AnimateMagazine(t);
+            }
+            else
+            {
+                ResetMagazinePose();
             }
 
             shotKick = Mathf.Lerp(shotKick, 0f, 12f * Time.deltaTime);
@@ -112,12 +91,7 @@ namespace Renkai.Kurokage
 
         private void AnimateMagazine(float t)
         {
-            Transform mag = null;
-            if (weapon.slot == RenkaiWeaponSlot.Rifle && weapon.rifleView != null)
-                mag = FindDeepChild(weapon.rifleView.transform, "Magazine");
-            else if (weapon.slot == RenkaiWeaponSlot.Pistol && weapon.pistolView != null)
-                mag = FindDeepChild(weapon.pistolView.transform, "Magazine");
-
+            Transform mag = GetActiveMagazine();
             if (mag == null) return;
 
             float drop;
@@ -130,6 +104,23 @@ namespace Renkai.Kurokage
             p.z = 0.30f - 0.05f * drop;
             mag.localPosition = p;
             mag.localRotation = Quaternion.Euler(8f + 18f * drop, 0f, 0f);
+        }
+
+        private void ResetMagazinePose()
+        {
+            Transform mag = GetActiveMagazine();
+            if (mag == null) return;
+            mag.localPosition = new Vector3(0f, -0.14f, 0.30f);
+            mag.localRotation = Quaternion.Euler(8f, 0f, 0f);
+        }
+
+        private Transform GetActiveMagazine()
+        {
+            if (weapon.slot == RenkaiWeaponSlot.Rifle && weapon.rifleView != null)
+                return FindDeepChild(weapon.rifleView.transform, "Magazine");
+            if (weapon.slot == RenkaiWeaponSlot.Pistol && weapon.pistolView != null)
+                return FindDeepChild(weapon.pistolView.transform, "Magazine");
+            return null;
         }
 
         private static Transform FindDeepChild(Transform parent, string name)
