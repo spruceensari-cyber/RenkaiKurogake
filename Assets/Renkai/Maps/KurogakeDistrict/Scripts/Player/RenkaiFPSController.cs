@@ -27,11 +27,18 @@ namespace Renkai.Kurogake
         public float minPitch = -82f;
         public float maxPitch = 82f;
 
+        [Header("Recoil Layer")]
+        public float recoilReturnSpeed = 11f;
+        public float recoilFollowSpeed = 22f;
+
         [Header("Respawn / Safety")]
         public Transform respawnPoint;
         public float killY = -12f;
         public bool allowManualRespawn = false;
         public KeyCode manualRespawnKey = KeyCode.F9;
+
+        public bool IsCrouching => isCrouching;
+        public float PlanarSpeed => controller == null ? 0f : new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
 
         private CharacterController controller;
         private float verticalVelocity;
@@ -39,6 +46,8 @@ namespace Renkai.Kurogake
         private bool isCrouching;
         private Vector3 fallbackSpawnPosition;
         private Quaternion fallbackSpawnRotation;
+        private Vector2 recoilTarget;
+        private Vector2 recoilCurrent;
 
         private void Awake()
         {
@@ -84,8 +93,20 @@ namespace Renkai.Kurogake
             transform.Rotate(Vector3.up * mouseX);
             pitch = Mathf.Clamp(pitch - mouseY, minPitch, maxPitch);
 
+            recoilCurrent = Vector2.Lerp(recoilCurrent, recoilTarget, recoilFollowSpeed * Time.deltaTime);
+            recoilTarget = Vector2.Lerp(recoilTarget, Vector2.zero, recoilReturnSpeed * Time.deltaTime);
+
             if (playerCamera != null)
-                playerCamera.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
+                playerCamera.transform.localEulerAngles = new Vector3(
+                    Mathf.Clamp(pitch - recoilCurrent.y, minPitch, maxPitch),
+                    recoilCurrent.x,
+                    0f
+                );
+        }
+
+        public void AddRecoil(float pitchKick, float yawKick)
+        {
+            recoilTarget += new Vector2(yawKick, pitchKick);
         }
 
         private void HandleCrouch()
@@ -169,6 +190,8 @@ namespace Renkai.Kurogake
             }
 
             verticalVelocity = 0f;
+            recoilTarget = Vector2.zero;
+            recoilCurrent = Vector2.zero;
             controller.enabled = true;
 
             Debug.Log("Renkai player respawned.");
