@@ -47,6 +47,7 @@ public static class KurokageFinalUpgradeInstaller
         EnsureMovementPresentation();
         EnsureEliteHud();
         EnsureCombatFeedbackHud();
+        EnsureDamageDirectionHud();
         EnsureMatchPresentationHud();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
@@ -152,6 +153,16 @@ public static class KurokageFinalUpgradeInstaller
         {
             existing = new GameObject("KUROKAGE_COMBAT_FEEDBACK_HUD");
             existing.AddComponent<KurokageCombatFeedbackHUD>();
+        }
+    }
+
+    private static void EnsureDamageDirectionHud()
+    {
+        GameObject existing = GameObject.Find("KUROKAGE_DAMAGE_DIRECTION_HUD");
+        if (existing == null)
+        {
+            existing = new GameObject("KUROKAGE_DAMAGE_DIRECTION_HUD");
+            existing.AddComponent<KurokageDamageDirectionHUD>();
         }
     }
 
