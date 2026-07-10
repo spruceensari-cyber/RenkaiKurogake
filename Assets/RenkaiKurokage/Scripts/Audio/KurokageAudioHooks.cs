@@ -35,9 +35,6 @@ namespace Renkai.Kurokage
         private AudioSource source;
         private RenkaiWeaponController weapon;
         private KairiAbilityController abilities;
-        private int lastRifleAmmo;
-        private int lastPistolAmmo;
-        private bool wasReloading;
         private float previousQ;
         private float previousE;
         private float previousC;
@@ -54,55 +51,65 @@ namespace Renkai.Kurokage
 
             weapon = GetComponent<RenkaiWeaponController>();
             abilities = GetComponent<KairiAbilityController>();
-
-            if (weapon != null)
-            {
-                lastRifleAmmo = weapon.rifleAmmo;
-                lastPistolAmmo = weapon.pistolAmmo;
-            }
         }
 
         private void OnEnable()
         {
             KurokageGameEvents.RoundBanner += OnRoundBanner;
             KurokageGameEvents.RoundEnded += OnRoundEnded;
+
+            if (weapon == null) weapon = GetComponent<RenkaiWeaponController>();
+            if (weapon != null)
+            {
+                weapon.ShotFired += OnShotFired;
+                weapon.ReloadStarted += OnReloadStarted;
+                weapon.ReloadFinished += OnReloadFinished;
+                weapon.HitConfirmed += OnHitConfirmed;
+            }
         }
 
         private void OnDisable()
         {
             KurokageGameEvents.RoundBanner -= OnRoundBanner;
             KurokageGameEvents.RoundEnded -= OnRoundEnded;
+
+            if (weapon != null)
+            {
+                weapon.ShotFired -= OnShotFired;
+                weapon.ReloadStarted -= OnReloadStarted;
+                weapon.ReloadFinished -= OnReloadFinished;
+                weapon.HitConfirmed -= OnHitConfirmed;
+            }
         }
 
         private void Update()
         {
-            MonitorWeapon();
             MonitorAbilities();
         }
 
-        private void MonitorWeapon()
+        private void OnShotFired()
         {
             if (weapon == null) return;
+            if (weapon.slot == RenkaiWeaponSlot.Rifle) Play(rifleFire);
+            else if (weapon.slot == RenkaiWeaponSlot.Pistol) Play(pistolFire);
+            else Play(bladeSlash);
+        }
 
-            if (weapon.rifleAmmo < lastRifleAmmo)
-                Play(rifleFire);
-            if (weapon.pistolAmmo < lastPistolAmmo)
-                Play(pistolFire);
+        private void OnReloadStarted() => Play(reloadStart);
+        private void OnReloadFinished() => Play(reloadFinish);
 
-            lastRifleAmmo = weapon.rifleAmmo;
-            lastPistolAmmo = weapon.pistolAmmo;
-
-            bool reloadHeld = Input.GetKey(KeyCode.R) && weapon.slot != RenkaiWeaponSlot.Sword;
-            if (reloadHeld && !wasReloading)
-                Play(reloadStart);
-            if (!reloadHeld && wasReloading)
-                Play(reloadFinish);
-            wasReloading = reloadHeld;
+        private void OnHitConfirmed(bool isHeadshot)
+        {
+            Play(isHeadshot ? headshot : bodyHit);
         }
 
         private void MonitorAbilities()
         {
-            if (abilities == null) return;
+            if (abilities == null)
+            {
+                abilities = GetComponent<KairiAbilityController>();
+                if (abilities == null) return;
+            }
 
             float q = abilities.QCooldown01;
             float e = abilities.ECooldown01;
