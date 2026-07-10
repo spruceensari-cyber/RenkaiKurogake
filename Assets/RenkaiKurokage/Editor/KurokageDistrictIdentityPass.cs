@@ -15,7 +15,6 @@ public static class KurokageDistrictIdentityPass
     private static Material blue;
     private static Material violet;
     private static Material hologram;
-    private static Material glass;
 
     public static bool ApplySilent()
     {
@@ -43,13 +42,11 @@ public static class KurokageDistrictIdentityPass
         blue = Load("M_Accent_Blue");
         violet = Load("M_Accent_Violet");
         hologram = Load("M_Hologram");
-        glass = Load("M_Glass_Subtle");
         return light != null && dark != null && navy != null && cover != null && blue != null && violet != null && hologram != null;
     }
 
     private static void BuildShibuyaIdentity(Transform parent)
     {
-        // Clean crossing language: bright curb islands, dark framing, suspended transit elements.
         for (int i = -3; i <= 3; i++)
         {
             float z = -50f + i * 12f;
@@ -138,19 +135,14 @@ public static class KurokageDistrictIdentityPass
     private static void BuildFramedSign(string name, Transform parent, Vector3 position, Vector3 scale, Material face, Material frame, Vector3? euler = null)
     {
         GameObject root = new GameObject(name);
-        root.transform.SetParent(parent, true);
+        root.transform.SetParent(parent, false);
         root.transform.position = position;
         root.transform.eulerAngles = euler ?? Vector3.zero;
 
-        Slab(name + "_FACE", root.transform, position, scale, face, euler);
-        Vector3 border = scale + new Vector3(0.22f, 0.22f, 0.10f);
-        Slab(name + "_FRAME", root.transform, position + Vector3.forward * 0.06f, border, frame, euler);
-        root.transform.DetachChildren();
-        foreach (GameObject go in Object.FindObjectsOfType<GameObject>())
-        {
-            if (go.name == name + "_FACE" || go.name == name + "_FRAME")
-                go.transform.SetParent(root.transform, true);
-        }
+        GameObject frameGo = PrimitiveLocal(name + "_FRAME", root.transform, Vector3.zero, scale + new Vector3(0.22f, 0.22f, 0.10f), frame);
+        GameObject faceGo = PrimitiveLocal(name + "_FACE", root.transform, new Vector3(0f, 0f, -0.065f), scale, face);
+        frameGo.transform.SetSiblingIndex(0);
+        faceGo.transform.SetSiblingIndex(1);
     }
 
     private static Material Load(string name)
@@ -167,27 +159,35 @@ public static class KurokageDistrictIdentityPass
 
     private static GameObject Pillar(string name, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? euler = null)
     {
-        return Primitive(name, parent, position, scale, material, euler);
+        return PrimitiveWorld(name, parent, position, scale, material, euler);
     }
 
     private static GameObject Beam(string name, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? euler = null)
     {
-        return Primitive(name, parent, position, scale, material, euler);
+        return PrimitiveWorld(name, parent, position, scale, material, euler);
     }
 
     private static GameObject Slab(string name, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? euler = null)
     {
-        return Primitive(name, parent, position, scale, material, euler);
+        return PrimitiveWorld(name, parent, position, scale, material, euler);
     }
 
-    private static GameObject Primitive(string name, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? euler)
+    private static GameObject PrimitiveWorld(string name, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? euler)
+    {
+        GameObject go = PrimitiveLocal(name, parent, Vector3.zero, scale, material);
+        go.transform.position = position;
+        go.transform.eulerAngles = euler ?? Vector3.zero;
+        return go;
+    }
+
+    private static GameObject PrimitiveLocal(string name, Transform parent, Vector3 localPosition, Vector3 localScale, Material material)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
-        go.transform.SetParent(parent, true);
-        go.transform.position = position;
-        go.transform.localScale = scale;
-        go.transform.eulerAngles = euler ?? Vector3.zero;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = localPosition;
+        go.transform.localRotation = Quaternion.identity;
+        go.transform.localScale = localScale;
         Renderer renderer = go.GetComponent<Renderer>();
         if (renderer != null) renderer.sharedMaterial = material;
         Collider collider = go.GetComponent<Collider>();
