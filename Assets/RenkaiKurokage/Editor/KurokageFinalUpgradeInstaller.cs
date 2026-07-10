@@ -36,9 +36,11 @@ public static class KurokageFinalUpgradeInstaller
     public static bool BuildProductionVersion(out string validationReport)
     {
         RenkaiUnifiedCompetitiveBuilder.Build();
-        KurokageGameplayUpgradeInstaller.Upgrade();
-        KurokageFiveVFiveInstaller.Install();
-        KurokageAgentVisualInstaller.Install();
+
+        bool gameplayOk = KurokageGameplayUpgradeInstaller.UpgradeSilent();
+        bool matchOk = KurokageFiveVFiveInstaller.InstallSilent();
+        bool visualsOk = KurokageAgentVisualInstaller.InstallSilent();
+
         EnsureArmorAudioAndCombatVfx();
         EnsureMovementPresentation();
         EnsureEliteHud();
@@ -54,7 +56,12 @@ public static class KurokageFinalUpgradeInstaller
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        bool passed = KurokageProductionValidator.ValidateSilent(out validationReport);
+        bool structurePassed = KurokageProductionValidator.ValidateSilent(out validationReport);
+        if (!gameplayOk) validationReport += "\nERROR Gameplay upgrade silent step failed.";
+        if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
+        if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
+
+        bool passed = structurePassed && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
