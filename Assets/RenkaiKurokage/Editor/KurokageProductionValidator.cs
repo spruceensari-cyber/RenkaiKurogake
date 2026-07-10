@@ -12,11 +12,7 @@ public static class KurokageProductionValidator
         string report;
         bool passed = ValidateSilent(out report);
         Debug.Log(report);
-        EditorUtility.DisplayDialog(
-            "Renkai Production Validation",
-            report,
-            passed ? "OK" : "REVIEW"
-        );
+        EditorUtility.DisplayDialog("Renkai Production Validation", report, passed ? "OK" : "REVIEW");
     }
 
     public static bool ValidateSilent(out string reportText)
@@ -40,6 +36,7 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
         ValidateCount<KurokageAgentReadabilityPresenter>("Agent readability presenters", 10, ref errors, report);
         ValidateCount<KurokageHitReactionPresenter>("Agent hit reaction presenters", 10, ref errors, report);
+        ValidateCount<KurokageProceduralAgentRig>("Code-built procedural agent rigs", 10, ref errors, report);
         ValidateCount<KurokageViewmodelLightingPresenter>("Viewmodel lighting presenter", 1, ref errors, report);
         ValidateCount<KurokageSprintWeaponGate>("Sprint weapon readiness gate", 1, ref errors, report);
         ValidateCount<KurokageArchitecturalResonancePresenter>("Architectural resonance presenter", 1, ref errors, report);
@@ -70,6 +67,10 @@ public static class KurokageProductionValidator
         int defenders = 0;
         int visibleRootRenderers = 0;
         int tacticalBots = 0;
+        int kairi = 0;
+        int noa = 0;
+        int reiha = 0;
+        int mio = 0;
 
         foreach (RenkaiRoundPlayer player in players)
         {
@@ -81,8 +82,30 @@ public static class KurokageProductionValidator
             else defenders++;
 
             Renderer rootRenderer = player.GetComponent<Renderer>();
-            if (rootRenderer != null && rootRenderer.enabled)
-                visibleRootRenderers++;
+            if (rootRenderer != null && rootRenderer.enabled) visibleRootRenderers++;
+
+            Transform visual = player.transform.Find("AGENT_VISUAL");
+            if (visual == null || visual.Find("PROCEDURAL_AGENT_ROOT") == null)
+            {
+                errors++;
+                report.AppendLine("ERROR Missing code-built AGENT_VISUAL for " + player.agentName);
+            }
+            else
+            {
+                report.AppendLine("PASS  Code-built AGENT_VISUAL " + player.agentName);
+            }
+
+            KurokageProceduralAgentRig rig = player.GetComponentInChildren<KurokageProceduralAgentRig>(true);
+            if (rig != null)
+            {
+                switch (rig.Archetype)
+                {
+                    case KurokageAgentArchetype.Kairi: kairi++; break;
+                    case KurokageAgentArchetype.Noa: noa++; break;
+                    case KurokageAgentArchetype.Reiha: reiha++; break;
+                    case KurokageAgentArchetype.Mio: mio++; break;
+                }
+            }
 
             KurokageHitZoneBinder binder = player.GetComponent<KurokageHitZoneBinder>();
             int zones = player.GetComponentsInChildren<KurokageHitZone>(true).Length;
@@ -101,16 +124,17 @@ public static class KurokageProductionValidator
         ValidateExact("Attackers", attackers, 5, ref errors, report);
         ValidateExact("Defenders", defenders, 5, ref errors, report);
         ValidateExact("Tactical bots", tacticalBots, 9, ref errors, report);
+        ValidateAtLeast("Kairi visual coverage", kairi, 1, ref errors, report);
+        ValidateAtLeast("Noa visual coverage", noa, 1, ref errors, report);
+        ValidateAtLeast("Reiha visual coverage", reiha, 1, ref errors, report);
+        ValidateAtLeast("Mio visual coverage", mio, 1, ref errors, report);
 
         if (visibleRootRenderers > 0)
         {
             warnings++;
             report.AppendLine("WARN  Visible root player renderers: " + visibleRootRenderers + " (capsule placeholders may still be visible)");
         }
-        else
-        {
-            report.AppendLine("PASS  No visible root player renderers");
-        }
+        else report.AppendLine("PASS  No visible root player renderers");
 
         int visibleWorldHealthBars = 0;
         foreach (RenkaiWorldHealthBar bar in Object.FindObjectsOfType<RenkaiWorldHealthBar>(true))
@@ -118,22 +142,13 @@ public static class KurokageProductionValidator
         ValidateExact("Visible world health bars", visibleWorldHealthBars, 0, ref errors, report);
 
         KurokageDecoyRuntime[] sceneDecoys = Object.FindObjectsOfType<KurokageDecoyRuntime>(true);
-        if (sceneDecoys.Length > 0)
-        {
-            errors++;
-            report.AppendLine("ERROR Initial scene contains active decoy objects: " + sceneDecoys.Length);
-        }
-        else
-        {
-            report.AppendLine("PASS  No decoys in initial scene state");
-        }
+        ValidateExact("Initial decoys", sceneDecoys.Length, 0, ref errors, report);
 
         ValidateEnvironmentIdentity(ref errors, ref warnings, report);
 
         ZodiacNexusSite[] sites = Object.FindObjectsOfType<ZodiacNexusSite>(true);
         ValidateExact("Zodiac Nexus sites", sites.Length, 2, ref errors, report);
-        foreach (ZodiacNexusSite site in sites)
-            ValidateNexusArt(site, ref errors, report);
+        foreach (ZodiacNexusSite site in sites) ValidateNexusArt(site, ref errors, report);
 
         GameObject core = GameObject.Find("ZODIAC_CORE");
         if (core == null)
@@ -152,6 +167,8 @@ public static class KurokageProductionValidator
             "KUROKAGE_ENVIRONMENT_ART",
             "KUROKAGE_BRIGHT_VISUAL_PASS",
             "KUROKAGE_COMPETITIVE_ARCHITECTURE",
+            "KUROKAGE_DISTRICT_IDENTITY",
+            "KUROKAGE_SITE_READABILITY_LIGHTING",
             "KUROKAGE_ELITE_HUD",
             "KUROKAGE_TACTICAL_RADAR_HUD",
             "KUROKAGE_COMBAT_FEEDBACK_HUD",
@@ -172,17 +189,14 @@ public static class KurokageProductionValidator
                 errors++;
                 report.AppendLine("ERROR Missing required root: " + rootName);
             }
-            else
-            {
-                report.AppendLine("PASS  Root present: " + rootName);
-            }
+            else report.AppendLine("PASS  Root present: " + rootName);
         }
 
         report.AppendLine("------------------------------------");
         report.AppendLine("Errors: " + errors);
         report.AppendLine("Warnings: " + warnings);
         report.AppendLine(errors == 0 ? "RESULT: STRUCTURE VALIDATION PASSED" : "RESULT: STRUCTURE VALIDATION FAILED");
-        report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, navigation, audio asset, or visual validation.");
+        report.AppendLine("Note: structural validation does not replace Unity compile, Play Mode, scale, collision, navigation, animation, audio or visual QA.");
 
         reportText = report.ToString();
         return errors == 0;
@@ -207,10 +221,7 @@ public static class KurokageProductionValidator
                 errors++;
                 report.AppendLine("ERROR Missing Nexus " + site.SiteId + " art layer: " + path);
             }
-            else
-            {
-                report.AppendLine("PASS  Nexus " + site.SiteId + " art layer: " + path);
-            }
+            else report.AppendLine("PASS  Nexus " + site.SiteId + " art layer: " + path);
         }
     }
 
@@ -233,10 +244,7 @@ public static class KurokageProductionValidator
                 errors++;
                 report.AppendLine("ERROR Missing Zodiac Core art layer: " + path);
             }
-            else
-            {
-                report.AppendLine("PASS  Zodiac Core art layer: " + path);
-            }
+            else report.AppendLine("PASS  Zodiac Core art layer: " + path);
         }
     }
 
@@ -258,10 +266,7 @@ public static class KurokageProductionValidator
                 errors++;
                 report.AppendLine("ERROR Missing environment landmark: " + landmark);
             }
-            else
-            {
-                report.AppendLine("PASS  Landmark present: " + landmark);
-            }
+            else report.AppendLine("PASS  Landmark present: " + landmark);
         }
 
         string[] materials =
@@ -284,10 +289,7 @@ public static class KurokageProductionValidator
                 warnings++;
                 report.AppendLine("WARN  Missing shared material asset: " + materialName);
             }
-            else
-            {
-                report.AppendLine("PASS  Shared material: " + materialName);
-            }
+            else report.AppendLine("PASS  Shared material: " + materialName);
         }
     }
 
@@ -299,14 +301,21 @@ public static class KurokageProductionValidator
 
     private static void ValidateExact(string label, int actual, int expected, ref int errors, StringBuilder report)
     {
-        if (actual == expected)
-        {
-            report.AppendLine("PASS  " + label + ": " + actual);
-        }
+        if (actual == expected) report.AppendLine("PASS  " + label + ": " + actual);
         else
         {
             errors++;
             report.AppendLine("ERROR " + label + ": expected " + expected + ", found " + actual);
+        }
+    }
+
+    private static void ValidateAtLeast(string label, int actual, int minimum, ref int errors, StringBuilder report)
+    {
+        if (actual >= minimum) report.AppendLine("PASS  " + label + ": " + actual);
+        else
+        {
+            errors++;
+            report.AppendLine("ERROR " + label + ": expected at least " + minimum + ", found " + actual);
         }
     }
 }
