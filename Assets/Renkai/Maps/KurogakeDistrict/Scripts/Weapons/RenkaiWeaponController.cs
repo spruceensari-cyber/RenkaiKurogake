@@ -66,6 +66,15 @@ namespace Renkai.Kurogake
         public Color rifleTracerColor = new Color(0.18f, 0.55f, 1f);
         public Color pistolTracerColor = new Color(0.75f, 0.35f, 1f);
 
+        [Header("Recoil Pattern")]
+        [SerializeField] private float recoilPatternResetDelay = 0.34f;
+        [SerializeField] private Vector2[] riflePattern =
+        {
+            new Vector2(-0.08f, 1.00f), new Vector2(0.05f, 1.08f), new Vector2(0.12f, 1.15f),
+            new Vector2(-0.10f, 1.18f), new Vector2(-0.16f, 1.20f), new Vector2(0.14f, 1.16f),
+            new Vector2(0.20f, 1.12f), new Vector2(-0.18f, 1.08f), new Vector2(0.10f, 1.02f)
+        };
+
         public bool IsReloading => reloading;
         public bool IsAiming { get; private set; }
         public float ReloadNormalized
@@ -81,6 +90,7 @@ namespace Renkai.Kurogake
         public string ActiveWeaponName => slot == RenkaiWeaponSlot.Rifle ? "KX-9 KURO" : slot == RenkaiWeaponSlot.Pistol ? "SHIRO SIDEARM" : "ECLIPSE BLADE";
 
         public event Action ShotFired;
+        public event Action EmptyTriggered;
         public event Action ReloadStarted;
         public event Action ReloadFinished;
         public event Action<bool> HitConfirmed;
@@ -94,6 +104,9 @@ namespace Renkai.Kurogake
         private CharacterController characterController;
         private RenkaiFPSController fpsController;
         private KurokageCombatVfxPresenter combatVfx;
+        private KurokageBladeCombatController bladeCombat;
+        private int recoilPatternIndex;
+        private float lastShotTime = -999f;
 
         private void Awake()
         {
@@ -103,6 +116,7 @@ namespace Renkai.Kurogake
             characterController = GetComponent<CharacterController>();
             fpsController = GetComponent<RenkaiFPSController>();
             combatVfx = GetComponent<KurokageCombatVfxPresenter>();
+            bladeCombat = GetComponent<KurokageBladeCombatController>();
 
             if (muzzlePoint == null && playerCamera != null)
             {
@@ -142,11 +156,24 @@ namespace Renkai.Kurogake
 
             if (!reloading && wantsFire && Time.time >= nextFireTime)
             {
-                if (slot == RenkaiWeaponSlot.Sword) Slash();
-                else FireGun();
+                if (slot == RenkaiWeaponSlot.Sword)
+                {
+                    if (bladeCombat == null)
+                        bladeCombat = GetComponent<KurokageBladeCombatController>();
+
+                    if (bladeCombat == null)
+                        LegacySlash();
+                }
+                else
+                {
+                    FireGun();
+                }
             }
 
             if (Input.GetKeyDown(KeyCode.R)) StartReload();
+
+            if (Time.time - lastShotTime > recoilPatternResetDelay)
+                recoilPatternIndex = 0;
 
             if (hitText != null && hitText.enabled && Time.time > hitTextUntil)
                 hitText.enabled = false;
@@ -161,7 +188,13 @@ namespace Renkai.Kurogake
             pistolAmmo = 12;
             pistolReserve = 36;
             reloading = false;
+            recoilPatternIndex = 0;
             SelectWeapon(0);
+        }
+
+        public void SelectSlot(RenkaiWeaponSlot targetSlot)
+        {
+            SelectWeapon((int)targetSlot);
         }
 
         private void UpdateAdsRequest()
@@ -185,6 +218,7 @@ namespace Renkai.Kurogake
             if (swordView != null) swordView.SetActive(slot == RenkaiWeaponSlot.Sword);
 
             IsAiming = false;
+            recoilPatternIndex = 0;
             UpdateAdsRequest();
         }
 
@@ -193,7 +227,8 @@ namespace Renkai.Kurogake
             int ammo = slot == RenkaiWeaponSlot.Rifle ? rifleAmmo : pistolAmmo;
             if (ammo <= 0)
             {
-                StartReload();
+                nextFireTime = Time.time + 0.16f;
+                EmptyTriggered?.Invoke();
                 return;
             }
 
@@ -202,6 +237,7 @@ namespace Renkai.Kurogake
 
             float fireRate = slot == RenkaiWeaponSlot.Rifle ? rifleFireRate : pistolFireRate;
             nextFireTime = Time.time + 1f / Mathf.Max(0.1f, fireRate);
+            lastShotTime = Time.time;
 
             float spreadDegrees = GetCurrentSpread();
             if (IsAiming) spreadDegrees *= adsSpreadMultiplier;
@@ -310,15 +346,28 @@ namespace Renkai.Kurogake
         {
             float vertical = slot == RenkaiWeaponSlot.Rifle ? rifleVerticalRecoil : pistolVerticalRecoil;
             float horizontal = slot == RenkaiWeaponSlot.Rifle ? rifleHorizontalRecoil : pistolHorizontalRecoil;
+            float yawKick;
+
+            if (slot == RenkaiWeaponSlot.Rifle && riflePattern != null && riflePattern.Length > 0)
+            {
+                Vector2 pattern = riflePattern[recoilPatternIndex % riflePattern.Length];
+                vertical *= pattern.y;
+                yawKick = horizontal * pattern.x + UnityEngine.Random.Range(-horizontal * 0.18f, horizontal * 0.18f);
+                recoilPatternIndex++;
+            }
+            else
+            {
+                yawKick = UnityEngine.Random.Range(-horizontal, horizontal);
+            }
 
             if (IsAiming)
             {
                 vertical *= adsRecoilMultiplier;
-                horizontal *= adsRecoilMultiplier;
+                yawKick *= adsRecoilMultiplier;
             }
 
             if (fpsController != null)
-                fpsController.AddRecoil(vertical, UnityEngine.Random.Range(-horizontal, horizontal));
+                fpsController.AddRecoil(vertical, yawKick);
         }
 
         private void StartReload()
@@ -362,7 +411,7 @@ namespace Renkai.Kurogake
             ReloadFinished?.Invoke();
         }
 
-        private void Slash()
+        private void LegacySlash()
         {
             nextFireTime = Time.time + 0.55f;
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
@@ -383,7 +432,7 @@ namespace Renkai.Kurogake
                         hit.normal,
                         KurokageDamageType.Blade,
                         zoneType,
-                        "ECLIPSE BLADE"
+                        "ECLIPSE BLADE LEGACY"
                     );
                     victim.ApplyDamage(info);
                     ShowHit(false);
@@ -402,7 +451,7 @@ namespace Renkai.Kurogake
 
             KurokageVfxPool.Instance.Spawn(
                 KurokageVfxShape.Cube,
-                "Renkai_Sword_Slash",
+                "Renkai_Sword_Slash_Legacy",
                 playerCamera.transform.TransformPoint(new Vector3(0f, -0.05f, 1.35f)),
                 playerCamera.transform.rotation * Quaternion.Euler(0f, 0f, 35f),
                 new Vector3(1.6f, 0.045f, 0.18f),
