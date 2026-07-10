@@ -37,6 +37,7 @@ namespace Renkai.Kurokage
         private RenkaiWeaponController weapon;
         private KairiAbilityController abilities;
         private RenkaiRoundPlayer localPlayer;
+        private ZodiacCoreRuntime zodiacCore;
         private float previousQ;
         private float previousE;
         private float previousC;
@@ -54,6 +55,7 @@ namespace Renkai.Kurokage
             weapon = GetComponent<RenkaiWeaponController>();
             abilities = GetComponent<KairiAbilityController>();
             localPlayer = GetComponent<RenkaiRoundPlayer>();
+            zodiacCore = Object.FindObjectOfType<ZodiacCoreRuntime>();
         }
 
         private void OnEnable()
@@ -71,6 +73,15 @@ namespace Renkai.Kurokage
                 weapon.ReloadFinished += OnReloadFinished;
                 weapon.HitConfirmed += OnHitConfirmed;
             }
+
+            if (zodiacCore == null) zodiacCore = Object.FindObjectOfType<ZodiacCoreRuntime>();
+            if (zodiacCore != null)
+            {
+                zodiacCore.CorePickedUp += OnCorePickedUp;
+                zodiacCore.LinkStarted += OnLinkStarted;
+                zodiacCore.SeverStarted += OnSeverStarted;
+                zodiacCore.SynchronizationCompleted += OnSynchronizationCompleted;
+            }
         }
 
         private void OnDisable()
@@ -86,6 +97,14 @@ namespace Renkai.Kurokage
                 weapon.ReloadStarted -= OnReloadStarted;
                 weapon.ReloadFinished -= OnReloadFinished;
                 weapon.HitConfirmed -= OnHitConfirmed;
+            }
+
+            if (zodiacCore != null)
+            {
+                zodiacCore.CorePickedUp -= OnCorePickedUp;
+                zodiacCore.LinkStarted -= OnLinkStarted;
+                zodiacCore.SeverStarted -= OnSeverStarted;
+                zodiacCore.SynchronizationCompleted -= OnSynchronizationCompleted;
             }
         }
 
@@ -105,6 +124,10 @@ namespace Renkai.Kurokage
         private void OnEmptyTriggered() => Play(emptyClick);
         private void OnReloadStarted() => Play(reloadStart);
         private void OnReloadFinished() => Play(reloadFinish);
+        private void OnCorePickedUp(Transform carrier) => Play(zodiacPickup);
+        private void OnLinkStarted() => Play(linkStart);
+        private void OnSeverStarted() => Play(severStart);
+        private void OnSynchronizationCompleted() => Play(synchronizationComplete);
 
         private void OnHitConfirmed(bool isHeadshot)
         {
