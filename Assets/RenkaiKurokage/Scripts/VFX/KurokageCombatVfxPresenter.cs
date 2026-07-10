@@ -1,4 +1,5 @@
 using UnityEngine;
+using Renkai.Kurogake;
 
 namespace Renkai.Kurokage
 {
@@ -13,6 +14,16 @@ namespace Renkai.Kurokage
         [SerializeField] private float worldImpactScale = 0.14f;
         [SerializeField] private float armorImpactScale = 0.22f;
         [SerializeField] private float headshotScale = 0.32f;
+
+        private void OnEnable()
+        {
+            KurokageGameEvents.ArmorBroken += OnArmorBroken;
+        }
+
+        private void OnDisable()
+        {
+            KurokageGameEvents.ArmorBroken -= OnArmorBroken;
+        }
 
         public void SpawnWorldImpact(Vector3 point, Vector3 normal)
         {
@@ -40,6 +51,15 @@ namespace Renkai.Kurokage
         {
             SpawnDisc("ARMOR_BREAK", point + normal * 0.03f, normal, new Color(0.40f, 0.90f, 1f, 1f), armorImpactScale * 1.45f, headshotLife, 5.2f);
             SpawnSparkCross(point, normal, new Color(0.72f, 0.96f, 1f, 1f), armorImpactScale * 2.1f, headshotLife);
+        }
+
+        private void OnArmorBroken(RenkaiRoundPlayer victim, KurokageDamageInfo info)
+        {
+            Vector3 point = info.Point;
+            Vector3 normal = info.Normal == Vector3.zero ? Vector3.up : info.Normal;
+            if (point == Vector3.zero && victim != null)
+                point = victim.transform.position + Vector3.up * 1.1f;
+            SpawnArmorBreak(point, normal);
         }
 
         private static void SpawnDisc(string name, Vector3 point, Vector3 normal, Color color, float scale, float life, float emission)
