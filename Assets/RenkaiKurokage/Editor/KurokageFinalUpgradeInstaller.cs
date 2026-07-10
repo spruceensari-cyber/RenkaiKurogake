@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_07";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_08";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -52,6 +52,7 @@ public static class KurokageFinalUpgradeInstaller
         EnsureDeathPresentation();
         EnsureMovementPresentation();
         EnsureEliteHud();
+        EnsureTacticalRadarHud();
         EnsureCombatFeedbackHud();
         EnsureDamageDirectionHud();
         EnsureMatchPresentationHud();
@@ -172,6 +173,16 @@ public static class KurokageFinalUpgradeInstaller
         KurokageCompetitiveHUD oldPremium = Object.FindObjectOfType<KurokageCompetitiveHUD>();
         if (oldPremium != null && oldPremium.gameObject != existing)
             oldPremium.gameObject.SetActive(false);
+    }
+
+    private static void EnsureTacticalRadarHud()
+    {
+        GameObject existing = GameObject.Find("KUROKAGE_TACTICAL_RADAR_HUD");
+        if (existing == null)
+        {
+            existing = new GameObject("KUROKAGE_TACTICAL_RADAR_HUD");
+            existing.AddComponent<KurokageTacticalRadarHUD>();
+        }
     }
 
     private static void EnsureCombatFeedbackHud()
