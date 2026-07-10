@@ -20,6 +20,7 @@ public static class KurokageFinalUpgradeInstaller
         KurokageFiveVFiveInstaller.Install();
         KurokageAgentVisualInstaller.Install();
         EnsureEliteHud();
+        EnsureZodiacObjective();
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
@@ -28,7 +29,7 @@ public static class KurokageFinalUpgradeInstaller
 
         EditorUtility.DisplayDialog(
             "Renkai: Kurokage",
-            "Final competitive upgrade tamamlandı.\n\n- unified scene\n- gameplay feel\n- 5v5 test match\n- FBX agent visuals\n- elite HUD\n\nPlay'e basıp test et.",
+            "Final competitive upgrade tamamlandı.\n\n- unified scene\n- gameplay feel\n- 5v5 test match\n- FBX agent visuals\n- elite HUD\n- Zodiac Core objective loop\n\nPlay'e basıp test et.",
             "OK"
         );
     }
@@ -45,5 +46,26 @@ public static class KurokageFinalUpgradeInstaller
         KurokageCompetitiveHUD oldPremium = Object.FindObjectOfType<KurokageCompetitiveHUD>();
         if (oldPremium != null && oldPremium.gameObject != existing)
             oldPremium.gameObject.SetActive(false);
+    }
+
+    private static void EnsureZodiacObjective()
+    {
+        GameObject coreGo = GameObject.Find("ZODIAC_CORE");
+        if (coreGo != null && coreGo.GetComponent<ZodiacCoreRuntime>() == null)
+            coreGo.AddComponent<ZodiacCoreRuntime>();
+
+        GameObject objectiveGo = GameObject.Find("KUROKAGE_ZODIAC_OBJECTIVE");
+        if (objectiveGo == null)
+        {
+            objectiveGo = new GameObject("KUROKAGE_ZODIAC_OBJECTIVE");
+            objectiveGo.AddComponent<KurokageZodiacObjectiveController>();
+        }
+
+        GameObject hudGo = GameObject.Find("KUROKAGE_ZODIAC_HUD");
+        if (hudGo == null)
+        {
+            hudGo = new GameObject("KUROKAGE_ZODIAC_HUD");
+            hudGo.AddComponent<KurokageZodiacHUD>();
+        }
     }
 }
