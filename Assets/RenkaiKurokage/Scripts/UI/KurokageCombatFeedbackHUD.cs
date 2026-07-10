@@ -12,26 +12,36 @@ namespace Renkai.Kurokage
         private CanvasGroup hitGroup;
         private Image hitMarker;
         private Text headshotText;
+        private Text armorBreakText;
         private GameObject reloadRoot;
         private Image reloadFill;
         private Text reloadLabel;
         private Coroutine hitRoutine;
+        private Coroutine armorRoutine;
+        private RenkaiRoundPlayer localPlayer;
 
         private void Awake()
         {
             if (weapon == null) weapon = FindObjectOfType<RenkaiWeaponController>();
+            if (weapon != null) localPlayer = weapon.GetComponent<RenkaiRoundPlayer>();
             Build();
         }
 
         private void OnEnable()
         {
             if (weapon == null) weapon = FindObjectOfType<RenkaiWeaponController>();
-            if (weapon != null) weapon.HitConfirmed += OnHitConfirmed;
+            if (weapon != null)
+            {
+                localPlayer = weapon.GetComponent<RenkaiRoundPlayer>();
+                weapon.HitConfirmed += OnHitConfirmed;
+            }
+            KurokageGameEvents.ArmorBroken += OnArmorBroken;
         }
 
         private void OnDisable()
         {
             if (weapon != null) weapon.HitConfirmed -= OnHitConfirmed;
+            KurokageGameEvents.ArmorBroken -= OnArmorBroken;
         }
 
         private void Update()
@@ -39,7 +49,11 @@ namespace Renkai.Kurokage
             if (weapon == null)
             {
                 weapon = FindObjectOfType<RenkaiWeaponController>();
-                if (weapon != null) weapon.HitConfirmed += OnHitConfirmed;
+                if (weapon != null)
+                {
+                    localPlayer = weapon.GetComponent<RenkaiRoundPlayer>();
+                    weapon.HitConfirmed += OnHitConfirmed;
+                }
                 return;
             }
 
@@ -56,6 +70,16 @@ namespace Renkai.Kurokage
         {
             if (hitRoutine != null) StopCoroutine(hitRoutine);
             hitRoutine = StartCoroutine(HitRoutine(headshot));
+        }
+
+        private void OnArmorBroken(RenkaiRoundPlayer victim, KurokageDamageInfo info)
+        {
+            bool localArmorBroken = victim == localPlayer;
+            bool localBrokeEnemyArmor = localPlayer != null && info.Attacker == localPlayer;
+            if (!localArmorBroken && !localBrokeEnemyArmor) return;
+
+            if (armorRoutine != null) StopCoroutine(armorRoutine);
+            armorRoutine = StartCoroutine(ArmorBreakRoutine(localArmorBroken ? "ARMOR BROKEN" : "ENEMY ARMOR BROKEN"));
         }
 
         private IEnumerator HitRoutine(bool headshot)
@@ -82,10 +106,31 @@ namespace Renkai.Kurokage
             hitGroup.alpha = 0f;
         }
 
+        private IEnumerator ArmorBreakRoutine(string message)
+        {
+            armorBreakText.text = message;
+            armorBreakText.gameObject.SetActive(true);
+            Color baseColor = new Color(0.70f, 0.95f, 1f, 1f);
+
+            float elapsed = 0f;
+            const float duration = 0.72f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float pulse = 0.8f + Mathf.Sin(t * Mathf.PI * 5f) * 0.2f;
+                armorBreakText.color = new Color(baseColor.r, baseColor.g, baseColor.b, (1f - t) * pulse);
+                yield return null;
+            }
+
+            armorBreakText.gameObject.SetActive(false);
+        }
+
         private void Build()
         {
             Canvas canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 40;
 
             CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -98,7 +143,7 @@ namespace Renkai.Kurokage
             RectTransform hrt = hitRoot.GetComponent<RectTransform>();
             hrt.anchorMin = hrt.anchorMax = new Vector2(0.5f, 0.5f);
             hrt.anchoredPosition = Vector2.zero;
-            hrt.sizeDelta = new Vector2(180f, 120f);
+            hrt.sizeDelta = new Vector2(220f, 150f);
             hitGroup = hitRoot.GetComponent<CanvasGroup>();
             hitGroup.alpha = 0f;
 
@@ -116,6 +161,13 @@ namespace Renkai.Kurokage
             hst.anchoredPosition = new Vector2(0f, -38f);
             hst.sizeDelta = new Vector2(180f, 24f);
             headshotText.gameObject.SetActive(false);
+
+            armorBreakText = CreateText("ARMOR_BREAK_FEEDBACK", transform, 16, TextAnchor.MiddleCenter, new Color(0.70f, 0.95f, 1f, 1f));
+            RectTransform abt = armorBreakText.rectTransform;
+            abt.anchorMin = abt.anchorMax = new Vector2(0.5f, 0.5f);
+            abt.anchoredPosition = new Vector2(0f, -86f);
+            abt.sizeDelta = new Vector2(280f, 28f);
+            armorBreakText.gameObject.SetActive(false);
 
             reloadRoot = new GameObject("RELOAD_PROGRESS", typeof(Image));
             reloadRoot.transform.SetParent(transform, false);
@@ -151,7 +203,9 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(parent, false);
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.font = font;
             text.fontSize = size;
             text.alignment = alignment;
             text.color = color;
