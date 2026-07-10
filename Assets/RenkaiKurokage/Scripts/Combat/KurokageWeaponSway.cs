@@ -10,15 +10,14 @@ namespace Renkai.Kurokage
         [SerializeField] private float bobAmount = 0.015f;
         [SerializeField] private float bobSpeed = 9f;
 
-        private Vector3 baseLocalPosition;
-        private Quaternion baseLocalRotation;
+        public Vector3 PositionOffset { get; private set; }
+        public Quaternion RotationOffset { get; private set; } = Quaternion.identity;
+
         private CharacterController controller;
         private float bobTime;
 
         private void Awake()
         {
-            baseLocalPosition = transform.localPosition;
-            baseLocalRotation = transform.localRotation;
             controller = GetComponentInParent<CharacterController>();
         }
 
@@ -27,22 +26,30 @@ namespace Renkai.Kurokage
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
 
-            Vector3 targetPosition = baseLocalPosition + new Vector3(-mouseX, -mouseY, 0f) * positionAmount;
-            Quaternion targetRotation = baseLocalRotation * Quaternion.Euler(mouseY * rotationAmount, -mouseX * rotationAmount, mouseX * rotationAmount * 0.35f);
+            Vector3 targetPosition = new Vector3(-mouseX, -mouseY, 0f) * positionAmount;
+            Quaternion targetRotation = Quaternion.Euler(
+                mouseY * rotationAmount,
+                -mouseX * rotationAmount,
+                mouseX * rotationAmount * 0.35f
+            );
 
             bool moving = controller != null && controller.isGrounded && controller.velocity.sqrMagnitude > 0.3f;
             if (moving)
             {
                 bobTime += Time.deltaTime * bobSpeed;
-                targetPosition += new Vector3(Mathf.Cos(bobTime * 0.5f), Mathf.Abs(Mathf.Sin(bobTime)), 0f) * bobAmount;
+                targetPosition += new Vector3(
+                    Mathf.Cos(bobTime * 0.5f),
+                    Mathf.Abs(Mathf.Sin(bobTime)),
+                    0f
+                ) * bobAmount;
             }
             else
             {
                 bobTime = 0f;
             }
 
-            transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, smooth * Time.deltaTime);
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smooth * Time.deltaTime);
+            PositionOffset = Vector3.Lerp(PositionOffset, targetPosition, smooth * Time.deltaTime);
+            RotationOffset = Quaternion.Slerp(RotationOffset, targetRotation, smooth * Time.deltaTime);
         }
     }
 }
