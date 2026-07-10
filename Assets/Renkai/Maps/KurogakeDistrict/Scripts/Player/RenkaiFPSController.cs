@@ -1,4 +1,5 @@
 using UnityEngine;
+using Renkai.Kurokage;
 
 namespace Renkai.Kurogake
 {
@@ -46,9 +47,11 @@ namespace Renkai.Kurogake
         public KeyCode manualRespawnKey = KeyCode.F9;
 
         public bool IsCrouching => isCrouching;
+        public bool IsSprinting { get; private set; }
         public float PlanarSpeed => controller == null ? 0f : new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
 
         private CharacterController controller;
+        private KairiAbilityController abilityController;
         private float verticalVelocity;
         private float pitch;
         private bool isCrouching;
@@ -67,6 +70,7 @@ namespace Renkai.Kurogake
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
+            abilityController = GetComponent<KairiAbilityController>();
             if (playerCamera == null) playerCamera = GetComponentInChildren<Camera>();
 
             standingHeight = controller.height;
@@ -91,7 +95,14 @@ namespace Renkai.Kurogake
             UpdateAbilityImpulses();
             Look();
             HandleCrouch();
-            Move();
+            UpdateSprintState();
+
+            if (abilityController == null)
+                abilityController = GetComponent<KairiAbilityController>();
+
+            if (abilityController == null || !abilityController.MovementAbilityActive)
+                Move();
+
             UpdateFov();
             SafetyRespawnCheck();
 
@@ -198,6 +209,13 @@ namespace Renkai.Kurogake
             }
         }
 
+        private void UpdateSprintState()
+        {
+            float forward = Input.GetAxisRaw("Vertical");
+            bool abilityLocked = abilityController != null && abilityController.MovementAbilityActive;
+            IsSprinting = !abilityLocked && !isCrouching && controller.isGrounded && Input.GetKey(KeyCode.LeftShift) && forward > 0.1f;
+        }
+
         private void Move()
         {
             float x = Input.GetAxisRaw("Horizontal");
@@ -207,7 +225,7 @@ namespace Renkai.Kurogake
 
             float speed = walkSpeed;
             if (isCrouching) speed = crouchSpeed;
-            else if (Input.GetKey(KeyCode.LeftShift) && z > 0.1f) speed = sprintSpeed;
+            else if (IsSprinting) speed = sprintSpeed;
 
             Vector3 velocity = direction * speed;
 
@@ -262,6 +280,7 @@ namespace Renkai.Kurogake
             abilityRotationImpulse = Vector2.zero;
             abilityRollImpulse = 0f;
             abilityFovImpulse = 0f;
+            IsSprinting = false;
             controller.enabled = true;
 
             Debug.Log("Renkai player respawned.");
