@@ -61,8 +61,12 @@ namespace Renkai.Kurogake
             if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
             if (deathPresentation != null) deathPresentation.ResetPresentation();
 
-            foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
-                r.enabled = true;
+            Transform agentVisual = transform.Find("AGENT_VISUAL");
+            if (agentVisual != null)
+            {
+                foreach (Renderer renderer in agentVisual.GetComponentsInChildren<Renderer>(true))
+                    renderer.enabled = true;
+            }
 
             foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
             {
@@ -179,12 +183,16 @@ namespace Renkai.Kurogake
 
                 if (deathPresentation == null)
                 {
-                    foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
-                        r.enabled = false;
+                    Transform visual = transform.Find("AGENT_VISUAL");
+                    if (visual != null)
+                    {
+                        foreach (Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+                            renderer.enabled = false;
+                    }
                 }
 
-                CharacterController controller = GetComponent<CharacterController>();
-                if (controller != null) controller.enabled = false;
+                CharacterController deadController = GetComponent<CharacterController>();
+                if (deadController != null) deadController.enabled = false;
 
                 foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
                 {
