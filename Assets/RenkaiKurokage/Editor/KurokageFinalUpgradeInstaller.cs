@@ -24,7 +24,6 @@ public static class KurokageFinalUpgradeInstaller
         EditorUtility.DisplayDialog(
             "Renkai: Kurokage",
             "Tek üretim sürümü hazırlandı.\n\n" +
-            "Bu noktadan sonra eski V2/V3 tarzı ayrı kurulum zincirlerini kullanma.\n" +
             "Ana akış: main branch + Renkai_Kurogake_Competitive scene + Build Production Version.\n\n" +
             "Kurulan sistemler:\n" +
             "- unified competitive scene\n" +
@@ -32,6 +31,7 @@ public static class KurokageFinalUpgradeInstaller
             "- 5v5 test match\n" +
             "- FBX agent visuals\n" +
             "- elite HUD\n" +
+            "- round banners and kill feed\n" +
             "- Zodiac Core objective\n" +
             "- Kairi Q/E/C/X ability kit\n" +
             "- Eclipse Blade combo combat\n" +
@@ -48,6 +48,7 @@ public static class KurokageFinalUpgradeInstaller
         KurokageFiveVFiveInstaller.Install();
         KurokageAgentVisualInstaller.Install();
         EnsureEliteHud();
+        EnsureMatchPresentationHud();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
         EnsureProductionMarker();
@@ -84,6 +85,16 @@ public static class KurokageFinalUpgradeInstaller
         KurokageCompetitiveHUD oldPremium = Object.FindObjectOfType<KurokageCompetitiveHUD>();
         if (oldPremium != null && oldPremium.gameObject != existing)
             oldPremium.gameObject.SetActive(false);
+    }
+
+    private static void EnsureMatchPresentationHud()
+    {
+        GameObject existing = GameObject.Find("KUROKAGE_MATCH_PRESENTATION_HUD");
+        if (existing == null)
+        {
+            existing = new GameObject("KUROKAGE_MATCH_PRESENTATION_HUD");
+            existing.AddComponent<KurokageMatchPresentationHUD>();
+        }
     }
 
     private static void EnsureZodiacObjective()
