@@ -25,7 +25,13 @@ namespace Renkai.Kurokage
         [SerializeField] private Camera playerCamera;
         [SerializeField] private KairiAbilityController abilities;
 
-        [Header("Ghost Edge — RMB")]
+        [Header("Core Blade")]
+        [SerializeField] private float lightSlashDamage = 46f;
+        [SerializeField] private float lightSlashRange = 3.35f;
+        [SerializeField] private float heavySlashDamage = 78f;
+        [SerializeField] private float heavySlashRange = 3.65f;
+
+        [Header("Ghost Edge — RMB + Forward")]
         [SerializeField] private float ghostEdgeDamage = 72f;
         [SerializeField] private float ghostEdgeRange = 4.2f;
         [SerializeField] private float ghostEdgeCooldown = 1.15f;
@@ -56,6 +62,7 @@ namespace Renkai.Kurokage
 
         private CharacterController controller;
         private RenkaiRoundPlayer self;
+        private RenkaiFPSController fps;
         private float nextGhostEdge;
         private float nextAirBreak;
         private float nextKuroShift;
@@ -68,6 +75,7 @@ namespace Renkai.Kurokage
         {
             controller = GetComponent<CharacterController>();
             self = GetComponent<RenkaiRoundPlayer>();
+            fps = GetComponent<RenkaiFPSController>();
             if (weapon == null) weapon = GetComponent<RenkaiWeaponController>();
             if (playerCamera == null) playerCamera = GetComponentInChildren<Camera>();
             if (abilities == null) abilities = GetComponent<KairiAbilityController>();
@@ -78,21 +86,8 @@ namespace Renkai.Kurokage
             if (weapon == null || weapon.slot != RenkaiWeaponSlot.Sword || IsAttacking)
                 return;
 
-            if (Input.GetMouseButtonDown(1) && Time.time >= nextGhostEdge)
-            {
-                nextGhostEdge = Time.time + ghostEdgeCooldown;
-                activeRoutine = StartCoroutine(GhostEdgeRoutine());
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.V) && Time.time >= nextKuroShift)
-            {
-                nextKuroShift = Time.time + kuroShiftCooldown;
-                activeRoutine = StartCoroutine(KuroShiftRoutine());
-                return;
-            }
-
             bool airborne = controller != null && !controller.isGrounded;
+
             if (airborne && Input.GetMouseButtonDown(0) && Time.time >= nextAirBreak)
             {
                 nextAirBreak = Time.time + airBreakCooldown;
@@ -104,7 +99,33 @@ namespace Renkai.Kurokage
             {
                 nextPhantomBurst = Time.time + phantomBurstCooldown;
                 activeRoutine = StartCoroutine(PhantomBurstRoutine());
+                return;
             }
+
+            if (Input.GetKeyDown(KeyCode.V) && Time.time >= nextKuroShift)
+            {
+                nextKuroShift = Time.time + kuroShiftCooldown;
+                activeRoutine = StartCoroutine(KuroShiftRoutine());
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                bool forwardIntent = Input.GetAxisRaw("Vertical") > 0.25f;
+                if (forwardIntent && Time.time >= nextGhostEdge)
+                {
+                    nextGhostEdge = Time.time + ghostEdgeCooldown;
+                    activeRoutine = StartCoroutine(GhostEdgeRoutine());
+                }
+                else
+                {
+                    activeRoutine = StartCoroutine(HeavySlashRoutine());
+                }
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+                activeRoutine = StartCoroutine(LightSlashRoutine());
         }
 
         public void ResetForRound()
@@ -120,14 +141,43 @@ namespace Renkai.Kurokage
             LastComboName = "READY";
         }
 
+        private IEnumerator LightSlashRoutine()
+        {
+            attackState = BladeAttackState.Windup;
+            AnnounceCombo("ECLIPSE CUT");
+            if (fps != null) fps.AddAbilityCameraImpulse(-0.45f, 0f, -1.15f, 0.5f);
+            yield return new WaitForSeconds(0.065f);
+
+            attackState = BladeAttackState.Active;
+            SpawnLayeredSlash(new Color(0.90f, 0.97f, 1f, 1f), new Color(0.14f, 0.55f, 1f, 1f), 1.75f, 0.11f, 34f);
+            hitCache.Clear();
+            DamageCone(lightSlashRange, 0.92f, lightSlashDamage, "ECLIPSE CUT", hitCache);
+            yield return Recovery(0.23f);
+        }
+
+        private IEnumerator HeavySlashRoutine()
+        {
+            attackState = BladeAttackState.Windup;
+            AnnounceCombo("ECLIPSE BREAK");
+            if (fps != null) fps.AddAbilityCameraImpulse(0.8f, 0f, 2.0f, 1.0f);
+            yield return new WaitForSeconds(0.19f);
+
+            attackState = BladeAttackState.Active;
+            SpawnLayeredSlash(new Color(1f, 1f, 1f, 1f), new Color(0.46f, 0.20f, 1f, 1f), 2.35f, 0.16f, -52f);
+            hitCache.Clear();
+            DamageCone(heavySlashRange, 1.18f, heavySlashDamage, "ECLIPSE BREAK", hitCache);
+            yield return Recovery(0.42f);
+        }
+
         private IEnumerator GhostEdgeRoutine()
         {
             attackState = BladeAttackState.Windup;
             AnnounceCombo("GHOST EDGE");
-            SpawnLayeredSlash(new Color(0.20f, 0.58f, 1f, 1f), new Color(0.46f, 0.24f, 1f, 1f), 2.0f, 0.16f, 28f);
+            if (fps != null) fps.AddAbilityCameraImpulse(-0.8f, 0f, 1.8f, 2.2f);
             yield return new WaitForSeconds(0.05f);
 
             attackState = BladeAttackState.DashCutTravel;
+            SpawnLayeredSlash(new Color(0.20f, 0.58f, 1f, 1f), new Color(0.46f, 0.24f, 1f, 1f), 2.0f, 0.16f, 28f);
             Vector3 dir = FlatForward();
             float elapsed = 0f;
             while (elapsed < 0.12f)
@@ -139,7 +189,8 @@ namespace Renkai.Kurokage
             }
 
             attackState = BladeAttackState.Active;
-            DamageCone(ghostEdgeRange, 1.15f, ghostEdgeDamage, "GHOST EDGE");
+            hitCache.Clear();
+            DamageCone(ghostEdgeRange, 1.15f, ghostEdgeDamage, "GHOST EDGE", hitCache);
             yield return Recovery(0.22f);
         }
 
@@ -161,6 +212,7 @@ namespace Renkai.Kurokage
             hitCache.Clear();
             DamageSphere(transform.position + transform.forward * 1.2f, airBreakRadius, airBreakDamage, "AIR BREAK", hitCache);
             SpawnLandingRing(transform.position, new Color(0.26f, 0.62f, 1f, 1f), 0.34f);
+            if (fps != null) fps.AddAbilityCameraImpulse(3.1f, 0f, 0f, 1.3f);
             yield return Recovery(0.32f);
         }
 
@@ -170,6 +222,7 @@ namespace Renkai.Kurokage
             AnnounceCombo("KURO SHIFT");
             Vector3 direction = FlatForward();
             SpawnTravelStreak(new Color(0.38f, 0.22f, 1f, 1f), 0.24f);
+            if (fps != null) fps.AddAbilityCameraImpulse(-0.6f, 0f, -2.3f, 3.0f);
 
             hitCache.Clear();
             float elapsed = 0f;
@@ -195,10 +248,11 @@ namespace Renkai.Kurokage
             for (int i = 0; i < phantomBurstHits; i++)
             {
                 float angle = i % 2 == 0 ? 48f : -48f;
-                SpawnLayeredSlash(new Color(0.16f, 0.62f, 1f, 1f), new Color(0.48f, 0.22f, 1f, 1f), 2.5f, 0.11f, angle);
+                SpawnLayeredSlash(new Color(0.92f, 0.98f, 1f, 1f), new Color(0.48f, 0.22f, 1f, 1f), 2.5f, 0.11f, angle);
                 hitCache.Clear();
                 DamageCone(4.6f, 1.35f, phantomBurstDamage, "PHANTOM BURST", hitCache);
                 controller.Move(FlatForward() * 0.75f);
+                if (fps != null) fps.AddAbilityCameraImpulse(-0.35f, 0f, i % 2 == 0 ? -1.2f : 1.2f, 0.7f);
                 yield return new WaitForSeconds(phantomBurstInterval);
             }
 
