@@ -11,6 +11,7 @@ namespace Renkai.Kurokage
         [SerializeField] private float pickupDistance = 2.6f;
         [SerializeField] private float nexusUseDistance = 4.5f;
         [SerializeField] private float defenderSeverDistance = 4.2f;
+        [SerializeField] private KeyCode interactKey = KeyCode.F;
 
         public ZodiacCoreRuntime Core => core;
         public string ActiveSiteId { get; private set; } = string.Empty;
@@ -42,8 +43,8 @@ namespace Renkai.Kurokage
 
             if (core.State == ZodiacLinkState.Idle)
             {
-                StatusText = "ZODIAC CORE AVAILABLE";
-                if (Vector3.Distance(humanPlayer.transform.position, core.transform.position) <= pickupDistance && Input.GetKeyDown(KeyCode.E))
+                StatusText = "ZODIAC CORE AVAILABLE // F TO ACQUIRE";
+                if (Vector3.Distance(humanPlayer.transform.position, core.transform.position) <= pickupDistance && Input.GetKeyDown(interactKey))
                 {
                     core.SetCarried(humanPlayer.transform);
                     StatusText = "CORE ACQUIRED";
@@ -55,8 +56,8 @@ namespace Renkai.Kurokage
                 ZodiacNexusSite nearest = FindNearestSite(humanPlayer.transform.position, nexusUseDistance);
                 if (nearest != null)
                 {
-                    StatusText = "HOLD POSITION - PRESS E TO LINK " + nearest.SiteId;
-                    if (Input.GetKeyDown(KeyCode.E))
+                    StatusText = "HOLD POSITION - PRESS F TO LINK " + nearest.SiteId;
+                    if (Input.GetKeyDown(interactKey))
                     {
                         ActiveSiteId = nearest.SiteId;
                         core.transform.SetParent(null, true);
