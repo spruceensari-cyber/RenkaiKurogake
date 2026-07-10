@@ -9,21 +9,33 @@ public static class KurokageProductionValidator
     [MenuItem("Renkai/Validate Production Build")]
     public static void Validate()
     {
+        string report;
+        bool passed = ValidateSilent(out report);
+        Debug.Log(report);
+        EditorUtility.DisplayDialog(
+            "Renkai Production Validation",
+            report,
+            passed ? "OK" : "REVIEW"
+        );
+    }
+
+    public static bool ValidateSilent(out string reportText)
+    {
         int errors = 0;
         int warnings = 0;
         StringBuilder report = new StringBuilder();
         report.AppendLine("RENKAI: KUROKAGE PRODUCTION VALIDATION");
         report.AppendLine("====================================");
 
-        ValidateCount<RenkaiFPSController>("Human FPS controller", 1, ref errors, ref warnings, report);
-        ValidateCount<RenkaiRoundManager>("Round manager", 1, ref errors, ref warnings, report);
-        ValidateCount<ZodiacCoreRuntime>("Zodiac Core runtime", 1, ref errors, ref warnings, report);
-        ValidateCount<KurokageZodiacObjectiveController>("Zodiac objective controller", 1, ref errors, ref warnings, report);
-        ValidateCount<KairiAbilityController>("Kairi ability controller", 1, ref errors, ref warnings, report);
-        ValidateCount<KurokageBladeCombatController>("Blade combat controller", 1, ref errors, ref warnings, report);
-        ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, ref warnings, report);
-        ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, ref warnings, report);
-        ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, ref warnings, report);
+        ValidateCount<RenkaiFPSController>("Human FPS controller", 1, ref errors, report);
+        ValidateCount<RenkaiRoundManager>("Round manager", 1, ref errors, report);
+        ValidateCount<ZodiacCoreRuntime>("Zodiac Core runtime", 1, ref errors, report);
+        ValidateCount<KurokageZodiacObjectiveController>("Zodiac objective controller", 1, ref errors, report);
+        ValidateCount<KairiAbilityController>("Kairi ability controller", 1, ref errors, report);
+        ValidateCount<KurokageBladeCombatController>("Blade combat controller", 1, ref errors, report);
+        ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
+        ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
+        ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, report);
 
         Camera[] cameras = Object.FindObjectsOfType<Camera>(true);
         int activeCameras = 0;
@@ -112,12 +124,11 @@ public static class KurokageProductionValidator
         report.AppendLine(errors == 0 ? "RESULT: STRUCTURE VALIDATION PASSED" : "RESULT: STRUCTURE VALIDATION FAILED");
         report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, or visual validation.");
 
-        string text = report.ToString();
-        Debug.Log(text);
-        EditorUtility.DisplayDialog("Renkai Production Validation", text, "OK");
+        reportText = report.ToString();
+        return errors == 0;
     }
 
-    private static void ValidateCount<T>(string label, int expected, ref int errors, ref int warnings, StringBuilder report) where T : Object
+    private static void ValidateCount<T>(string label, int expected, ref int errors, StringBuilder report) where T : Object
     {
         T[] objects = Object.FindObjectsOfType<T>(true);
         ValidateExact(label, objects.Length, expected, ref errors, report);
