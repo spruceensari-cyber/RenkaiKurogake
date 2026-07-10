@@ -202,6 +202,9 @@ public static class KurokageFinalUpgradeInstaller
 
         if (human != null)
         {
+            if (human.GetComponent<KurokageAfterimagePresenter>() == null)
+                human.gameObject.AddComponent<KurokageAfterimagePresenter>();
+
             if (human.GetComponent<KairiAbilityController>() == null)
                 human.gameObject.AddComponent<KairiAbilityController>();
 
