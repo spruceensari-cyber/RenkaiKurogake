@@ -155,6 +155,8 @@ public static class KurokageFinalUpgradeInstaller
             if (!player.isHumanPlayer) continue;
             if (player.GetComponent<KurokageMovementPresentation>() == null)
                 player.gameObject.AddComponent<KurokageMovementPresentation>();
+            if (player.GetComponent<KurokageViewmodelLightingPresenter>() == null)
+                player.gameObject.AddComponent<KurokageViewmodelLightingPresenter>();
         }
     }
 
