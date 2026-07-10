@@ -158,6 +158,11 @@ namespace Renkai.Kurokage
 
             SpawnBurstTrail(new Color(0.12f, 0.55f, 1f, 1f), 0.22f);
             if (afterimages != null) afterimages.SpawnDashSequence(dashDuration);
+            if (fps != null)
+            {
+                float side = Vector3.Dot(input, transform.right);
+                fps.AddAbilityCameraImpulse(-0.8f, side * 0.65f, -side * 2.4f, 5.2f);
+            }
 
             float elapsed = 0f;
             float speed = dashDistance / Mathf.Max(0.01f, dashDuration);
@@ -187,6 +192,8 @@ namespace Renkai.Kurokage
             forward.Normalize();
 
             SpawnBurstTrail(new Color(0.36f, 0.30f, 1f, 1f), 0.35f);
+            if (fps != null)
+                fps.AddAbilityCameraImpulse(2.4f, 0f, 0f, 3.6f);
 
             float elapsed = 0f;
             while (elapsed < leapDuration)
@@ -218,6 +225,8 @@ namespace Renkai.Kurokage
                     waitingForLeapLanding = false;
                     isMomentumLeaping = false;
                     SpawnLeapLandingShockwave();
+                    if (fps != null)
+                        fps.AddAbilityCameraImpulse(3.4f, 0f, 0f, 1.8f);
                     leapLandingRoutine = null;
                     yield break;
                 }
@@ -326,6 +335,7 @@ namespace Renkai.Kurokage
                 fps.walkSpeed = originalWalk * ultimateMoveBoost;
                 fps.sprintSpeed = originalSprint * ultimateMoveBoost;
                 fps.crouchSpeed = originalCrouch * ultimateMoveBoost;
+                fps.AddAbilityCameraImpulse(-2.2f, 0f, 0.8f, 4.5f);
             }
 
             SpawnBurstTrail(new Color(0.20f, 0.42f, 1f, 1f), 0.6f);
