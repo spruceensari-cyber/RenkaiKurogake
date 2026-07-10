@@ -158,6 +158,8 @@ public static class KurokageFinalUpgradeInstaller
                 player.gameObject.AddComponent<KurokageMovementPresentation>();
             if (player.GetComponent<KurokageViewmodelLightingPresenter>() == null)
                 player.gameObject.AddComponent<KurokageViewmodelLightingPresenter>();
+            if (player.GetComponent<KurokageSprintWeaponGate>() == null)
+                player.gameObject.AddComponent<KurokageSprintWeaponGate>();
         }
     }
 
