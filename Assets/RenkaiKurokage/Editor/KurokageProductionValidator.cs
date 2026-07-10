@@ -36,6 +36,7 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
         ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, report);
+        ValidateCount<KurokageVfxPool>("Shared VFX pool", 1, ref errors, report);
 
         Camera[] cameras = Object.FindObjectsOfType<Camera>(true);
         int activeCameras = 0;
@@ -102,6 +103,7 @@ public static class KurokageProductionValidator
             "KUROKAGE_MATCH_PRESENTATION_HUD",
             "KUROKAGE_ABILITY_HUD",
             "KUROKAGE_ZODIAC_HUD",
+            "KUROKAGE_VFX_POOL",
             "RENKAI_KUROKAGE_PRODUCTION_BUILD"
         };
 
