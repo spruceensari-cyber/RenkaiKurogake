@@ -1,4 +1,5 @@
 using UnityEngine;
+using Renkai.Kurokage;
 
 namespace Renkai.Kurogake
 {
@@ -100,6 +101,7 @@ namespace Renkai.Kurogake
 
             string killerName = killer != null ? killer.agentName : "Unknown";
             Debug.Log(agentName + " eliminated by " + killerName + ". No respawn until round end.");
+            KurokageGameEvents.RaiseKillFeed(killerName, agentName);
 
             RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null)
