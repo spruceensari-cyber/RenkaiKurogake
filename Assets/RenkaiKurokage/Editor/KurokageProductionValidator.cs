@@ -32,9 +32,12 @@ public static class KurokageProductionValidator
         ValidateCount<ZodiacCoreRuntime>("Zodiac Core runtime", 1, ref errors, report);
         ValidateCount<KurokageZodiacObjectiveController>("Zodiac objective controller", 1, ref errors, report);
         ValidateCount<KurokageZodiacVfxPresenter>("Zodiac VFX presenter", 1, ref errors, report);
+        ValidateCount<KurokageNexusVfxPresenter>("Zodiac Nexus VFX presenters", 2, ref errors, report);
         ValidateCount<KairiAbilityController>("Kairi ability controller", 1, ref errors, report);
         ValidateCount<KurokageBladeCombatController>("Blade combat controller", 1, ref errors, report);
         ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
+        ValidateCount<KurokageEclipseProtocolPresenter>("Eclipse Protocol presenter", 1, ref errors, report);
+        ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
         ValidateCount<KurokageDamageDirectionHUD>("Damage direction HUD", 1, ref errors, report);
@@ -116,6 +119,8 @@ public static class KurokageProductionValidator
 
         ZodiacNexusSite[] sites = Object.FindObjectsOfType<ZodiacNexusSite>(true);
         ValidateExact("Zodiac Nexus sites", sites.Length, 2, ref errors, report);
+        foreach (ZodiacNexusSite site in sites)
+            ValidateNexusArt(site, ref errors, report);
 
         GameObject core = GameObject.Find("ZODIAC_CORE");
         if (core == null)
@@ -163,6 +168,32 @@ public static class KurokageProductionValidator
 
         reportText = report.ToString();
         return errors == 0;
+    }
+
+    private static void ValidateNexusArt(ZodiacNexusSite site, ref int errors, StringBuilder report)
+    {
+        if (site == null) return;
+        string[] paths =
+        {
+            "ZODIAC_NEXUS_ART/NEXUS_FOUNDATION",
+            "ZODIAC_NEXUS_ART/NEXUS_RING_INNER",
+            "ZODIAC_NEXUS_ART/NEXUS_RING_OUTER",
+            "ZODIAC_NEXUS_ART/NEXUS_CROWN",
+            "ZODIAC_NEXUS_ART/NEXUS_ENERGY"
+        };
+
+        foreach (string path in paths)
+        {
+            if (site.transform.Find(path) == null)
+            {
+                errors++;
+                report.AppendLine("ERROR Missing Nexus " + site.SiteId + " art layer: " + path);
+            }
+            else
+            {
+                report.AppendLine("PASS  Nexus " + site.SiteId + " art layer: " + path);
+            }
+        }
     }
 
     private static void ValidateZodiacCoreArt(Transform core, ref int errors, StringBuilder report)
