@@ -7,8 +7,18 @@ namespace Renkai.Kurogake
         public RenkaiRoundPlayer target;
         public Transform fill;
         public TextMesh nameText;
+        [SerializeField] private bool visibleInWorld = false;
+
+        public bool VisibleInWorld => visibleInWorld;
 
         private Camera cam;
+        private Renderer[] worldRenderers;
+
+        private void Awake()
+        {
+            worldRenderers = GetComponentsInChildren<Renderer>(true);
+            ApplyVisibility();
+        }
 
         private void Start()
         {
@@ -18,7 +28,7 @@ namespace Renkai.Kurogake
 
         private void LateUpdate()
         {
-            if (target == null) return;
+            if (!visibleInWorld || target == null) return;
 
             if (cam == null) cam = Camera.main;
 
@@ -35,7 +45,13 @@ namespace Renkai.Kurogake
             }
 
             if (nameText != null)
-                nameText.text = target.agentName + "  " + Mathf.CeilToInt(target.health);
+                nameText.text = target.agentName;
+        }
+
+        public void SetWorldVisible(bool visible)
+        {
+            visibleInWorld = visible;
+            ApplyVisibility();
         }
 
         public void RefreshNow()
@@ -44,7 +60,19 @@ namespace Renkai.Kurogake
                 target = GetComponentInParent<RenkaiRoundPlayer>();
 
             if (nameText != null && target != null)
-                nameText.text = target.agentName + "  " + Mathf.CeilToInt(target.health);
+                nameText.text = target.agentName;
+        }
+
+        private void ApplyVisibility()
+        {
+            if (worldRenderers == null || worldRenderers.Length == 0)
+                worldRenderers = GetComponentsInChildren<Renderer>(true);
+
+            foreach (Renderer renderer in worldRenderers)
+            {
+                if (renderer != null)
+                    renderer.enabled = visibleInWorld;
+            }
         }
     }
 }
