@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Renkai.Kurogake;
 using Renkai.Kurokage;
 
 public static class KurokageFinalUpgradeInstaller
@@ -21,6 +22,7 @@ public static class KurokageFinalUpgradeInstaller
         KurokageAgentVisualInstaller.Install();
         EnsureEliteHud();
         EnsureZodiacObjective();
+        EnsureKairiAbilityKit();
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         EditorSceneManager.SaveOpenScenes();
@@ -29,7 +31,7 @@ public static class KurokageFinalUpgradeInstaller
 
         EditorUtility.DisplayDialog(
             "Renkai: Kurokage",
-            "Final competitive upgrade tamamlandı.\n\n- unified scene\n- gameplay feel\n- 5v5 test match\n- FBX agent visuals\n- elite HUD\n- Zodiac Core objective loop\n\nPlay'e basıp test et.",
+            "Final competitive upgrade tamamlandı.\n\n- unified scene\n- gameplay feel\n- 5v5 test match\n- FBX agent visuals\n- elite HUD\n- Zodiac Core objective loop\n- Kairi Q/E/C/X ability kit\n- ability cooldown HUD\n\nPlay'e basıp test et.",
             "OK"
         );
     }
@@ -66,6 +68,29 @@ public static class KurokageFinalUpgradeInstaller
         {
             hudGo = new GameObject("KUROKAGE_ZODIAC_HUD");
             hudGo.AddComponent<KurokageZodiacHUD>();
+        }
+    }
+
+    private static void EnsureKairiAbilityKit()
+    {
+        RenkaiRoundPlayer human = null;
+        foreach (RenkaiRoundPlayer player in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
+        {
+            if (player.isHumanPlayer)
+            {
+                human = player;
+                break;
+            }
+        }
+
+        if (human != null && human.GetComponent<KairiAbilityController>() == null)
+            human.gameObject.AddComponent<KairiAbilityController>();
+
+        GameObject abilityHud = GameObject.Find("KUROKAGE_ABILITY_HUD");
+        if (abilityHud == null)
+        {
+            abilityHud = new GameObject("KUROKAGE_ABILITY_HUD");
+            abilityHud.AddComponent<KurokageAbilityHUD>();
         }
     }
 }
