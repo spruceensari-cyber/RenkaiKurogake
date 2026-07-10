@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_04";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_05";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -52,6 +52,7 @@ public static class KurokageFinalUpgradeInstaller
         EnsureCombatFeedbackHud();
         EnsureDamageDirectionHud();
         EnsureMatchPresentationHud();
+        EnsureMatchStatsAndScoreboard();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
         EnsureProductionMarker();
@@ -188,6 +189,21 @@ public static class KurokageFinalUpgradeInstaller
             existing = new GameObject("KUROKAGE_MATCH_PRESENTATION_HUD");
             existing.AddComponent<KurokageMatchPresentationHUD>();
         }
+    }
+
+    private static void EnsureMatchStatsAndScoreboard()
+    {
+        GameObject statsRoot = GameObject.Find("KUROKAGE_MATCH_STATS");
+        if (statsRoot == null)
+            statsRoot = new GameObject("KUROKAGE_MATCH_STATS");
+        if (statsRoot.GetComponent<KurokageMatchStatsTracker>() == null)
+            statsRoot.AddComponent<KurokageMatchStatsTracker>();
+
+        GameObject scoreboardRoot = GameObject.Find("KUROKAGE_SCOREBOARD_HUD");
+        if (scoreboardRoot == null)
+            scoreboardRoot = new GameObject("KUROKAGE_SCOREBOARD_HUD");
+        if (scoreboardRoot.GetComponent<KurokageScoreboardHUD>() == null)
+            scoreboardRoot.AddComponent<KurokageScoreboardHUD>();
     }
 
     private static void EnsureZodiacObjective()
