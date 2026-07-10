@@ -16,6 +16,7 @@ namespace Renkai.Kurokage
         [Header("Combat")]
         public AudioClip bodyHit;
         public AudioClip headshot;
+        public AudioClip armorBreak;
 
         [Header("Abilities")]
         public AudioClip dash;
@@ -35,6 +36,7 @@ namespace Renkai.Kurokage
         private AudioSource source;
         private RenkaiWeaponController weapon;
         private KairiAbilityController abilities;
+        private RenkaiRoundPlayer localPlayer;
         private float previousQ;
         private float previousE;
         private float previousC;
@@ -51,12 +53,14 @@ namespace Renkai.Kurokage
 
             weapon = GetComponent<RenkaiWeaponController>();
             abilities = GetComponent<KairiAbilityController>();
+            localPlayer = GetComponent<RenkaiRoundPlayer>();
         }
 
         private void OnEnable()
         {
             KurokageGameEvents.RoundBanner += OnRoundBanner;
             KurokageGameEvents.RoundEnded += OnRoundEnded;
+            KurokageGameEvents.ArmorBroken += OnArmorBroken;
 
             if (weapon == null) weapon = GetComponent<RenkaiWeaponController>();
             if (weapon != null)
@@ -72,6 +76,7 @@ namespace Renkai.Kurokage
         {
             KurokageGameEvents.RoundBanner -= OnRoundBanner;
             KurokageGameEvents.RoundEnded -= OnRoundEnded;
+            KurokageGameEvents.ArmorBroken -= OnArmorBroken;
 
             if (weapon != null)
             {
@@ -101,6 +106,17 @@ namespace Renkai.Kurokage
         private void OnHitConfirmed(bool isHeadshot)
         {
             Play(isHeadshot ? headshot : bodyHit);
+        }
+
+        private void OnArmorBroken(RenkaiRoundPlayer victim, KurokageDamageInfo info)
+        {
+            if (localPlayer == null) localPlayer = GetComponent<RenkaiRoundPlayer>();
+            if (localPlayer == null) return;
+
+            bool localArmorBroken = victim == localPlayer;
+            bool localBrokeEnemyArmor = info.Attacker == localPlayer;
+            if (localArmorBroken || localBrokeEnemyArmor)
+                Play(armorBreak);
         }
 
         private void MonitorAbilities()
@@ -134,9 +150,9 @@ namespace Renkai.Kurokage
 
         private void OnRoundEnded(RenkaiTeam winner, string reason)
         {
-            RenkaiRoundPlayer player = GetComponent<RenkaiRoundPlayer>();
-            if (player == null) return;
-            Play(player.team == winner ? roundWin : roundLoss);
+            if (localPlayer == null) localPlayer = GetComponent<RenkaiRoundPlayer>();
+            if (localPlayer == null) return;
+            Play(localPlayer.team == winner ? roundWin : roundLoss);
         }
 
         public void PlayBodyHit() => Play(bodyHit);
