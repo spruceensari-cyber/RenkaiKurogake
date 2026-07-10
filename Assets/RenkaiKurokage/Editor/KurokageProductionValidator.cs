@@ -38,6 +38,7 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
         ValidateCount<KurokageEclipseProtocolPresenter>("Eclipse Protocol presenter", 1, ref errors, report);
         ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
+        ValidateCount<KurokageAgentReadabilityPresenter>("Agent readability presenters", 10, ref errors, report);
         ValidateCount<KurokageMatchStatsTracker>("Match stats tracker", 1, ref errors, report);
         ValidateCount<KurokageScoreboardHUD>("Scoreboard HUD", 1, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
@@ -106,6 +107,11 @@ public static class KurokageProductionValidator
             report.AppendLine("PASS  No visible root player renderers");
         }
 
+        int visibleWorldHealthBars = 0;
+        foreach (RenkaiWorldHealthBar bar in Object.FindObjectsOfType<RenkaiWorldHealthBar>(true))
+            if (bar != null && bar.VisibleInWorld) visibleWorldHealthBars++;
+        ValidateExact("Visible world health bars", visibleWorldHealthBars, 0, ref errors, report);
+
         KurokageDecoyRuntime[] sceneDecoys = Object.FindObjectsOfType<KurokageDecoyRuntime>(true);
         if (sceneDecoys.Length > 0)
         {
@@ -139,6 +145,7 @@ public static class KurokageProductionValidator
         string[] requiredRoots =
         {
             "KUROKAGE_ENVIRONMENT_ART",
+            "KUROKAGE_BRIGHT_VISUAL_PASS",
             "KUROKAGE_ELITE_HUD",
             "KUROKAGE_COMBAT_FEEDBACK_HUD",
             "KUROKAGE_DAMAGE_DIRECTION_HUD",
