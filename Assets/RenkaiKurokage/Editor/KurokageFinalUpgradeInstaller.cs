@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_01";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_02";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -36,6 +36,7 @@ public static class KurokageFinalUpgradeInstaller
     public static bool BuildProductionVersion(out string validationReport)
     {
         bool sceneOk = RenkaiUnifiedCompetitiveBuilder.BuildSilent();
+        bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
         bool gameplayOk = KurokageGameplayUpgradeInstaller.UpgradeSilent();
         bool matchOk = KurokageFiveVFiveInstaller.InstallSilent();
         bool visualsOk = KurokageAgentVisualInstaller.InstallSilent();
@@ -58,11 +59,12 @@ public static class KurokageFinalUpgradeInstaller
 
         bool structurePassed = KurokageProductionValidator.ValidateSilent(out validationReport);
         if (!sceneOk) validationReport += "\nERROR Unified scene silent build failed.";
+        if (!environmentOk) validationReport += "\nERROR Environment art pass failed.";
         if (!gameplayOk) validationReport += "\nERROR Gameplay upgrade silent step failed.";
         if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
         if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
 
-        bool passed = structurePassed && sceneOk && gameplayOk && matchOk && visualsOk;
+        bool passed = structurePassed && sceneOk && environmentOk && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
