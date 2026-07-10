@@ -23,6 +23,9 @@ public static class KurokageZodiacNexusArtInstaller
 
         foreach (ZodiacNexusSite site in sites)
         {
+            string resolvedId = site.gameObject.name.StartsWith("B_") || site.gameObject.name.Contains("B_NEXUS") ? "B" : "A";
+            site.Configure(resolvedId);
+
             Transform old = site.transform.Find("ZODIAC_NEXUS_ART");
             if (old != null) Object.DestroyImmediate(old.gameObject);
 
