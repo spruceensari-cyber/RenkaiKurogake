@@ -72,6 +72,10 @@ namespace Renkai.Kurogake
                 weapon.ResetAmmo();
             }
 
+            KairiAbilityController kairi = GetComponent<KairiAbilityController>();
+            if (kairi != null)
+                kairi.ResetAbilityState(true);
+
             RenkaiBotAI bot = GetComponent<RenkaiBotAI>();
             if (bot != null) bot.enabled = true;
 
