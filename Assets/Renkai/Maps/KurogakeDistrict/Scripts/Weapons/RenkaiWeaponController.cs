@@ -115,10 +115,16 @@ namespace Renkai.Kurogake
                 muzzlePoint = muzzle.transform;
             }
 
-            if (playerCamera != null)
-                playerCamera.fieldOfView = hipFov;
+            if (fpsController != null)
+                fpsController.baseFov = hipFov;
 
             SelectWeapon(0);
+        }
+
+        private void OnDisable()
+        {
+            if (fpsController != null)
+                fpsController.SetAdsFovRequest(false, adsFov);
         }
 
         private void Update()
@@ -128,7 +134,7 @@ namespace Renkai.Kurogake
             if (Input.GetKeyDown(KeyCode.Alpha3)) SelectWeapon(2);
 
             IsAiming = !reloading && slot != RenkaiWeaponSlot.Sword && Input.GetMouseButton(1);
-            UpdateAds();
+            UpdateAdsRequest();
 
             if (reloading && Time.time >= reloadEndTime)
                 FinishReload();
@@ -161,11 +167,10 @@ namespace Renkai.Kurogake
             SelectWeapon(0);
         }
 
-        private void UpdateAds()
+        private void UpdateAdsRequest()
         {
-            if (playerCamera == null) return;
-            float target = IsAiming ? adsFov : hipFov;
-            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, target, adsLerpSpeed * Time.deltaTime);
+            if (fpsController != null)
+                fpsController.SetAdsFovRequest(IsAiming, adsFov);
         }
 
         private void SelectWeapon(int index)
@@ -181,6 +186,9 @@ namespace Renkai.Kurogake
             if (rifleView != null) rifleView.SetActive(slot == RenkaiWeaponSlot.Rifle);
             if (pistolView != null) pistolView.SetActive(slot == RenkaiWeaponSlot.Pistol);
             if (swordView != null) swordView.SetActive(slot == RenkaiWeaponSlot.Sword);
+
+            IsAiming = false;
+            UpdateAdsRequest();
         }
 
         private void FireGun()
@@ -249,12 +257,6 @@ namespace Renkai.Kurogake
                         else if (hadArmor) combatVfx.SpawnArmorImpact(hit.point, hit.normal);
                         else combatVfx.SpawnBodyImpact(hit.point, hit.normal);
                     }
-
-                    if (audioHooks != null)
-                    {
-                        if (headshot) audioHooks.PlayHeadshot();
-                        else audioHooks.PlayBodyHit();
-                    }
                     return;
                 }
             }
@@ -317,6 +319,8 @@ namespace Renkai.Kurogake
             reloadDuration = slot == RenkaiWeaponSlot.Rifle ? rifleReloadTime : pistolReloadTime;
             reloadStartTime = Time.time;
             reloadEndTime = Time.time + reloadDuration;
+            IsAiming = false;
+            UpdateAdsRequest();
             ReloadStarted?.Invoke();
         }
 
