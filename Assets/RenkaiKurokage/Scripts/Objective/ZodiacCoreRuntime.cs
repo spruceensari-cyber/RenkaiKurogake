@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Renkai.Kurokage
@@ -11,7 +12,25 @@ namespace Renkai.Kurokage
         public ZodiacLinkState State { get; private set; } = ZodiacLinkState.Idle;
         public float Progress01 { get; private set; }
 
+        public event Action<Transform> CorePickedUp;
+        public event Action LinkStarted;
+        public event Action LinkCompleted;
+        public event Action SynchronizationCompleted;
+        public event Action SeverStarted;
+        public event Action SeverCompleted;
+        public event Action ObjectiveReset;
+
         private float stateStartTime;
+        private Vector3 resetPosition;
+        private Quaternion resetRotation;
+        private Transform resetParent;
+
+        private void Awake()
+        {
+            resetPosition = transform.position;
+            resetRotation = transform.rotation;
+            resetParent = transform.parent;
+        }
 
         private void Update()
         {
@@ -20,17 +39,29 @@ namespace Renkai.Kurokage
             if (State == ZodiacLinkState.Linking)
             {
                 Progress01 = Mathf.Clamp01(elapsed / linkDuration);
-                if (Progress01 >= 1f) SetState(ZodiacLinkState.Synchronized);
+                if (Progress01 >= 1f)
+                {
+                    SetState(ZodiacLinkState.Synchronized);
+                    LinkCompleted?.Invoke();
+                }
             }
             else if (State == ZodiacLinkState.Synchronized)
             {
                 Progress01 = Mathf.Clamp01(elapsed / syncDuration);
-                if (Progress01 >= 1f) SetState(ZodiacLinkState.Completed);
+                if (Progress01 >= 1f)
+                {
+                    SetState(ZodiacLinkState.Completed);
+                    SynchronizationCompleted?.Invoke();
+                }
             }
             else if (State == ZodiacLinkState.Severing)
             {
                 Progress01 = Mathf.Clamp01(elapsed / severDuration);
-                if (Progress01 >= 1f) SetState(ZodiacLinkState.Severed);
+                if (Progress01 >= 1f)
+                {
+                    SetState(ZodiacLinkState.Severed);
+                    SeverCompleted?.Invoke();
+                }
             }
         }
 
@@ -38,14 +69,17 @@ namespace Renkai.Kurokage
         {
             if (carrier == null) return;
             transform.SetParent(carrier, false);
-            transform.localPosition = Vector3.zero;
+            transform.localPosition = new Vector3(0f, 1.15f, -0.38f);
+            transform.localRotation = Quaternion.identity;
             SetState(ZodiacLinkState.Carried);
+            CorePickedUp?.Invoke(carrier);
         }
 
         public bool BeginLink()
         {
             if (State != ZodiacLinkState.Carried && State != ZodiacLinkState.Idle) return false;
             SetState(ZodiacLinkState.Linking);
+            LinkStarted?.Invoke();
             return true;
         }
 
@@ -53,6 +87,7 @@ namespace Renkai.Kurokage
         {
             if (State != ZodiacLinkState.Synchronized) return false;
             SetState(ZodiacLinkState.Severing);
+            SeverStarted?.Invoke();
             return true;
         }
 
@@ -60,6 +95,17 @@ namespace Renkai.Kurokage
         {
             if (State == ZodiacLinkState.Linking) SetState(ZodiacLinkState.Carried);
             else if (State == ZodiacLinkState.Severing) SetState(ZodiacLinkState.Synchronized);
+        }
+
+        public void ResetObjective()
+        {
+            transform.SetParent(resetParent, true);
+            transform.position = resetPosition;
+            transform.rotation = resetRotation;
+            State = ZodiacLinkState.Idle;
+            Progress01 = 0f;
+            stateStartTime = Time.time;
+            ObjectiveReset?.Invoke();
         }
 
         private void SetState(ZodiacLinkState next)
