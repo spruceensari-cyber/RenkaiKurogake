@@ -19,35 +19,21 @@ public static class KurokageFinalUpgradeInstaller
             return;
         }
 
-        BuildProductionVersion();
+        string validationReport;
+        bool passed = BuildProductionVersion(out validationReport);
 
         EditorUtility.DisplayDialog(
             "Renkai: Kurokage",
             "Tek üretim sürümü hazırlandı.\n\n" +
             "Ana akış: main branch + Renkai_Kurogake_Competitive scene + Build Production Version.\n\n" +
-            "Kurulan sistemler:\n" +
-            "- unified competitive scene\n" +
-            "- gameplay feel and viewmodels\n" +
-            "- 5v5 test match\n" +
-            "- FBX agent visuals\n" +
-            "- health + armor combat pipeline\n" +
-            "- elite HUD\n" +
-            "- hitmarker + headshot + reload progress HUD\n" +
-            "- world/body/armor/headshot impact VFX\n" +
-            "- unified recoil ownership\n" +
-            "- premium movement camera presentation\n" +
-            "- round banners and kill feed\n" +
-            "- event-driven gameplay audio hooks\n" +
-            "- Zodiac Core objective + VFX\n" +
-            "- Kairi Q/E/C/X ability kit\n" +
-            "- Eclipse Blade combo combat\n" +
-            "- ability cooldown HUD\n\n" +
+            "Validation: " + (passed ? "PASSED" : "REVIEW REQUIRED") + "\n\n" +
+            validationReport + "\n\n" +
             "Build ID: " + ProductionBuildId,
-            "OK"
+            passed ? "OK" : "REVIEW"
         );
     }
 
-    public static void BuildProductionVersion()
+    public static bool BuildProductionVersion(out string validationReport)
     {
         RenkaiUnifiedCompetitiveBuilder.Build();
         KurokageGameplayUpgradeInstaller.Upgrade();
@@ -67,6 +53,16 @@ public static class KurokageFinalUpgradeInstaller
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+
+        bool passed = KurokageProductionValidator.ValidateSilent(out validationReport);
+        Debug.Log(validationReport);
+        return passed;
+    }
+
+    public static void BuildProductionVersion()
+    {
+        string ignored;
+        BuildProductionVersion(out ignored);
     }
 
     private static void EnsureProductionMarker()
