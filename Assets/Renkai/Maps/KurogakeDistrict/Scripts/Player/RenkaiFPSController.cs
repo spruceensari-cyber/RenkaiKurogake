@@ -27,6 +27,10 @@ namespace Renkai.Kurogake
         public float minPitch = -82f;
         public float maxPitch = 82f;
 
+        [Header("Camera FOV")]
+        public float baseFov = 90f;
+        public float fovSmooth = 10f;
+
         [Header("Recoil Layer")]
         public float recoilReturnSpeed = 11f;
         public float recoilFollowSpeed = 22f;
@@ -48,6 +52,10 @@ namespace Renkai.Kurogake
         private Quaternion fallbackSpawnRotation;
         private Vector2 recoilTarget;
         private Vector2 recoilCurrent;
+        private float presentationPitch;
+        private float presentationRoll;
+        private float requestedAdsFov = -1f;
+        private float requestedSprintFovBonus;
 
         private void Awake()
         {
@@ -57,6 +65,12 @@ namespace Renkai.Kurogake
             standingHeight = controller.height;
             fallbackSpawnPosition = transform.position;
             fallbackSpawnRotation = transform.rotation;
+
+            if (playerCamera != null)
+            {
+                baseFov = playerCamera.fieldOfView > 1f ? playerCamera.fieldOfView : baseFov;
+                playerCamera.fieldOfView = baseFov;
+            }
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -70,6 +84,7 @@ namespace Renkai.Kurogake
             Look();
             HandleCrouch();
             Move();
+            UpdateFov();
             SafetyRespawnCheck();
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -97,16 +112,41 @@ namespace Renkai.Kurogake
             recoilTarget = Vector2.Lerp(recoilTarget, Vector2.zero, recoilReturnSpeed * Time.deltaTime);
 
             if (playerCamera != null)
+            {
                 playerCamera.transform.localEulerAngles = new Vector3(
-                    Mathf.Clamp(pitch - recoilCurrent.y, minPitch, maxPitch),
+                    Mathf.Clamp(pitch - recoilCurrent.y + presentationPitch, minPitch - 6f, maxPitch + 6f),
                     recoilCurrent.x,
-                    0f
+                    presentationRoll
                 );
+            }
+        }
+
+        private void UpdateFov()
+        {
+            if (playerCamera == null) return;
+            float target = requestedAdsFov > 1f ? requestedAdsFov : baseFov + requestedSprintFovBonus;
+            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, target, fovSmooth * Time.deltaTime);
         }
 
         public void AddRecoil(float pitchKick, float yawKick)
         {
             recoilTarget += new Vector2(yawKick, pitchKick);
+        }
+
+        public void SetPresentationAdditives(float pitchOffset, float rollOffset)
+        {
+            presentationPitch = pitchOffset;
+            presentationRoll = rollOffset;
+        }
+
+        public void SetAdsFovRequest(bool active, float adsFov)
+        {
+            requestedAdsFov = active ? adsFov : -1f;
+        }
+
+        public void SetSprintFovBonus(float bonus)
+        {
+            requestedSprintFovBonus = Mathf.Max(0f, bonus);
         }
 
         private void HandleCrouch()
@@ -192,6 +232,10 @@ namespace Renkai.Kurogake
             verticalVelocity = 0f;
             recoilTarget = Vector2.zero;
             recoilCurrent = Vector2.zero;
+            presentationPitch = 0f;
+            presentationRoll = 0f;
+            requestedAdsFov = -1f;
+            requestedSprintFovBonus = 0f;
             controller.enabled = true;
 
             Debug.Log("Renkai player respawned.");
