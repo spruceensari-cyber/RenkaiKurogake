@@ -64,8 +64,11 @@ namespace Renkai.Kurogake
             foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
                 r.enabled = true;
 
-            foreach (Collider c in GetComponentsInChildren<Collider>(true))
-                if (!c.isTrigger) c.enabled = true;
+            foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
+            {
+                Collider hitCollider = zone.GetComponent<Collider>();
+                if (hitCollider != null) hitCollider.enabled = true;
+            }
 
             RenkaiFPSController fps = GetComponent<RenkaiFPSController>();
             if (fps != null) fps.enabled = true;
@@ -80,6 +83,9 @@ namespace Renkai.Kurogake
             KairiAbilityController kairi = GetComponent<KairiAbilityController>();
             if (kairi != null)
                 kairi.ResetAbilityState(true);
+
+            KurokageEclipseProtocolPresenter eclipse = GetComponent<KurokageEclipseProtocolPresenter>();
+            if (eclipse != null) eclipse.ResetPresentation();
 
             RenkaiBotAI bot = GetComponent<RenkaiBotAI>();
             if (bot != null) bot.enabled = true;
@@ -177,8 +183,14 @@ namespace Renkai.Kurogake
                         r.enabled = false;
                 }
 
-                foreach (Collider c in GetComponentsInChildren<Collider>(true))
-                    if (!c.isTrigger) c.enabled = false;
+                CharacterController controller = GetComponent<CharacterController>();
+                if (controller != null) controller.enabled = false;
+
+                foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
+                {
+                    Collider hitCollider = zone.GetComponent<Collider>();
+                    if (hitCollider != null) hitCollider.enabled = false;
+                }
             }
 
             RenkaiRoundManager manager = Object.FindObjectOfType<RenkaiRoundManager>();
