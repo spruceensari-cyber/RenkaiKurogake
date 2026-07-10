@@ -33,6 +33,7 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageZodiacObjectiveController>("Zodiac objective controller", 1, ref errors, report);
         ValidateCount<KairiAbilityController>("Kairi ability controller", 1, ref errors, report);
         ValidateCount<KurokageBladeCombatController>("Blade combat controller", 1, ref errors, report);
+        ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
         ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, report);
@@ -66,6 +67,18 @@ public static class KurokageProductionValidator
             Renderer rootRenderer = player.GetComponent<Renderer>();
             if (rootRenderer != null && rootRenderer.enabled)
                 visibleRootRenderers++;
+
+            KurokageHitZoneBinder binder = player.GetComponent<KurokageHitZoneBinder>();
+            int zones = player.GetComponentsInChildren<KurokageHitZone>(true).Length;
+            if (binder == null || zones < 3)
+            {
+                errors++;
+                report.AppendLine("ERROR Hit zone binding incomplete for " + player.agentName + ": zones=" + zones);
+            }
+            else
+            {
+                report.AppendLine("PASS  Hit zones " + player.agentName + ": " + zones);
+            }
         }
 
         ValidateExact("Human player", humans, 1, ref errors, report);
@@ -80,6 +93,17 @@ public static class KurokageProductionValidator
         else
         {
             report.AppendLine("PASS  No visible root player renderers");
+        }
+
+        KurokageDecoyRuntime[] sceneDecoys = Object.FindObjectsOfType<KurokageDecoyRuntime>(true);
+        if (sceneDecoys.Length > 0)
+        {
+            errors++;
+            report.AppendLine("ERROR Initial scene contains active decoy objects: " + sceneDecoys.Length);
+        }
+        else
+        {
+            report.AppendLine("PASS  No decoys in initial scene state");
         }
 
         ZodiacNexusSite[] sites = Object.FindObjectsOfType<ZodiacNexusSite>(true);
