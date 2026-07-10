@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_05";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_06";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -37,6 +37,7 @@ public static class KurokageFinalUpgradeInstaller
     {
         bool sceneOk = RenkaiUnifiedCompetitiveBuilder.BuildSilent();
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
+        bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
         bool ringRefineOk = KurokageEnvironmentRingRefiner.ApplySilent();
         bool zodiacArtOk = KurokageZodiacCoreArtInstaller.ApplySilent();
         bool nexusArtOk = KurokageZodiacNexusArtInstaller.ApplySilent();
@@ -46,6 +47,7 @@ public static class KurokageFinalUpgradeInstaller
 
         EnsureVfxPool();
         EnsureArmorAudioAndCombatVfx();
+        EnsureWorldHealthBarsHidden();
         EnsureDeathPresentation();
         EnsureMovementPresentation();
         EnsureEliteHud();
@@ -66,6 +68,7 @@ public static class KurokageFinalUpgradeInstaller
         bool structurePassed = KurokageProductionValidator.ValidateSilent(out validationReport);
         if (!sceneOk) validationReport += "\nERROR Unified scene silent build failed.";
         if (!environmentOk) validationReport += "\nERROR Environment art pass failed.";
+        if (!brightVisualOk) validationReport += "\nERROR Bright competitive visual pass failed.";
         if (!ringRefineOk) validationReport += "\nERROR Environment ring refinement failed.";
         if (!zodiacArtOk) validationReport += "\nERROR Zodiac Core art pass failed.";
         if (!nexusArtOk) validationReport += "\nERROR Zodiac Nexus art pass failed.";
@@ -73,7 +76,7 @@ public static class KurokageFinalUpgradeInstaller
         if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
         if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
 
-        bool passed = structurePassed && sceneOk && environmentOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
+        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
@@ -126,6 +129,12 @@ public static class KurokageFinalUpgradeInstaller
                     player.gameObject.AddComponent<KurokageCombatVfxPresenter>();
             }
         }
+    }
+
+    private static void EnsureWorldHealthBarsHidden()
+    {
+        foreach (RenkaiWorldHealthBar bar in Object.FindObjectsOfType<RenkaiWorldHealthBar>(true))
+            bar.SetWorldVisible(false);
     }
 
     private static void EnsureDeathPresentation()
