@@ -57,10 +57,11 @@ public static class KurokageAgentVisualInstaller
             }
 
             bool applied = KurokageProceduralAgentFactory.Build(player, archetype);
-            if (!applied)
+            bool detailed = applied && KurokageProceduralAgentDetailPass.Apply(player, archetype);
+            if (!applied || !detailed)
             {
                 allSucceeded = false;
-                Debug.LogError("Renkai code-built agent visual failed for " + player.agentName + " archetype=" + archetype);
+                Debug.LogError("Renkai code-built agent visual failed for " + player.agentName + " archetype=" + archetype + " base=" + applied + " detail=" + detailed);
             }
         }
 
