@@ -15,19 +15,25 @@ public static class KurokageFiveVFiveInstaller
             return;
         }
 
+        bool ok = InstallSilent();
+        EditorUtility.DisplayDialog(
+            "Renkai",
+            ok ? "5v5 test match kuruldu: 1 human + 4 attacker bot + 5 defender bot." : "5v5 kurulamadı. Human player bulunamadı.",
+            ok ? "OK" : "REVIEW"
+        );
+    }
+
+    public static bool InstallSilent()
+    {
         GameObject old = GameObject.Find("KUROKAGE_5V5_TEST_MATCH");
         if (old != null) Object.DestroyImmediate(old);
+
+        RenkaiFPSController humanFps = Object.FindObjectOfType<RenkaiFPSController>();
+        if (humanFps == null) return false;
 
         GameObject root = new GameObject("KUROKAGE_5V5_TEST_MATCH");
         Transform attackers = Group(root.transform, "ATTACKERS");
         Transform defenders = Group(root.transform, "DEFENDERS");
-
-        RenkaiFPSController humanFps = Object.FindObjectOfType<RenkaiFPSController>();
-        if (humanFps == null)
-        {
-            EditorUtility.DisplayDialog("Renkai", "Önce birleşik sahneyi oluştur. Human player bulunamadı.", "OK");
-            return;
-        }
 
         GameObject human = humanFps.gameObject;
         RenkaiRoundPlayer humanRound = human.GetComponent<RenkaiRoundPlayer>();
@@ -63,6 +69,10 @@ public static class KurokageFiveVFiveInstaller
         for (int i = 0; i < defSpawns.Length; i++)
             CreateBot(defNames[i], RenkaiTeam.Defenders, defSpawns[i], defenders, new Color(0.72f, 0.24f, 0.82f));
 
+        RenkaiRoundManager[] managers = Object.FindObjectsOfType<RenkaiRoundManager>(true);
+        for (int i = 1; i < managers.Length; i++)
+            Object.DestroyImmediate(managers[i].gameObject);
+
         if (Object.FindObjectOfType<RenkaiRoundManager>() == null)
         {
             GameObject managerGo = new GameObject("ROUND_MANAGER");
@@ -72,12 +82,7 @@ public static class KurokageFiveVFiveInstaller
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         Selection.activeGameObject = root;
-
-        EditorUtility.DisplayDialog(
-            "Renkai",
-            "5v5 test match kuruldu:\n1 human + 4 attacker bot\n5 defender bot\nround manager\nteam identities\n\nCtrl+S ile kaydet.",
-            "OK"
-        );
+        return true;
     }
 
     private static Transform Group(Transform parent, string name)
