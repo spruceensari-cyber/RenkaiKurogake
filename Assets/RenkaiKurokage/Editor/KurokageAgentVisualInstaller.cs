@@ -24,29 +24,44 @@ public static class KurokageAgentVisualInstaller
             return;
         }
 
+        bool ok = InstallSilent();
+        EditorUtility.DisplayDialog(
+            "Renkai",
+            ok ? "Karakter görselleri uygulandı. Capsule renderer gizlendi ve locomotion presentation driver bağlandı." : "Karakter görselleri uygulanamadı. FBX asset yollarını ve 5v5 kurulumunu kontrol et.",
+            ok ? "OK" : "REVIEW"
+        );
+    }
+
+    public static bool InstallSilent()
+    {
         RenkaiRoundPlayer[] players = Object.FindObjectsOfType<RenkaiRoundPlayer>(true);
-        if (players == null || players.Length == 0)
-        {
-            EditorUtility.DisplayDialog("Renkai", "RenkaiRoundPlayer bulunamadı. Önce 5v5 kurulumunu yap.", "OK");
-            return;
-        }
+        if (players == null || players.Length == 0) return false;
 
         int index = 0;
+        bool allSucceeded = true;
         foreach (RenkaiRoundPlayer rp in players)
         {
-            ApplyVisual(rp, CharacterPaths[index % CharacterPaths.Length]);
+            bool applied = ApplyVisual(rp, CharacterPaths[index % CharacterPaths.Length]);
+            if (!applied) allSucceeded = false;
             index++;
         }
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         Selection.activeGameObject = players[0].gameObject;
-        EditorUtility.DisplayDialog("Renkai", "Karakter görselleri uygulandı. Capsule renderer gizlendi ve locomotion presentation driver bağlandı.", "OK");
+        return allSucceeded;
     }
 
-    private static void ApplyVisual(RenkaiRoundPlayer roundPlayer, string assetPath)
+    private static bool ApplyVisual(RenkaiRoundPlayer roundPlayer, string assetPath)
     {
         Transform old = roundPlayer.transform.Find("AGENT_VISUAL");
         if (old != null) Object.DestroyImmediate(old.gameObject);
+
+        GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+        if (asset == null)
+        {
+            Debug.LogError("Renkai agent visual missing: " + assetPath + " for " + roundPlayer.agentName);
+            return false;
+        }
 
         foreach (Renderer r in roundPlayer.GetComponents<Renderer>())
             r.enabled = false;
@@ -56,18 +71,13 @@ public static class KurokageAgentVisualInstaller
         visualRoot.transform.localPosition = Vector3.zero;
         visualRoot.transform.localRotation = Quaternion.identity;
 
-        GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-        GameObject instance = null;
-        if (asset != null)
-        {
-            Object spawned = PrefabUtility.InstantiatePrefab(asset);
-            instance = spawned as GameObject;
-        }
-
+        Object spawned = PrefabUtility.InstantiatePrefab(asset);
+        GameObject instance = spawned as GameObject;
         if (instance == null)
         {
-            instance = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            instance.name = "FallbackAgent";
+            Debug.LogError("Renkai could not instantiate FBX visual: " + assetPath);
+            Object.DestroyImmediate(visualRoot);
+            return false;
         }
 
         instance.transform.SetParent(visualRoot.transform, false);
@@ -93,6 +103,8 @@ public static class KurokageAgentVisualInstaller
         KurokageAgentAnimationDriver driver = visualRoot.GetComponent<KurokageAgentAnimationDriver>();
         if (driver == null)
             visualRoot.AddComponent<KurokageAgentAnimationDriver>();
+
+        return true;
     }
 
     private static void NormalizeVisual(Transform visual, float targetHeight)
