@@ -34,6 +34,7 @@ public static class KurokageFinalUpgradeInstaller
             "- elite HUD\n" +
             "- Zodiac Core objective\n" +
             "- Kairi Q/E/C/X ability kit\n" +
+            "- Eclipse Blade combo combat\n" +
             "- ability cooldown HUD\n\n" +
             "Build ID: " + ProductionBuildId,
             "OK"
@@ -118,8 +119,14 @@ public static class KurokageFinalUpgradeInstaller
             }
         }
 
-        if (human != null && human.GetComponent<KairiAbilityController>() == null)
-            human.gameObject.AddComponent<KairiAbilityController>();
+        if (human != null)
+        {
+            if (human.GetComponent<KairiAbilityController>() == null)
+                human.gameObject.AddComponent<KairiAbilityController>();
+
+            if (human.GetComponent<KurokageBladeCombatController>() == null)
+                human.gameObject.AddComponent<KurokageBladeCombatController>();
+        }
 
         GameObject abilityHud = GameObject.Find("KUROKAGE_ABILITY_HUD");
         if (abilityHud == null)
