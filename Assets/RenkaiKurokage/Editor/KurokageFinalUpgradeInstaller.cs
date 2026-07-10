@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_09";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_10";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -40,6 +40,7 @@ public static class KurokageFinalUpgradeInstaller
         bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
         bool architectureOk = KurokageCompetitiveArchitecturePass.ApplySilent();
         bool districtIdentityOk = KurokageDistrictIdentityPass.ApplySilent();
+        bool siteLightingOk = KurokageSiteReadabilityLightingPass.ApplySilent();
         bool ringRefineOk = KurokageEnvironmentRingRefiner.ApplySilent();
         bool zodiacArtOk = KurokageZodiacCoreArtInstaller.ApplySilent();
         bool nexusArtOk = KurokageZodiacNexusArtInstaller.ApplySilent();
@@ -52,6 +53,7 @@ public static class KurokageFinalUpgradeInstaller
         EnsureWorldHealthBarsHidden();
         EnsureDeathPresentation();
         EnsureMovementPresentation();
+        EnsureCompetitivePostFx();
         EnsureEliteHud();
         EnsureTacticalRadarHud();
         EnsureCombatFeedbackHud();
@@ -74,6 +76,7 @@ public static class KurokageFinalUpgradeInstaller
         if (!brightVisualOk) validationReport += "\nERROR Bright competitive visual pass failed.";
         if (!architectureOk) validationReport += "\nERROR Competitive architecture pass failed.";
         if (!districtIdentityOk) validationReport += "\nERROR District identity pass failed.";
+        if (!siteLightingOk) validationReport += "\nERROR Site readability lighting pass failed.";
         if (!ringRefineOk) validationReport += "\nERROR Environment ring refinement failed.";
         if (!zodiacArtOk) validationReport += "\nERROR Zodiac Core art pass failed.";
         if (!nexusArtOk) validationReport += "\nERROR Zodiac Nexus art pass failed.";
@@ -81,7 +84,7 @@ public static class KurokageFinalUpgradeInstaller
         if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
         if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
 
-        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && architectureOk && districtIdentityOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
+        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && architectureOk && districtIdentityOk && siteLightingOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
@@ -163,6 +166,21 @@ public static class KurokageFinalUpgradeInstaller
             if (player.GetComponent<KurokageSprintWeaponGate>() == null)
                 player.gameObject.AddComponent<KurokageSprintWeaponGate>();
         }
+    }
+
+    private static void EnsureCompetitivePostFx()
+    {
+        RenkaiFPSController fps = Object.FindObjectOfType<RenkaiFPSController>(true);
+        if (fps == null) return;
+
+        Camera camera = fps.playerCamera != null ? fps.playerCamera : fps.GetComponentInChildren<Camera>(true);
+        if (camera == null) return;
+
+        KurokageCompetitivePostFX postFx = camera.GetComponent<KurokageCompetitivePostFX>();
+        if (postFx == null)
+            postFx = camera.gameObject.AddComponent<KurokageCompetitivePostFX>();
+
+        postFx.ConfigureCompetitivePreset();
     }
 
     private static void EnsureEliteHud()
