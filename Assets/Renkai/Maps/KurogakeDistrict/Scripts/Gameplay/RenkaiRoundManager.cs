@@ -39,8 +39,24 @@ namespace Renkai.Kurogake
             KurokageGameEvents.RaiseRoundBanner("PREPARE // ROUND " + roundNumber);
             SetScoreUI();
 
+            KurokageVfxPool pool = Object.FindObjectOfType<KurokageVfxPool>();
+            if (pool != null) pool.ClearAll();
+
+            ZodiacCoreRuntime core = Object.FindObjectOfType<ZodiacCoreRuntime>();
+            if (core != null) core.ResetObjective();
+
             foreach (RenkaiRoundPlayer p in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
+            {
                 p.ResetForRound();
+                KurokageBladeCombatController blade = p.GetComponent<KurokageBladeCombatController>();
+                if (blade != null) blade.ResetForRound();
+            }
+
+            for (int i = KurokageDecoyRuntime.Active.Count - 1; i >= 0; i--)
+            {
+                KurokageDecoyRuntime decoy = KurokageDecoyRuntime.Active[i];
+                if (decoy != null) decoy.DissolveAndDestroy();
+            }
 
             if (bomb != null)
                 bomb.ResetBomb();
