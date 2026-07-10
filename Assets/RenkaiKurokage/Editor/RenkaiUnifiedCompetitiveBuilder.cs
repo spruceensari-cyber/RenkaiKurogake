@@ -55,6 +55,39 @@ public static class RenkaiUnifiedCompetitiveBuilder
         );
     }
 
+    [MenuItem("Renkai/Repair Current Unified Scene Materials")]
+    public static void RepairCurrentSceneMaterials()
+    {
+        if (EditorApplication.isPlaying)
+        {
+            EditorUtility.DisplayDialog("Renkai", "Play modundan çıkıp tekrar çalıştır.", "OK");
+            return;
+        }
+
+        CreateMaterials();
+        int changed = 0;
+
+        foreach (Renderer renderer in Object.FindObjectsOfType<Renderer>(true))
+        {
+            string n = renderer.gameObject.name;
+            Material target = ResolveMaterialForName(n);
+            if (target == null) continue;
+            renderer.sharedMaterial = target;
+            EditorUtility.SetDirty(renderer);
+            changed++;
+        }
+
+        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        AssetDatabase.SaveAssets();
+        SceneView.RepaintAll();
+
+        EditorUtility.DisplayDialog(
+            "Renkai",
+            "Materyaller onarıldı. Değiştirilen Renderer: " + changed + "\n\nCtrl+S ile sahneyi kaydet.",
+            "OK"
+        );
+    }
+
     private static Transform Group(Transform parent, string name)
     {
         GameObject go = new GameObject(name);
@@ -77,19 +110,40 @@ public static class RenkaiUnifiedCompetitiveBuilder
 
     private static Material Mat(string name, Color color, float smoothness, float emission)
     {
-        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        bool srpActive = GraphicsSettings.currentRenderPipeline != null;
+        Shader shader = srpActive ? Shader.Find("Universal Render Pipeline/Lit") : Shader.Find("Standard");
+        if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
         if (shader == null) shader = Shader.Find("Standard");
+        if (shader == null) shader = Shader.Find("Diffuse");
+
         Material mat = new Material(shader) { name = name };
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
         if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
         if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smoothness);
+        if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smoothness);
         if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 0.08f);
+
         if (emission > 0f && mat.HasProperty("_EmissionColor"))
         {
             mat.EnableKeyword("_EMISSION");
             mat.SetColor("_EmissionColor", color * emission);
         }
+
         return mat;
+    }
+
+    private static Material ResolveMaterialForName(string name)
+    {
+        string n = name.ToLowerInvariant();
+        if (n.Contains("floor")) return floorMat;
+        if (n.Contains("wall")) return n.Contains("main_left") || n.Contains("main_right") || n.Contains("mid_") ? lightWallMat : wallMat;
+        if (n.Contains("cover") || n.Contains("box")) return coverMat;
+        if (n.Contains("a_route") || n.Contains("a_default")) return blueMat;
+        if (n.Contains("b_route") || n.Contains("b_default")) return violetMat;
+        if (n.Contains("a_nexus")) return siteAMat;
+        if (n.Contains("b_nexus")) return siteBMat;
+        if (n.Contains("zodiac_core")) return blueMat;
+        return null;
     }
 
     private static void BuildArena(Transform parent)
@@ -100,31 +154,25 @@ public static class RenkaiUnifiedCompetitiveBuilder
         Box("WestWall", new Vector3(-54, 4, 0), new Vector3(2, 8, 150), wallMat, parent);
         Box("EastWall", new Vector3(54, 4, 0), new Vector3(2, 8, 150), wallMat, parent);
 
-        // Three readable routes: A / Mid / B.
         Box("A_Main_Left", new Vector3(-42, 3, -24), new Vector3(3, 6, 46), lightWallMat, parent);
         Box("A_Main_Right", new Vector3(-24, 3, -28), new Vector3(3, 6, 38), wallMat, parent);
         Box("B_Main_Left", new Vector3(24, 3, -28), new Vector3(3, 6, 38), wallMat, parent);
         Box("B_Main_Right", new Vector3(42, 3, -24), new Vector3(3, 6, 46), lightWallMat, parent);
-
         Box("Mid_Left", new Vector3(-9, 3, -18), new Vector3(3, 6, 42), lightWallMat, parent);
         Box("Mid_Right", new Vector3(9, 3, -18), new Vector3(3, 6, 42), lightWallMat, parent);
-
         Box("A_Site_Back", new Vector3(-34, 3, 30), new Vector3(32, 6, 3), wallMat, parent);
         Box("B_Site_Back", new Vector3(34, 3, 30), new Vector3(32, 6, 3), wallMat, parent);
 
         Cover("A_Default", new Vector3(-34, 1.1f, 16), new Vector3(5.5f, 2.2f, 3.5f), parent, blueMat);
         Cover("A_Box_1", new Vector3(-45, 0.9f, 8), new Vector3(4, 1.8f, 5), parent, coverMat);
         Cover("A_Box_2", new Vector3(-25, 1.4f, 21), new Vector3(3, 2.8f, 6), parent, coverMat);
-
         Cover("B_Default", new Vector3(34, 1.1f, 16), new Vector3(5.5f, 2.2f, 3.5f), parent, violetMat);
         Cover("B_Box_1", new Vector3(45, 0.9f, 8), new Vector3(4, 1.8f, 5), parent, coverMat);
         Cover("B_Box_2", new Vector3(25, 1.4f, 21), new Vector3(3, 2.8f, 6), parent, coverMat);
-
         Cover("Mid_Cover_1", new Vector3(0, 1.1f, 2), new Vector3(5, 2.2f, 2.6f), parent, coverMat);
         Cover("Mid_Cover_2", new Vector3(-4, 0.75f, 16), new Vector3(3, 1.5f, 4), parent, coverMat);
         Cover("Mid_Cover_3", new Vector3(4, 0.75f, 16), new Vector3(3, 1.5f, 4), parent, coverMat);
 
-        // Restrained accents, not full-scene purple wash.
         Strip("A_Route_Accent", new Vector3(-33, 0.03f, -42), new Vector3(0.35f, 0.06f, 40), blueMat, parent);
         Strip("B_Route_Accent", new Vector3(33, 0.03f, -42), new Vector3(0.35f, 0.06f, 40), violetMat, parent);
     }
@@ -133,7 +181,6 @@ public static class RenkaiUnifiedCompetitiveBuilder
     {
         GameObject a = Cylinder("A_NEXUS", new Vector3(-34, 0.3f, 17), new Vector3(4.8f, 0.3f, 4.8f), siteAMat, parent);
         a.AddComponent<ZodiacNexusSite>();
-
         GameObject b = Cylinder("B_NEXUS", new Vector3(34, 0.3f, 17), new Vector3(4.8f, 0.3f, 4.8f), siteBMat, parent);
         b.AddComponent<ZodiacNexusSite>();
 
