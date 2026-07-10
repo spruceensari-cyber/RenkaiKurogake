@@ -106,6 +106,10 @@ public static class KurokageAgentVisualInstaller
         if (visualRoot.GetComponent<KurokageAgentAnimationDriver>() == null)
             visualRoot.AddComponent<KurokageAgentAnimationDriver>();
 
+        KurokageHitReactionPresenter hitReaction = roundPlayer.GetComponent<KurokageHitReactionPresenter>();
+        if (hitReaction == null)
+            roundPlayer.gameObject.AddComponent<KurokageHitReactionPresenter>();
+
         KurokageHitZoneBinder binder = roundPlayer.GetComponent<KurokageHitZoneBinder>();
         if (binder == null) binder = roundPlayer.gameObject.AddComponent<KurokageHitZoneBinder>();
         binder.Bind();
