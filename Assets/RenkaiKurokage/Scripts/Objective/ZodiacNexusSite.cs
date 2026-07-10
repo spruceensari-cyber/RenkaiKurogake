@@ -9,6 +9,11 @@ namespace Renkai.Kurokage
 
         public string SiteId => siteId;
 
+        public void Configure(string id)
+        {
+            siteId = string.IsNullOrWhiteSpace(id) ? "A" : id.Trim().ToUpperInvariant();
+        }
+
         private void Reset()
         {
             Collider col = GetComponent<Collider>();
