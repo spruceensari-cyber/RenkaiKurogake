@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Renkai.Kurokage;
 
@@ -24,8 +23,8 @@ namespace Renkai.Kurogake
         [Header("Round")]
         public bool noRespawnUntilRoundEnd = true;
 
-        public event Action<RenkaiRoundPlayer, RenkaiRoundPlayer> Eliminated;
-        public static event Action<RenkaiRoundPlayer, RenkaiRoundPlayer> AnyPlayerEliminated;
+        public event System.Action<RenkaiRoundPlayer, RenkaiRoundPlayer> Eliminated;
+        public static event System.Action<RenkaiRoundPlayer, RenkaiRoundPlayer> AnyPlayerEliminated;
 
         private Vector3 spawnPosition;
         private Quaternion spawnRotation;
@@ -128,10 +127,6 @@ namespace Renkai.Kurogake
             if (legacyBot != null)
                 legacyBot.enabled = tacticalBot == null && !isHumanPlayer;
 
-            ZodiacObjectiveInteractor interactor = GetComponent<ZodiacObjectiveInteractor>();
-            if (interactor != null)
-                interactor.enabled = isHumanPlayer;
-
             RenkaiWorldHealthBar healthBar = GetComponentInChildren<RenkaiWorldHealthBar>(true);
             if (healthBar != null)
                 healthBar.RefreshNow();
@@ -179,7 +174,7 @@ namespace Renkai.Kurogake
             if (armorBefore > 0f && armorAfter <= 0f)
                 KurokageGameEvents.RaiseArmorBroken(this, info);
 
-            RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
+            RenkaiHUDController hud = UnityEngine.Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null && isHumanPlayer)
                 hud.SetPlayerHP(Mathf.CeilToInt(health), Mathf.CeilToInt(maxHealth));
 
@@ -197,15 +192,15 @@ namespace Renkai.Kurogake
             isAlive = false;
             health = 0f;
 
-            ZodiacCoreRuntime core = Object.FindObjectOfType<ZodiacCoreRuntime>();
-            if (core != null && core.Carrier == this)
+            ZodiacCoreRuntime core = UnityEngine.Object.FindObjectOfType<ZodiacCoreRuntime>();
+            if (core != null && core.Carrier == transform)
                 core.Drop(transform.position + transform.forward * 0.75f);
 
             string killerName = killer != null ? killer.agentName : "Unknown";
             Debug.Log(agentName + " eliminated by " + killerName + ". No respawn until round end.");
             KurokageGameEvents.RaiseKillFeed(killerName, agentName);
 
-            RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
+            RenkaiHUDController hud = UnityEngine.Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null)
             {
                 hud.AddKillFeed(killerName + " eliminated " + agentName);
@@ -228,10 +223,6 @@ namespace Renkai.Kurogake
 
             if (weaponController != null)
                 weaponController.enabled = false;
-
-            ZodiacObjectiveInteractor interactor = GetComponent<ZodiacObjectiveInteractor>();
-            if (interactor != null)
-                interactor.enabled = false;
 
             RenkaiBotAI legacyBot = GetComponent<RenkaiBotAI>();
             if (legacyBot != null)
@@ -267,7 +258,7 @@ namespace Renkai.Kurogake
             Eliminated?.Invoke(this, killer);
             AnyPlayerEliminated?.Invoke(this, killer);
 
-            RenkaiRoundManager manager = Object.FindObjectOfType<RenkaiRoundManager>();
+            RenkaiRoundManager manager = UnityEngine.Object.FindObjectOfType<RenkaiRoundManager>();
             if (manager != null)
                 manager.CheckWinConditions();
         }
