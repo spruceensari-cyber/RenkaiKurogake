@@ -36,6 +36,7 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
+        ValidateCount<KurokageDamageDirectionHUD>("Damage direction HUD", 1, ref errors, report);
         ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, report);
         ValidateCount<KurokageVfxPool>("Shared VFX pool", 1, ref errors, report);
 
@@ -106,6 +107,8 @@ public static class KurokageProductionValidator
             report.AppendLine("PASS  No decoys in initial scene state");
         }
 
+        ValidateEnvironmentIdentity(ref errors, ref warnings, report);
+
         ZodiacNexusSite[] sites = Object.FindObjectsOfType<ZodiacNexusSite>(true);
         ValidateExact("Zodiac Nexus sites", sites.Length, 2, ref errors, report);
 
@@ -122,8 +125,10 @@ public static class KurokageProductionValidator
 
         string[] requiredRoots =
         {
+            "KUROKAGE_ENVIRONMENT_ART",
             "KUROKAGE_ELITE_HUD",
             "KUROKAGE_COMBAT_FEEDBACK_HUD",
+            "KUROKAGE_DAMAGE_DIRECTION_HUD",
             "KUROKAGE_MATCH_PRESENTATION_HUD",
             "KUROKAGE_ABILITY_HUD",
             "KUROKAGE_ZODIAC_HUD",
@@ -148,10 +153,61 @@ public static class KurokageProductionValidator
         report.AppendLine("Errors: " + errors);
         report.AppendLine("Warnings: " + warnings);
         report.AppendLine(errors == 0 ? "RESULT: STRUCTURE VALIDATION PASSED" : "RESULT: STRUCTURE VALIDATION FAILED");
-        report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, or visual validation.");
+        report.AppendLine("Note: this does not replace Unity compile, Play Mode, animation, scale, collision, navigation, or visual validation.");
 
         reportText = report.ToString();
         return errors == 0;
+    }
+
+    private static void ValidateEnvironmentIdentity(ref int errors, ref int warnings, StringBuilder report)
+    {
+        string[] landmarks =
+        {
+            "THE_ZERO_GATE",
+            "THE_MEMORY_CHOIR",
+            "THE_RESONANCE_CHAMBER",
+            "Ghost_Platform_09",
+            "CELESTIAL_NETWORK_ORBITAL_RING"
+        };
+
+        foreach (string landmark in landmarks)
+        {
+            if (GameObject.Find(landmark) == null)
+            {
+                errors++;
+                report.AppendLine("ERROR Missing environment landmark: " + landmark);
+            }
+            else
+            {
+                report.AppendLine("PASS  Landmark present: " + landmark);
+            }
+        }
+
+        string[] materials =
+        {
+            "M_DarkCeramic.mat",
+            "M_LightComposite.mat",
+            "M_NavyMetal.mat",
+            "M_Accent_Blue.mat",
+            "M_Accent_Violet.mat",
+            "M_Hologram.mat",
+            "M_Energy_Core.mat"
+        };
+
+        foreach (string materialName in materials)
+        {
+            string path = "Assets/RenkaiKurokage/Art/GeneratedMaterials/" + materialName;
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                warnings++;
+                report.AppendLine("WARN  Missing shared material asset: " + materialName);
+            }
+            else
+            {
+                report.AppendLine("PASS  Shared material: " + materialName);
+            }
+        }
     }
 
     private static void ValidateCount<T>(string label, int expected, ref int errors, StringBuilder report) where T : Object
