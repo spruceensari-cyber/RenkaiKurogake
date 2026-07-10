@@ -40,6 +40,7 @@ public static class KurokageFinalUpgradeInstaller
         bool matchOk = KurokageFiveVFiveInstaller.InstallSilent();
         bool visualsOk = KurokageAgentVisualInstaller.InstallSilent();
 
+        EnsureVfxPool();
         EnsureArmorAudioAndCombatVfx();
         EnsureMovementPresentation();
         EnsureEliteHud();
@@ -70,6 +71,19 @@ public static class KurokageFinalUpgradeInstaller
     {
         string ignored;
         BuildProductionVersion(out ignored);
+    }
+
+    private static void EnsureVfxPool()
+    {
+        KurokageVfxPool existing = Object.FindObjectOfType<KurokageVfxPool>(true);
+        if (existing != null) return;
+
+        GameObject poolRoot = GameObject.Find("KUROKAGE_VFX_POOL");
+        if (poolRoot == null)
+            poolRoot = new GameObject("KUROKAGE_VFX_POOL");
+
+        if (poolRoot.GetComponent<KurokageVfxPool>() == null)
+            poolRoot.AddComponent<KurokageVfxPool>();
     }
 
     private static void EnsureProductionMarker()
