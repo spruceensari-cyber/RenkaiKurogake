@@ -24,7 +24,7 @@ public static class KurokageDistrictIdentityPass
         if (!LoadMaterials()) return false;
 
         GameObject root = new GameObject(RootName);
-        BuildShibuyaIdentity(Group(root.transform, "SHIBUYA_ZERO_IDENTITY"));
+        BuildKurogakeIdentity(Group(root.transform, "KUROGATE_DISTRICT_IDENTITY"));
         BuildArchiveIdentity(Group(root.transform, "CELESTIAL_ARCHIVE_IDENTITY"));
         BuildReactorIdentity(Group(root.transform, "VOID_REACTOR_IDENTITY"));
         BuildGhostIdentity(Group(root.transform, "GHOST_LINE_IDENTITY"));
@@ -45,7 +45,7 @@ public static class KurokageDistrictIdentityPass
         return light != null && dark != null && navy != null && cover != null && blue != null && violet != null && hologram != null;
     }
 
-    private static void BuildShibuyaIdentity(Transform parent)
+    private static void BuildKurogakeIdentity(Transform parent)
     {
         for (int i = -3; i <= 3; i++)
         {

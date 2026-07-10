@@ -27,7 +27,6 @@ public static class KurokageAutoProductionPass
         ApplyProductionPass();
     }
 
-    [MenuItem("Renkai/Apply Production Graphics Pass V1")]
     public static void ApplyProductionPass()
     {
         if (EditorApplication.isPlaying)
@@ -139,7 +138,7 @@ public static class KurokageAutoProductionPass
         // Hologram landmarks.
         CreateHologram("A_CELESTIAL_ARCHIVE", new Vector3(-34f, 4.5f, 27f), blue, identity, 0.8f);
         CreateHologram("B_VOID_REACTOR", new Vector3(34f, 4.5f, 27f), violet, identity, -0.9f);
-        CreateHologram("MID_SHIBUYA_ZERO", new Vector3(0f, 5.8f, 26f), hologram, identity, 0.45f);
+        CreateHologram("MID_KUROGATE_DISTRICT", new Vector3(0f, 5.8f, 26f), hologram, identity, 0.45f);
 
         // Zodiac rings around core area.
         for (int i = 0; i < 3; i++)

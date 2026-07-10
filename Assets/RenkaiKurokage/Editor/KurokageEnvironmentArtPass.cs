@@ -29,13 +29,13 @@ public static class KurokageEnvironmentArtPass
         EnsureMaterials();
 
         GameObject root = new GameObject(RootName);
-        Transform shibuya = Group(root.transform, "SHIBUYA_ZERO_ART");
+        Transform district = Group(root.transform, "KUROGATE_DISTRICT_ART");
         Transform archive = Group(root.transform, "CELESTIAL_ARCHIVE_ART");
         Transform reactor = Group(root.transform, "VOID_REACTOR_ART");
         Transform ghost = Group(root.transform, "GHOST_LINE_ART");
         Transform skyline = Group(root.transform, "ORBITAL_SKYLINE_ART");
 
-        BuildShibuyaZero(shibuya);
+        BuildKurogakeDistrict(district);
         BuildCelestialArchive(archive);
         BuildVoidReactor(reactor);
         BuildGhostLine(ghost);
@@ -46,7 +46,7 @@ public static class KurokageEnvironmentArtPass
         return true;
     }
 
-    private static void BuildShibuyaZero(Transform parent)
+    private static void BuildKurogakeDistrict(Transform parent)
     {
         // ZERO GATE: original broken orbital transit arch framing Mid without changing collision lanes.
         Transform gate = Group(parent, "THE_ZERO_GATE");
@@ -67,8 +67,8 @@ public static class KurokageEnvironmentArtPass
             float side = i % 2 == 0 ? -1f : 1f;
             float x = side * (15f + (i % 3) * 4.5f);
             float z = -18f + (i / 2) * 14f;
-            Beam("Shibuya_CommBlade_" + i, parent, new Vector3(x, 7.5f, z), new Vector3(0.45f, 8f, 3.2f), i % 3 == 0 ? lightComposite : navyMetal, false, new Vector3(0f, side * 10f, 0f));
-            Beam("Shibuya_BlueStrip_" + i, parent, new Vector3(x - side * 0.28f, 8f, z), new Vector3(0.08f, 5.4f, 2.3f), blueAccent, false, new Vector3(0f, side * 10f, 0f));
+            Beam("Kurogake_CommBlade_" + i, parent, new Vector3(x, 7.5f, z), new Vector3(0.45f, 8f, 3.2f), i % 3 == 0 ? lightComposite : navyMetal, false, new Vector3(0f, side * 10f, 0f));
+            Beam("Kurogake_BlueStrip_" + i, parent, new Vector3(x - side * 0.28f, 8f, z), new Vector3(0.08f, 5.4f, 2.3f), blueAccent, false, new Vector3(0f, side * 10f, 0f));
         }
 
         // Controlled identity accent: a sculptural blossom canopy, not gameplay collision.
@@ -184,19 +184,19 @@ public static class KurokageEnvironmentArtPass
     private static void ApplyLightingMood()
     {
         RenderSettings.ambientMode = AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.47f, 0.51f, 0.58f);
+        RenderSettings.ambientLight = new Color(0.33f, 0.36f, 0.41f);
         RenderSettings.fog = true;
-        RenderSettings.fogColor = new Color(0.50f, 0.57f, 0.64f);
+        RenderSettings.fogColor = new Color(0.31f, 0.38f, 0.47f);
         RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogStartDistance = 78f;
-        RenderSettings.fogEndDistance = 210f;
+        RenderSettings.fogStartDistance = 118f;
+        RenderSettings.fogEndDistance = 270f;
 
         foreach (Light light in Object.FindObjectsOfType<Light>(true))
         {
             if (light.type == LightType.Directional)
             {
                 light.color = new Color(0.90f, 0.94f, 1f);
-                light.intensity = 1.08f;
+                light.intensity = 0.98f;
                 light.shadows = LightShadows.Soft;
             }
         }

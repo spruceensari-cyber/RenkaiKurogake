@@ -32,18 +32,18 @@ public static class KurokageBrightCompetitiveVisualPass
     private static void ApplyWorldTone()
     {
         RenderSettings.ambientMode = AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.62f, 0.67f, 0.75f);
+        RenderSettings.ambientLight = new Color(0.36f, 0.40f, 0.46f);
         RenderSettings.fog = true;
-        RenderSettings.fogColor = new Color(0.60f, 0.66f, 0.74f);
+        RenderSettings.fogColor = new Color(0.36f, 0.43f, 0.52f);
         RenderSettings.fogMode = FogMode.Linear;
-        RenderSettings.fogStartDistance = 94f;
-        RenderSettings.fogEndDistance = 245f;
+        RenderSettings.fogStartDistance = 122f;
+        RenderSettings.fogEndDistance = 280f;
 
         foreach (Light light in Object.FindObjectsOfType<Light>(true))
         {
             if (light == null || light.type != LightType.Directional) continue;
             light.color = new Color(0.96f, 0.975f, 1f);
-            light.intensity = 1.32f;
+            light.intensity = 1.04f;
             light.shadows = LightShadows.Soft;
             light.shadowStrength = 0.74f;
         }
@@ -76,7 +76,7 @@ public static class KurokageBrightCompetitiveVisualPass
 
     private static void BuildReadabilityLighting(Transform parent)
     {
-        CreateFillLight(parent, "SHIBUYA_ZERO_FILL", new Vector3(0f, 8f, 4f), new Color(0.78f, 0.88f, 1f), 0.56f, 44f);
+        CreateFillLight(parent, "KUROGATE_DISTRICT_FILL", new Vector3(0f, 8f, 4f), new Color(0.78f, 0.88f, 1f), 0.56f, 44f);
         CreateFillLight(parent, "CELESTIAL_ARCHIVE_FILL", new Vector3(-34f, 8f, 17f), new Color(0.88f, 0.94f, 1f), 0.74f, 38f);
         CreateFillLight(parent, "VOID_REACTOR_FILL", new Vector3(34f, 8f, 17f), new Color(0.66f, 0.76f, 1f), 0.52f, 36f);
         CreateFillLight(parent, "GHOST_LINE_FILL", new Vector3(0f, -0.8f, 26f), new Color(0.72f, 0.84f, 1f), 0.46f, 30f);

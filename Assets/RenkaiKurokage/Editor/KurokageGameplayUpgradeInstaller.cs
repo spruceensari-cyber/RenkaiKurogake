@@ -10,7 +10,6 @@ public static class KurokageGameplayUpgradeInstaller
 {
     private const string MaterialFolder = "Assets/RenkaiKurokage/Art/GeneratedMaterials/";
 
-    [MenuItem("Renkai/Upgrade Current Scene Gameplay Feel")]
     public static void Upgrade()
     {
         if (EditorApplication.isPlaying)

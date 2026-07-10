@@ -144,7 +144,7 @@ namespace Renkai.Kurokage
             modeRt.anchoredPosition = new Vector2(-34f, -32f);
             modeRt.sizeDelta = new Vector2(300f, 28f);
 
-            RectTransform header = new GameObject("HEADER").AddComponent<RectTransform>();
+            RectTransform header = new GameObject("HEADER", typeof(RectTransform)).GetComponent<RectTransform>();
             header.SetParent(panelRoot.transform, false);
             header.anchorMin = header.anchorMax = new Vector2(0.5f, 1f);
             header.anchoredPosition = new Vector2(0f, -98f);
@@ -159,7 +159,7 @@ namespace Renkai.Kurokage
             CreateHeaderLabel(header, "BLADE", 330f, 110f);
             CreateHeaderLabel(header, "CORE", 470f, 90f);
 
-            rowsRoot = new GameObject("ROWS").AddComponent<RectTransform>();
+            rowsRoot = new GameObject("ROWS", typeof(RectTransform)).GetComponent<RectTransform>();
             rowsRoot.SetParent(panelRoot.transform, false);
             rowsRoot.anchorMin = rowsRoot.anchorMax = new Vector2(0.5f, 1f);
             rowsRoot.anchoredPosition = new Vector2(0f, -142f);
@@ -213,9 +213,7 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(parent, false);
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            text.font = font;
+            text.font = KurokageUiFont.Default;
             text.fontSize = size;
             text.alignment = alignment;
             text.color = color;

@@ -24,6 +24,11 @@ namespace Renkai.Kurogake
         private float roundStartTime;
         private RenkaiHUDController hud;
 
+        public bool IsRoundActive => roundActive;
+        public float TimeRemaining => roundActive
+            ? Mathf.Max(0f, roundTime - (Time.time - roundStartTime))
+            : buyTime;
+
         private void Start()
         {
             hud = Object.FindObjectOfType<RenkaiHUDController>();

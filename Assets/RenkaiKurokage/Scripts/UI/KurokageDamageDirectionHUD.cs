@@ -103,9 +103,9 @@ namespace Renkai.Kurokage
             if (gameObject.GetComponent<GraphicRaycaster>() == null)
                 gameObject.AddComponent<GraphicRaycaster>();
 
-            GameObject ring = new GameObject("RESONANCE_DIRECTION_RING");
+            GameObject ring = new GameObject("RESONANCE_DIRECTION_RING", typeof(RectTransform));
             ring.transform.SetParent(transform, false);
-            RectTransform ringRt = ring.AddComponent<RectTransform>();
+            RectTransform ringRt = ring.GetComponent<RectTransform>();
             ringRt.anchorMin = ringRt.anchorMax = new Vector2(0.5f, 0.5f);
             ringRt.anchoredPosition = Vector2.zero;
             ringRt.sizeDelta = new Vector2(ringRadius * 2.6f, ringRadius * 2.6f);

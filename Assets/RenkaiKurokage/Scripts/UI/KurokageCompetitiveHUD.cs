@@ -78,7 +78,7 @@ namespace Renkai.Kurokage
             ammoText = CreateText("Ammo", new Vector2(-70f, 45f), TextAnchor.LowerRight, 28);
             weaponText = CreateText("Weapon", new Vector2(-70f, 78f), TextAnchor.LowerRight, 16);
 
-            crosshairRoot = new GameObject("Crosshair").AddComponent<RectTransform>();
+            crosshairRoot = new GameObject("Crosshair", typeof(RectTransform)).GetComponent<RectTransform>();
             crosshairRoot.SetParent(transform, false);
             crosshairRoot.anchorMin = crosshairRoot.anchorMax = new Vector2(0.5f, 0.5f);
             crosshairRoot.anchoredPosition = Vector2.zero;
@@ -103,7 +103,7 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(transform, false);
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.font = KurokageUiFont.Default;
             text.fontSize = fontSize;
             text.alignment = alignment;
             text.color = Color.white;

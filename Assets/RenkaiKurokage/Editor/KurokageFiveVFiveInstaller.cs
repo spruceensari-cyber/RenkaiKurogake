@@ -6,7 +6,6 @@ using Renkai.Kurogake;
 
 public static class KurokageFiveVFiveInstaller
 {
-    [MenuItem("Renkai/Install Competitive 5v5 Test Match")]
     public static void Install()
     {
         if (EditorApplication.isPlaying)

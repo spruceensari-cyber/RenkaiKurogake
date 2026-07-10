@@ -21,7 +21,6 @@ public static class RenkaiUnifiedCompetitiveBuilder
     private static Material siteAMat;
     private static Material siteBMat;
 
-    [MenuItem("Renkai/Build Unified Competitive Kurokage")]
     public static void Build()
     {
         if (EditorApplication.isPlaying)
@@ -61,7 +60,6 @@ public static class RenkaiUnifiedCompetitiveBuilder
         return true;
     }
 
-    [MenuItem("Renkai/Repair Current Unified Scene Materials")]
     public static void RepairCurrentSceneMaterials()
     {
         if (EditorApplication.isPlaying)

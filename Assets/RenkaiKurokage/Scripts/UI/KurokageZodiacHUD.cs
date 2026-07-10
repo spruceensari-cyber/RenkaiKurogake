@@ -48,7 +48,7 @@ namespace Renkai.Kurokage
 
             stateText = new GameObject("State").AddComponent<Text>();
             stateText.transform.SetParent(panel.transform, false);
-            stateText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            stateText.font = KurokageUiFont.Default;
             stateText.fontSize = 18;
             stateText.alignment = TextAnchor.MiddleCenter;
             stateText.color = new Color(0.92f, 0.97f, 1f, 1f);

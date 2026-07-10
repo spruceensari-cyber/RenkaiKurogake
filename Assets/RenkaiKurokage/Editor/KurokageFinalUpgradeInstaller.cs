@@ -8,9 +8,10 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_11";
+    private const string ProductionBuildId = "KUROKAGE_COMPETITIVE";
+    private const string MainCompetitiveScenePath = "Assets/RenkaiKurokage/Scenes/Renkai_Kurogake_Competitive.unity";
 
-    [MenuItem("Renkai/Build Production Version")]
+    [MenuItem("Renkai/Apply Kurogake Production")]
     public static void RunAll()
     {
         if (EditorApplication.isPlaying)
@@ -20,12 +21,12 @@ public static class KurokageFinalUpgradeInstaller
         }
 
         string validationReport;
-        bool passed = BuildProductionVersion(out validationReport);
+        bool passed = BuildProductionVersionWithValidation(out validationReport);
 
         EditorUtility.DisplayDialog(
             "Renkai: Kurokage",
             "Tek üretim sürümü hazırlandı.\n\n" +
-            "Ana akış: main branch + Renkai_Kurogake_Competitive scene + Build Production Version.\n\n" +
+            "Ana akış: main branch + Renkai_Kurogake_Competitive scene + Apply Kurogake Production.\n\n" +
             "Validation: " + (passed ? "PASSED" : "REVIEW REQUIRED") + "\n\n" +
             validationReport + "\n\n" +
             "Build ID: " + ProductionBuildId,
@@ -33,9 +34,9 @@ public static class KurokageFinalUpgradeInstaller
         );
     }
 
-    public static bool BuildProductionVersion(out string validationReport)
+    public static bool BuildProductionVersionWithValidation(out string validationReport)
     {
-        bool sceneOk = RenkaiUnifiedCompetitiveBuilder.BuildSilent();
+        bool sceneOk = EnsureActiveCompetitiveScene();
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
         bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
         bool architectureOk = KurokageCompetitiveArchitecturePass.ApplySilent();
@@ -54,15 +55,11 @@ public static class KurokageFinalUpgradeInstaller
         EnsureDeathPresentation();
         EnsureMovementPresentation();
         EnsureCompetitivePostFx();
-        EnsureEliteHud();
-        EnsureTacticalRadarHud();
-        EnsureCombatFeedbackHud();
-        EnsureDamageDirectionHud();
-        EnsureMatchPresentationHud();
-        EnsureMatchStatsAndScoreboard();
+        EnsureMatchStats();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
         EnsureProductionMarker();
+        EnsureUnifiedPresentation();
 
         Scene scene = SceneManager.GetActiveScene();
         EditorSceneManager.MarkSceneDirty(scene);
@@ -94,12 +91,21 @@ public static class KurokageFinalUpgradeInstaller
     public static void BuildProductionVersion()
     {
         string ignored;
-        BuildProductionVersion(out ignored);
+        BuildProductionVersionWithValidation(out ignored);
     }
 
     private static void AppendStepFailure(ref string report, bool ok, string label)
     {
         if (!ok) report += "\nERROR " + label + " failed.";
+    }
+
+    private static bool EnsureActiveCompetitiveScene()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.path != MainCompetitiveScenePath)
+            scene = EditorSceneManager.OpenScene(MainCompetitiveScenePath, OpenSceneMode.Single);
+
+        return scene.IsValid() && scene.isLoaded && GameObject.Find("RENKAI_KUROKAGE_UNIFIED") != null;
     }
 
     private static void EnsureVfxPool()
@@ -217,17 +223,13 @@ public static class KurokageFinalUpgradeInstaller
         }
     }
 
-    private static void EnsureMatchStatsAndScoreboard()
+    private static void EnsureMatchStats()
     {
         GameObject statsRoot = GameObject.Find("KUROKAGE_MATCH_STATS");
         if (statsRoot == null) statsRoot = new GameObject("KUROKAGE_MATCH_STATS");
         if (statsRoot.GetComponent<KurokageMatchStatsTracker>() == null)
             statsRoot.AddComponent<KurokageMatchStatsTracker>();
 
-        GameObject scoreboardRoot = GameObject.Find("KUROKAGE_SCOREBOARD_HUD");
-        if (scoreboardRoot == null) scoreboardRoot = new GameObject("KUROKAGE_SCOREBOARD_HUD");
-        if (scoreboardRoot.GetComponent<KurokageScoreboardHUD>() == null)
-            scoreboardRoot.AddComponent<KurokageScoreboardHUD>();
     }
 
     private static void EnsureZodiacObjective()
@@ -248,12 +250,6 @@ public static class KurokageFinalUpgradeInstaller
             objectiveRoot.AddComponent<KurokageZodiacObjectiveController>();
         }
 
-        GameObject hudRoot = GameObject.Find("KUROKAGE_ZODIAC_HUD");
-        if (hudRoot == null)
-        {
-            hudRoot = new GameObject("KUROKAGE_ZODIAC_HUD");
-            hudRoot.AddComponent<KurokageZodiacHUD>();
-        }
     }
 
     private static void EnsureKairiAbilityKit()
@@ -280,12 +276,6 @@ public static class KurokageFinalUpgradeInstaller
                 human.gameObject.AddComponent<KurokageEclipseProtocolPresenter>();
         }
 
-        GameObject abilityHud = GameObject.Find("KUROKAGE_ABILITY_HUD");
-        if (abilityHud == null)
-        {
-            abilityHud = new GameObject("KUROKAGE_ABILITY_HUD");
-            abilityHud.AddComponent<KurokageAbilityHUD>();
-        }
     }
 
     private static void EnsureProductionMarker()
@@ -296,5 +286,35 @@ public static class KurokageFinalUpgradeInstaller
         KurokageProductionBuildMarker buildMarker = marker.GetComponent<KurokageProductionBuildMarker>();
         if (buildMarker == null) buildMarker = marker.AddComponent<KurokageProductionBuildMarker>();
         buildMarker.SetBuildId(ProductionBuildId);
+    }
+
+    private static void EnsureUnifiedPresentation()
+    {
+        GameObject marker = GameObject.Find(ProductionMarkerName);
+        if (marker == null) marker = new GameObject(ProductionMarkerName);
+        if (marker.GetComponent<KurokageUnifiedPresentationHUD>() == null)
+            marker.AddComponent<KurokageUnifiedPresentationHUD>();
+
+        RemoveLegacyHud<KurokageCompetitiveHUD>();
+        RemoveLegacyHud<KurokageEliteHUD>();
+        RemoveLegacyHud<KurokageTacticalRadarHUD>();
+        RemoveLegacyHud<KurokageCombatFeedbackHUD>();
+        RemoveLegacyHud<KurokageDamageDirectionHUD>();
+        RemoveLegacyHud<KurokageMatchPresentationHUD>();
+        RemoveLegacyHud<KurokageScoreboardHUD>();
+        RemoveLegacyHud<KurokageZodiacHUD>();
+        RemoveLegacyHud<KurokageAbilityHUD>();
+        RemoveLegacyHud<RenkaiHUD>();
+        RemoveLegacyHud<RenkaiHUDController>();
+        RemoveLegacyHud<RenkaiHitFeedback>();
+    }
+
+    private static void RemoveLegacyHud<T>() where T : Behaviour
+    {
+        foreach (T legacy in Object.FindObjectsOfType<T>(true))
+        {
+            if (legacy != null)
+                Object.DestroyImmediate(legacy.gameObject);
+        }
     }
 }

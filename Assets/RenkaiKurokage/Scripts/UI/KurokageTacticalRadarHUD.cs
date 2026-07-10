@@ -192,11 +192,11 @@ namespace Renkai.Kurokage
 
             BuildGrid(radarRoot);
 
-            RectTransform objectiveRoot = new GameObject("OBJECTIVE_ICONS").AddComponent<RectTransform>();
+            RectTransform objectiveRoot = new GameObject("OBJECTIVE_ICONS", typeof(RectTransform)).GetComponent<RectTransform>();
             objectiveRoot.SetParent(radarRoot, false);
             Stretch(objectiveRoot);
 
-            RectTransform playersRoot = new GameObject("PLAYER_ICONS").AddComponent<RectTransform>();
+            RectTransform playersRoot = new GameObject("PLAYER_ICONS", typeof(RectTransform)).GetComponent<RectTransform>();
             playersRoot.SetParent(radarRoot, false);
             Stretch(playersRoot);
 
@@ -261,9 +261,7 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(parent, false);
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            text.font = font;
+            text.font = KurokageUiFont.Default;
             text.fontSize = size;
             text.color = color;
             text.raycastTarget = false;

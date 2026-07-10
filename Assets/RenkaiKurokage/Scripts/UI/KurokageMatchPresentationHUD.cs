@@ -110,7 +110,7 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(parent, false);
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.font = KurokageUiFont.Default;
             text.fontSize = size;
             text.alignment = alignment;
             text.color = color;

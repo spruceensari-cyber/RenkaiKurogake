@@ -181,7 +181,7 @@ namespace Renkai.Kurokage
 
             gameObject.AddComponent<GraphicRaycaster>();
 
-            GameObject hitRoot = new GameObject("HIT_FEEDBACK", typeof(CanvasGroup));
+            GameObject hitRoot = new GameObject("HIT_FEEDBACK", typeof(RectTransform), typeof(CanvasGroup));
             hitRoot.transform.SetParent(transform, false);
             RectTransform hrt = hitRoot.GetComponent<RectTransform>();
             hrt.anchorMin = hrt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -253,9 +253,7 @@ namespace Renkai.Kurokage
         {
             Text text = new GameObject(name).AddComponent<Text>();
             text.transform.SetParent(parent, false);
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            text.font = font;
+            text.font = KurokageUiFont.Default;
             text.fontSize = size;
             text.alignment = alignment;
             text.color = color;

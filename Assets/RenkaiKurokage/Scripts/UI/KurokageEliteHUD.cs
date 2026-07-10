@@ -178,7 +178,7 @@ namespace Renkai.Kurokage
             reserveText = Label("Reserve", right.transform, new Vector2(65f, -12f), new Vector2(90f, 30f), 22, TextAnchor.MiddleLeft, new Color(0.72f, 0.78f, 0.88f, 1f));
             reloadText = Label("Reload", right.transform, new Vector2(100f, 28f), new Vector2(180f, 22f), 16, TextAnchor.MiddleLeft, new Color(0.56f, 0.78f, 1f, 1f));
 
-            crosshairRoot = new GameObject("Crosshair").AddComponent<RectTransform>();
+            crosshairRoot = new GameObject("Crosshair", typeof(RectTransform)).GetComponent<RectTransform>();
             crosshairRoot.SetParent(transform, false);
             crosshairRoot.anchorMin = crosshairRoot.anchorMax = new Vector2(0.5f, 0.5f);
             crosshairRoot.sizeDelta = Vector2.one * 10f;
@@ -221,9 +221,7 @@ namespace Renkai.Kurokage
         {
             Text t = new GameObject(name).AddComponent<Text>();
             t.transform.SetParent(parent, false);
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            t.font = font;
+            t.font = KurokageUiFont.Default;
             t.fontSize = fontSize;
             t.alignment = alignment;
             t.color = color;

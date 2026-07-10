@@ -88,7 +88,7 @@ namespace Renkai.Kurokage
             if (gameObject.GetComponent<GraphicRaycaster>() == null)
                 gameObject.AddComponent<GraphicRaycaster>();
 
-            RectTransform root = new GameObject("KAIRI_PROTOCOL_BAR").AddComponent<RectTransform>();
+            RectTransform root = new GameObject("KAIRI_PROTOCOL_BAR", typeof(RectTransform)).GetComponent<RectTransform>();
             root.SetParent(transform, false);
             root.anchorMin = root.anchorMax = new Vector2(0.5f, 0f);
             root.anchoredPosition = new Vector2(0f, 58f);
@@ -127,9 +127,7 @@ namespace Renkai.Kurokage
 
             Text text = new GameObject("Label").AddComponent<Text>();
             text.transform.SetParent(panelGo.transform, false);
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            text.font = font;
+            text.font = KurokageUiFont.Default;
             text.alignment = TextAnchor.MiddleCenter;
             text.fontSize = 14;
             text.color = readyText;

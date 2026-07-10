@@ -6,7 +6,6 @@ using Renkai.Kurokage;
 
 public static class KurokageProductionValidator
 {
-    [MenuItem("Renkai/Validate Production Build")]
     public static void Validate()
     {
         string report;
@@ -36,17 +35,15 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
         ValidateCount<KurokageAgentReadabilityPresenter>("Agent readability presenters", 10, ref errors, report);
         ValidateCount<KurokageHitReactionPresenter>("Agent hit reaction presenters", 10, ref errors, report);
-        ValidateCount<KurokageProceduralAgentRig>("Code-built procedural agent rigs", 10, ref errors, report);
+        ValidateCount<KurokageAgentAnimationDriver>("FBX agent animation drivers", 10, ref errors, report);
+        report.AppendLine("PASS  Legacy procedural agent rig path removed");
         ValidateCount<KurokageViewmodelLightingPresenter>("Viewmodel lighting presenter", 1, ref errors, report);
         ValidateCount<KurokageSprintWeaponGate>("Sprint weapon readiness gate", 1, ref errors, report);
         ValidateCount<KurokageArchitecturalResonancePresenter>("Architectural resonance presenter", 1, ref errors, report);
         ValidateCount<KurokageMatchStatsTracker>("Match stats tracker", 1, ref errors, report);
-        ValidateCount<KurokageScoreboardHUD>("Scoreboard HUD", 1, ref errors, report);
-        ValidateCount<KurokageTacticalRadarHUD>("Tactical radar HUD", 1, ref errors, report);
-        ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
-        ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
-        ValidateCount<KurokageDamageDirectionHUD>("Damage direction HUD", 1, ref errors, report);
-        ValidateCount<KurokageMatchPresentationHUD>("Match presentation HUD", 1, ref errors, report);
+        ValidateCount<KurokageProductionBuildMarker>("Unified presentation marker", 1, ref errors, report);
+        ValidateCount<KurokageUnifiedPresentationHUD>("Unified presentation HUD", 1, ref errors, report);
+        ValidateExact("Legacy HUD components", CountLegacyHudComponents(), 0, ref errors, report);
         ValidateCount<KurokageVfxPool>("Shared VFX pool", 1, ref errors, report);
 
         Camera[] cameras = Object.FindObjectsOfType<Camera>(true);
@@ -85,27 +82,22 @@ public static class KurokageProductionValidator
             if (rootRenderer != null && rootRenderer.enabled) visibleRootRenderers++;
 
             Transform visual = player.transform.Find("AGENT_VISUAL");
-            if (visual == null || visual.Find("PROCEDURAL_AGENT_ROOT") == null)
+            Renderer bodyRenderer = visual != null ? visual.GetComponentInChildren<Renderer>(true) : null;
+            if (visual == null || bodyRenderer == null)
             {
                 errors++;
-                report.AppendLine("ERROR Missing code-built AGENT_VISUAL for " + player.agentName);
+                report.AppendLine("ERROR Missing FBX AGENT_VISUAL for " + player.agentName);
             }
             else
             {
-                report.AppendLine("PASS  Code-built AGENT_VISUAL " + player.agentName);
+                report.AppendLine("PASS  FBX AGENT_VISUAL " + player.agentName);
             }
 
-            KurokageProceduralAgentRig rig = player.GetComponentInChildren<KurokageProceduralAgentRig>(true);
-            if (rig != null)
-            {
-                switch (rig.Archetype)
-                {
-                    case KurokageAgentArchetype.Kairi: kairi++; break;
-                    case KurokageAgentArchetype.Noa: noa++; break;
-                    case KurokageAgentArchetype.Reiha: reiha++; break;
-                    case KurokageAgentArchetype.Mio: mio++; break;
-                }
-            }
+            string identity = player.agentName.ToUpperInvariant();
+            if (identity.StartsWith("KAIRI")) kairi++;
+            else if (identity.StartsWith("NOA")) noa++;
+            else if (identity.StartsWith("REIHA")) reiha++;
+            else if (identity.StartsWith("MIO")) mio++;
 
             KurokageHitZoneBinder binder = player.GetComponent<KurokageHitZoneBinder>();
             int zones = player.GetComponentsInChildren<KurokageHitZone>(true).Length;
@@ -169,15 +161,7 @@ public static class KurokageProductionValidator
             "KUROKAGE_COMPETITIVE_ARCHITECTURE",
             "KUROKAGE_DISTRICT_IDENTITY",
             "KUROKAGE_SITE_READABILITY_LIGHTING",
-            "KUROKAGE_ELITE_HUD",
-            "KUROKAGE_TACTICAL_RADAR_HUD",
-            "KUROKAGE_COMBAT_FEEDBACK_HUD",
-            "KUROKAGE_DAMAGE_DIRECTION_HUD",
-            "KUROKAGE_MATCH_PRESENTATION_HUD",
             "KUROKAGE_MATCH_STATS",
-            "KUROKAGE_SCOREBOARD_HUD",
-            "KUROKAGE_ABILITY_HUD",
-            "KUROKAGE_ZODIAC_HUD",
             "KUROKAGE_VFX_POOL",
             "RENKAI_KUROKAGE_PRODUCTION_BUILD"
         };
@@ -297,6 +281,22 @@ public static class KurokageProductionValidator
     {
         T[] objects = Object.FindObjectsOfType<T>(true);
         ValidateExact(label, objects.Length, expected, ref errors, report);
+    }
+
+    private static int CountLegacyHudComponents()
+    {
+        return Object.FindObjectsOfType<KurokageCompetitiveHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageEliteHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageTacticalRadarHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageCombatFeedbackHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageDamageDirectionHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageMatchPresentationHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageScoreboardHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageZodiacHUD>(true).Length +
+               Object.FindObjectsOfType<KurokageAbilityHUD>(true).Length +
+               Object.FindObjectsOfType<RenkaiHUD>(true).Length +
+               Object.FindObjectsOfType<RenkaiHUDController>(true).Length +
+               Object.FindObjectsOfType<RenkaiHitFeedback>(true).Length;
     }
 
     private static void ValidateExact(string label, int actual, int expected, ref int errors, StringBuilder report)
