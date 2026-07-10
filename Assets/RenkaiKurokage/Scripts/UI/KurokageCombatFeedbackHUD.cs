@@ -13,12 +13,15 @@ namespace Renkai.Kurokage
         private Image hitMarker;
         private Text headshotText;
         private Text armorBreakText;
+        private Text killConfirmText;
         private GameObject reloadRoot;
         private Image reloadFill;
         private Text reloadLabel;
         private Coroutine hitRoutine;
         private Coroutine armorRoutine;
+        private Coroutine killRoutine;
         private RenkaiRoundPlayer localPlayer;
+        private float lastHeadshotTime = -999f;
 
         private void Awake()
         {
@@ -36,12 +39,14 @@ namespace Renkai.Kurokage
                 weapon.HitConfirmed += OnHitConfirmed;
             }
             KurokageGameEvents.ArmorBroken += OnArmorBroken;
+            KurokageGameEvents.KillFeed += OnKillFeed;
         }
 
         private void OnDisable()
         {
             if (weapon != null) weapon.HitConfirmed -= OnHitConfirmed;
             KurokageGameEvents.ArmorBroken -= OnArmorBroken;
+            KurokageGameEvents.KillFeed -= OnKillFeed;
         }
 
         private void Update()
@@ -68,6 +73,7 @@ namespace Renkai.Kurokage
 
         private void OnHitConfirmed(bool headshot)
         {
+            if (headshot) lastHeadshotTime = Time.time;
             if (hitRoutine != null) StopCoroutine(hitRoutine);
             hitRoutine = StartCoroutine(HitRoutine(headshot));
         }
@@ -80,6 +86,17 @@ namespace Renkai.Kurokage
 
             if (armorRoutine != null) StopCoroutine(armorRoutine);
             armorRoutine = StartCoroutine(ArmorBreakRoutine(localArmorBroken ? "ARMOR BROKEN" : "ENEMY ARMOR BROKEN"));
+        }
+
+        private void OnKillFeed(string killer, string victim)
+        {
+            if (localPlayer == null || string.IsNullOrEmpty(killer) || killer != localPlayer.agentName) return;
+
+            bool recentHeadshot = Time.time - lastHeadshotTime <= 0.42f;
+            string message = recentHeadshot ? "NEURAL COLLAPSE" : "TARGET SEVERED";
+
+            if (killRoutine != null) StopCoroutine(killRoutine);
+            killRoutine = StartCoroutine(KillConfirmRoutine(message, recentHeadshot));
         }
 
         private IEnumerator HitRoutine(bool headshot)
@@ -126,6 +143,32 @@ namespace Renkai.Kurokage
             armorBreakText.gameObject.SetActive(false);
         }
 
+        private IEnumerator KillConfirmRoutine(string message, bool headshot)
+        {
+            killConfirmText.text = message;
+            killConfirmText.color = headshot
+                ? new Color(1f, 0.30f, 0.52f, 1f)
+                : new Color(0.46f, 0.86f, 1f, 1f);
+            killConfirmText.gameObject.SetActive(true);
+
+            float elapsed = 0f;
+            const float duration = 0.92f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float scale = Mathf.Lerp(1.12f, 1f, Mathf.Clamp01(t * 4f));
+                killConfirmText.rectTransform.localScale = Vector3.one * scale;
+                Color c = killConfirmText.color;
+                c.a = 1f - Mathf.Clamp01((t - 0.55f) / 0.45f);
+                killConfirmText.color = c;
+                yield return null;
+            }
+
+            killConfirmText.rectTransform.localScale = Vector3.one;
+            killConfirmText.gameObject.SetActive(false);
+        }
+
         private void Build()
         {
             Canvas canvas = gameObject.AddComponent<Canvas>();
@@ -162,10 +205,17 @@ namespace Renkai.Kurokage
             hst.sizeDelta = new Vector2(180f, 24f);
             headshotText.gameObject.SetActive(false);
 
+            killConfirmText = CreateText("KILL_CONFIRM", transform, 20, TextAnchor.MiddleCenter, new Color(0.46f, 0.86f, 1f, 1f));
+            RectTransform kct = killConfirmText.rectTransform;
+            kct.anchorMin = kct.anchorMax = new Vector2(0.5f, 0.5f);
+            kct.anchoredPosition = new Vector2(0f, -62f);
+            kct.sizeDelta = new Vector2(360f, 32f);
+            killConfirmText.gameObject.SetActive(false);
+
             armorBreakText = CreateText("ARMOR_BREAK_FEEDBACK", transform, 16, TextAnchor.MiddleCenter, new Color(0.70f, 0.95f, 1f, 1f));
             RectTransform abt = armorBreakText.rectTransform;
             abt.anchorMin = abt.anchorMax = new Vector2(0.5f, 0.5f);
-            abt.anchoredPosition = new Vector2(0f, -86f);
+            abt.anchoredPosition = new Vector2(0f, -96f);
             abt.sizeDelta = new Vector2(280f, 28f);
             armorBreakText.gameObject.SetActive(false);
 
@@ -209,6 +259,7 @@ namespace Renkai.Kurokage
             text.fontSize = size;
             text.alignment = alignment;
             text.color = color;
+            text.raycastTarget = false;
             return text;
         }
     }
