@@ -62,23 +62,19 @@ namespace Renkai.Kurogake
             health = maxHealth;
             gameObject.SetActive(true);
 
-            if (armor != null)
-                armor.ResetArmor();
+            if (armor != null) armor.ResetArmor();
 
-            if (characterController != null)
-                characterController.enabled = false;
-
+            if (characterController != null) characterController.enabled = false;
             transform.SetPositionAndRotation(spawnPosition, spawnRotation);
+            if (characterController != null) characterController.enabled = true;
 
-            if (characterController != null)
-                characterController.enabled = true;
-
-            if (deathPresentation != null)
-                deathPresentation.ResetPresentation();
+            if (deathPresentation != null) deathPresentation.ResetPresentation();
 
             KurokageHitReactionPresenter hitReaction = GetComponent<KurokageHitReactionPresenter>();
-            if (hitReaction != null)
-                hitReaction.ResetPresentation();
+            if (hitReaction != null) hitReaction.ResetPresentation();
+
+            KurokageProceduralAgentRig proceduralRig = GetComponentInChildren<KurokageProceduralAgentRig>(true);
+            if (proceduralRig != null) proceduralRig.ResetRigPose();
 
             Transform agentVisual = transform.Find("AGENT_VISUAL");
             if (agentVisual != null)
@@ -90,12 +86,10 @@ namespace Renkai.Kurogake
             foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
             {
                 Collider hitCollider = zone.GetComponent<Collider>();
-                if (hitCollider != null)
-                    hitCollider.enabled = true;
+                if (hitCollider != null) hitCollider.enabled = true;
             }
 
-            if (fpsController != null)
-                fpsController.enabled = isHumanPlayer;
+            if (fpsController != null) fpsController.enabled = isHumanPlayer;
 
             if (weaponController != null)
             {
@@ -104,32 +98,25 @@ namespace Renkai.Kurogake
             }
 
             KurokageSprintWeaponGate sprintGate = GetComponent<KurokageSprintWeaponGate>();
-            if (sprintGate != null)
-                sprintGate.ResetGate();
+            if (sprintGate != null) sprintGate.ResetGate();
 
             KurokageViewmodelLightingPresenter viewmodelLighting = GetComponent<KurokageViewmodelLightingPresenter>();
-            if (viewmodelLighting != null)
-                viewmodelLighting.ResetPresentation();
+            if (viewmodelLighting != null) viewmodelLighting.ResetPresentation();
 
             KairiAbilityController kairi = GetComponent<KairiAbilityController>();
-            if (kairi != null)
-                kairi.ResetAbilityState(true);
+            if (kairi != null) kairi.ResetAbilityState(true);
 
             KurokageEclipseProtocolPresenter eclipse = GetComponent<KurokageEclipseProtocolPresenter>();
-            if (eclipse != null)
-                eclipse.ResetPresentation();
+            if (eclipse != null) eclipse.ResetPresentation();
 
             RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
-            if (tacticalBot != null)
-                tacticalBot.enabled = !isHumanPlayer;
+            if (tacticalBot != null) tacticalBot.enabled = !isHumanPlayer;
 
             RenkaiBotAI legacyBot = GetComponent<RenkaiBotAI>();
-            if (legacyBot != null)
-                legacyBot.enabled = tacticalBot == null && !isHumanPlayer;
+            if (legacyBot != null) legacyBot.enabled = tacticalBot == null && !isHumanPlayer;
 
             RenkaiWorldHealthBar healthBar = GetComponentInChildren<RenkaiWorldHealthBar>(true);
-            if (healthBar != null)
-                healthBar.RefreshNow();
+            if (healthBar != null) healthBar.RefreshNow();
         }
 
         public void TakeDamage(float amount, RenkaiRoundPlayer attacker = null)
@@ -151,26 +138,18 @@ namespace Renkai.Kurogake
 
         public float ApplyDamage(KurokageDamageInfo info)
         {
-            if (!isAlive || info.Amount <= 0f)
-                return 0f;
-
-            if (armor == null)
-                armor = GetComponent<KurokageArmor>();
+            if (!isAlive || info.Amount <= 0f) return 0f;
+            if (armor == null) armor = GetComponent<KurokageArmor>();
 
             float armorBefore = armor != null ? armor.CurrentArmor : 0f;
             float healthDamage = armor != null ? armor.AbsorbDamage(info.Amount) : info.Amount;
             float armorAfter = armor != null ? armor.CurrentArmor : 0f;
 
             health = Mathf.Max(0f, health - healthDamage);
-
-            Debug.Log(
-                agentName + " took " + info.Amount + " " + info.DamageType +
-                " damage from " + info.SourceId + ". Health damage: " +
-                healthDamage + ". HP: " + health
-            );
+            Debug.Log(agentName + " took " + info.Amount + " " + info.DamageType +
+                      " damage from " + info.SourceId + ". Health damage: " + healthDamage + ". HP: " + health);
 
             KurokageGameEvents.RaiseDamageApplied(this, info, healthDamage);
-
             if (armorBefore > 0f && armorAfter <= 0f)
                 KurokageGameEvents.RaiseArmorBroken(this, info);
 
@@ -178,16 +157,13 @@ namespace Renkai.Kurogake
             if (hud != null && isHumanPlayer)
                 hud.SetPlayerHP(Mathf.CeilToInt(health), Mathf.CeilToInt(maxHealth));
 
-            if (health <= 0f)
-                Die(info.Attacker);
-
+            if (health <= 0f) Die(info.Attacker);
             return healthDamage;
         }
 
         public void Die(RenkaiRoundPlayer killer = null)
         {
-            if (!isAlive)
-                return;
+            if (!isAlive) return;
 
             isAlive = false;
             health = 0f;
@@ -204,33 +180,21 @@ namespace Renkai.Kurogake
             if (hud != null)
             {
                 hud.AddKillFeed(killerName + " eliminated " + agentName);
-                if (isHumanPlayer)
-                    hud.SetStatus("YOU ARE DOWN - WAIT FOR ROUND END");
+                if (isHumanPlayer) hud.SetStatus("YOU ARE DOWN - WAIT FOR ROUND END");
             }
 
-            if (deathPresentation == null)
-                deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+            if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+            Vector3 hitDirection = killer != null ? transform.position - killer.transform.position : -transform.forward;
+            if (deathPresentation != null) deathPresentation.PlayDeath(hitDirection);
 
-            Vector3 hitDirection = killer != null
-                ? transform.position - killer.transform.position
-                : -transform.forward;
-
-            if (deathPresentation != null)
-                deathPresentation.PlayDeath(hitDirection);
-
-            if (fpsController != null)
-                fpsController.enabled = false;
-
-            if (weaponController != null)
-                weaponController.enabled = false;
+            if (fpsController != null) fpsController.enabled = false;
+            if (weaponController != null) weaponController.enabled = false;
 
             RenkaiBotAI legacyBot = GetComponent<RenkaiBotAI>();
-            if (legacyBot != null)
-                legacyBot.enabled = false;
+            if (legacyBot != null) legacyBot.enabled = false;
 
             RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
-            if (tacticalBot != null)
-                tacticalBot.enabled = false;
+            if (tacticalBot != null) tacticalBot.enabled = false;
 
             if (!isHumanPlayer)
             {
@@ -244,14 +208,12 @@ namespace Renkai.Kurogake
                     }
                 }
 
-                if (characterController != null)
-                    characterController.enabled = false;
+                if (characterController != null) characterController.enabled = false;
 
                 foreach (KurokageHitZone zone in GetComponentsInChildren<KurokageHitZone>(true))
                 {
                     Collider hitCollider = zone.GetComponent<Collider>();
-                    if (hitCollider != null)
-                        hitCollider.enabled = false;
+                    if (hitCollider != null) hitCollider.enabled = false;
                 }
             }
 
@@ -259,28 +221,21 @@ namespace Renkai.Kurogake
             AnyPlayerEliminated?.Invoke(this, killer);
 
             RenkaiRoundManager manager = UnityEngine.Object.FindObjectOfType<RenkaiRoundManager>();
-            if (manager != null)
-                manager.CheckWinConditions();
+            if (manager != null) manager.CheckWinConditions();
         }
 
         public float Health01()
         {
-            if (maxHealth <= 0f) return 0f;
-            return Mathf.Clamp01(health / maxHealth);
+            return maxHealth <= 0f ? 0f : Mathf.Clamp01(health / maxHealth);
         }
 
         private void CacheComponents()
         {
-            if (characterController == null)
-                characterController = GetComponent<CharacterController>();
-            if (fpsController == null)
-                fpsController = GetComponent<RenkaiFPSController>();
-            if (weaponController == null)
-                weaponController = GetComponent<RenkaiWeaponController>();
-            if (armor == null)
-                armor = GetComponent<KurokageArmor>();
-            if (deathPresentation == null)
-                deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+            characterController = GetComponent<CharacterController>();
+            fpsController = GetComponent<RenkaiFPSController>();
+            weaponController = GetComponent<RenkaiWeaponController>();
+            armor = GetComponent<KurokageArmor>();
+            deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
         }
     }
 }
