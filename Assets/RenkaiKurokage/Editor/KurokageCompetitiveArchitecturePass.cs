@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Renkai.Kurokage;
 
 public static class KurokageCompetitiveArchitecturePass
 {
@@ -34,6 +35,7 @@ public static class KurokageCompetitiveArchitecturePass
         BuildTacticalTrims(trims);
         BuildOverheadDepth(overhead);
         BuildWayfinding(signage);
+        root.AddComponent<KurokageArchitecturalResonancePresenter>();
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         return true;
@@ -73,17 +75,14 @@ public static class KurokageCompetitiveArchitecturePass
 
     private static void BuildLaneCladding(Transform parent)
     {
-        // A lane: brighter sacred-tech cladding, preserving gameplay collision beneath.
         Panel("A_CLADDING_01", parent, new Vector3(-43.55f, 3.6f, -28f), new Vector3(0.12f, 4.8f, 11f), lightComposite);
         Panel("A_CLADDING_02", parent, new Vector3(-24.45f, 3.2f, -31f), new Vector3(0.12f, 3.8f, 8.5f), darkCeramic);
         Panel("A_CLADDING_BLUE", parent, new Vector3(-43.42f, 3.7f, -28f), new Vector3(0.055f, 2.9f, 6.5f), blueAccent);
 
-        // B lane: dark industrial mass with restrained violet resonance.
         Panel("B_CLADDING_01", parent, new Vector3(24.45f, 3.2f, -31f), new Vector3(0.12f, 3.8f, 8.5f), navyMetal);
         Panel("B_CLADDING_02", parent, new Vector3(43.55f, 3.6f, -28f), new Vector3(0.12f, 4.8f, 11f), lightComposite);
         Panel("B_CLADDING_VIOLET", parent, new Vector3(24.58f, 3.4f, -31f), new Vector3(0.055f, 2.4f, 5.2f), violetAccent);
 
-        // Mid: bright framing to keep duel backgrounds readable.
         Panel("MID_LIGHT_FRAME_L", parent, new Vector3(-10.55f, 3.45f, -18f), new Vector3(0.10f, 4.4f, 8.0f), lightComposite);
         Panel("MID_LIGHT_FRAME_R", parent, new Vector3(10.55f, 3.45f, -18f), new Vector3(0.10f, 4.4f, 8.0f), lightComposite);
         Panel("MID_DARK_SPINE_L", parent, new Vector3(-10.40f, 4.0f, -18f), new Vector3(0.055f, 2.2f, 5.4f), navyMetal);
