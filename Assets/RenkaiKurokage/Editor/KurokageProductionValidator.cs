@@ -41,9 +41,11 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAgentReadabilityPresenter>("Agent readability presenters", 10, ref errors, report);
         ValidateCount<KurokageHitReactionPresenter>("Agent hit reaction presenters", 10, ref errors, report);
         ValidateCount<KurokageViewmodelLightingPresenter>("Viewmodel lighting presenter", 1, ref errors, report);
+        ValidateCount<KurokageSprintWeaponGate>("Sprint weapon readiness gate", 1, ref errors, report);
         ValidateCount<KurokageArchitecturalResonancePresenter>("Architectural resonance presenter", 1, ref errors, report);
         ValidateCount<KurokageMatchStatsTracker>("Match stats tracker", 1, ref errors, report);
         ValidateCount<KurokageScoreboardHUD>("Scoreboard HUD", 1, ref errors, report);
+        ValidateCount<KurokageTacticalRadarHUD>("Tactical radar HUD", 1, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
         ValidateCount<KurokageDamageDirectionHUD>("Damage direction HUD", 1, ref errors, report);
@@ -151,6 +153,7 @@ public static class KurokageProductionValidator
             "KUROKAGE_BRIGHT_VISUAL_PASS",
             "KUROKAGE_COMPETITIVE_ARCHITECTURE",
             "KUROKAGE_ELITE_HUD",
+            "KUROKAGE_TACTICAL_RADAR_HUD",
             "KUROKAGE_COMBAT_FEEDBACK_HUD",
             "KUROKAGE_DAMAGE_DIRECTION_HUD",
             "KUROKAGE_MATCH_PRESENTATION_HUD",
