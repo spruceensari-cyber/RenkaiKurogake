@@ -17,19 +17,21 @@ public static class KurokageGameplayUpgradeInstaller
             return;
         }
 
+        bool ok = UpgradeSilent();
+        EditorUtility.DisplayDialog(
+            "Renkai",
+            ok ? "Gun feel upgrade bağlandı. Ctrl+S ile kaydet ve Play'e bas." : "Gameplay upgrade başarısız. Player weapon/camera referanslarını kontrol et.",
+            ok ? "OK" : "REVIEW"
+        );
+    }
+
+    public static bool UpgradeSilent()
+    {
         RenkaiWeaponController weapon = Object.FindObjectOfType<RenkaiWeaponController>();
-        if (weapon == null)
-        {
-            EditorUtility.DisplayDialog("Renkai", "Aktif sahnede RenkaiWeaponController bulunamadı.", "OK");
-            return;
-        }
+        if (weapon == null) return false;
 
         Camera cam = weapon.playerCamera != null ? weapon.playerCamera : weapon.GetComponentInChildren<Camera>();
-        if (cam == null)
-        {
-            EditorUtility.DisplayDialog("Renkai", "Player Camera bulunamadı.", "OK");
-            return;
-        }
+        if (cam == null) return false;
 
         Transform viewRoot = cam.transform.Find("KUROKAGE_VIEWMODEL");
         if (viewRoot == null)
@@ -64,12 +66,7 @@ public static class KurokageGameplayUpgradeInstaller
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         Selection.activeGameObject = viewRoot.gameObject;
-
-        EditorUtility.DisplayDialog(
-            "Renkai",
-            "Gun feel upgrade bağlandı:\n- richer viewmodels\n- weapon sway\n- procedural reload\n- visible magazine movement\n- ADS presentation\n- dynamic crosshair\n- health/ammo HUD\n\nCtrl+S ile kaydet ve Play'e bas.",
-            "OK"
-        );
+        return true;
     }
 
     private static GameObject BuildRifleView(Transform root)
