@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Renkai.Kurokage;
 
@@ -9,7 +10,7 @@ namespace Renkai.Kurogake
         Defenders
     }
 
-    public class RenkaiRoundPlayer : MonoBehaviour
+    public sealed class RenkaiRoundPlayer : MonoBehaviour
     {
         public string agentName = "Agent";
         public RenkaiTeam team = RenkaiTeam.Attackers;
@@ -25,6 +26,7 @@ namespace Renkai.Kurogake
 
         private Vector3 spawnPosition;
         private Quaternion spawnRotation;
+<<<<<<< Updated upstream
         private KurokageArmor armor;
         private KurokageAgentDeathPresentation deathPresentation;
 
@@ -32,6 +34,29 @@ namespace Renkai.Kurogake
         {
             armor = GetComponent<KurokageArmor>();
             deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+=======
+        private CharacterController characterController;
+        private RenkaiFPSController fpsController;
+        private RenkaiWeaponController weaponController;
+
+        public event Action<RenkaiRoundPlayer, RenkaiRoundPlayer> Eliminated;
+        public static event Action<RenkaiRoundPlayer, RenkaiRoundPlayer> AnyPlayerEliminated;
+
+        public float Health01 => maxHealth <= 0f ? 0f : Mathf.Clamp01(health / maxHealth);
+
+        private void Awake()
+        {
+            CacheComponents();
+            RememberSpawn();
+        }
+
+        public void Configure(string identity, RenkaiTeam assignedTeam, bool human)
+        {
+            agentName = identity;
+            team = assignedTeam;
+            isHumanPlayer = human;
+            CacheComponents();
+>>>>>>> Stashed changes
             RememberSpawn();
         }
 
@@ -43,21 +68,28 @@ namespace Renkai.Kurogake
 
         public void ResetForRound()
         {
+            CacheComponents();
             isAlive = true;
             health = maxHealth;
             gameObject.SetActive(true);
 
+<<<<<<< Updated upstream
             if (armor == null) armor = GetComponent<KurokageArmor>();
             if (armor != null) armor.ResetArmor();
 
             CharacterController controller = GetComponent<CharacterController>();
             if (controller != null) controller.enabled = false;
+=======
+            if (characterController != null)
+                characterController.enabled = false;
+>>>>>>> Stashed changes
 
-            transform.position = spawnPosition;
-            transform.rotation = spawnRotation;
+            transform.SetPositionAndRotation(spawnPosition, spawnRotation);
 
-            if (controller != null) controller.enabled = true;
+            if (characterController != null)
+                characterController.enabled = true;
 
+<<<<<<< Updated upstream
             if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
             if (deathPresentation != null) deathPresentation.ResetPresentation();
 
@@ -108,10 +140,22 @@ namespace Renkai.Kurogake
 
             RenkaiWorldHealthBar bar = GetComponentInChildren<RenkaiWorldHealthBar>(true);
             if (bar != null) bar.RefreshNow();
+=======
+            SetGameplayEnabled(true);
+            SetCombatVisualsVisible(true);
+
+            if (weaponController != null)
+                weaponController.ResetAmmo();
+
+            RenkaiWorldHealthBar healthBar = GetComponentInChildren<RenkaiWorldHealthBar>(true);
+            if (healthBar != null)
+                healthBar.RefreshNow();
+>>>>>>> Stashed changes
         }
 
         public void TakeDamage(float amount, RenkaiRoundPlayer attacker = null)
         {
+<<<<<<< Updated upstream
             KurokageDamageInfo info = new KurokageDamageInfo(
                 amount,
                 attacker,
@@ -144,7 +188,12 @@ namespace Renkai.Kurogake
             RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null && isHumanPlayer)
                 hud.SetPlayerHP(Mathf.CeilToInt(health), Mathf.CeilToInt(maxHealth));
+=======
+            if (!isAlive || amount <= 0f)
+                return;
+>>>>>>> Stashed changes
 
+            health = Mathf.Max(0f, health - amount);
             if (health <= 0f)
                 Die(info.Attacker);
 
@@ -153,11 +202,13 @@ namespace Renkai.Kurogake
 
         public void Die(RenkaiRoundPlayer killer = null)
         {
-            if (!isAlive) return;
+            if (!isAlive)
+                return;
 
             isAlive = false;
             health = 0f;
 
+<<<<<<< Updated upstream
             string killerName = killer != null ? killer.agentName : "Unknown";
             Debug.Log(agentName + " eliminated by " + killerName + ". No respawn until round end.");
             KurokageGameEvents.RaiseKillFeed(killerName, agentName);
@@ -212,12 +263,68 @@ namespace Renkai.Kurogake
 
             RenkaiRoundManager manager = Object.FindObjectOfType<RenkaiRoundManager>();
             if (manager != null) manager.CheckWinConditions();
+=======
+            ZodiacCoreRuntime core = FindObjectOfType<ZodiacCoreRuntime>();
+            if (core != null && core.Carrier == this)
+                core.Drop(transform.position + transform.forward * 0.75f);
+
+            SetGameplayEnabled(false);
+            SetCombatVisualsVisible(false);
+
+            Eliminated?.Invoke(this, killer);
+            AnyPlayerEliminated?.Invoke(this, killer);
+
+            if (RenkaiRoundManager.Instance != null)
+                RenkaiRoundManager.Instance.CheckWinConditions();
+>>>>>>> Stashed changes
         }
 
-        public float Health01()
+        private void CacheComponents()
         {
-            if (maxHealth <= 0f) return 0f;
-            return Mathf.Clamp01(health / maxHealth);
+            if (characterController == null)
+                characterController = GetComponent<CharacterController>();
+            if (fpsController == null)
+                fpsController = GetComponent<RenkaiFPSController>();
+            if (weaponController == null)
+                weaponController = GetComponent<RenkaiWeaponController>();
+        }
+
+        private void SetGameplayEnabled(bool enabled)
+        {
+            if (fpsController != null)
+                fpsController.enabled = enabled && isHumanPlayer;
+            if (weaponController != null)
+                weaponController.enabled = enabled && isHumanPlayer;
+
+            RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
+            if (tacticalBot != null)
+                tacticalBot.enabled = enabled && !isHumanPlayer;
+
+            RenkaiBotAI legacyBot = GetComponent<RenkaiBotAI>();
+            if (legacyBot != null)
+                legacyBot.enabled = false;
+
+            ZodiacObjectiveInteractor interactor = GetComponent<ZodiacObjectiveInteractor>();
+            if (interactor != null)
+                interactor.enabled = enabled && isHumanPlayer;
+        }
+
+        private void SetCombatVisualsVisible(bool visible)
+        {
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer.GetComponentInParent<RenkaiWeaponController>() != null && isHumanPlayer)
+                    continue;
+
+                renderer.enabled = visible;
+            }
+
+            foreach (Collider collider in GetComponentsInChildren<Collider>(true))
+            {
+                if (collider is CharacterController)
+                    continue;
+                collider.enabled = visible;
+            }
         }
     }
 }
