@@ -37,6 +37,7 @@ public static class KurokageFinalUpgradeInstaller
     {
         bool sceneOk = RenkaiUnifiedCompetitiveBuilder.BuildSilent();
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
+        bool ringRefineOk = KurokageEnvironmentRingRefiner.ApplySilent();
         bool gameplayOk = KurokageGameplayUpgradeInstaller.UpgradeSilent();
         bool matchOk = KurokageFiveVFiveInstaller.InstallSilent();
         bool visualsOk = KurokageAgentVisualInstaller.InstallSilent();
@@ -60,11 +61,12 @@ public static class KurokageFinalUpgradeInstaller
         bool structurePassed = KurokageProductionValidator.ValidateSilent(out validationReport);
         if (!sceneOk) validationReport += "\nERROR Unified scene silent build failed.";
         if (!environmentOk) validationReport += "\nERROR Environment art pass failed.";
+        if (!ringRefineOk) validationReport += "\nERROR Environment ring refinement failed.";
         if (!gameplayOk) validationReport += "\nERROR Gameplay upgrade silent step failed.";
         if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
         if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
 
-        bool passed = structurePassed && sceneOk && environmentOk && gameplayOk && matchOk && visualsOk;
+        bool passed = structurePassed && sceneOk && environmentOk && ringRefineOk && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
