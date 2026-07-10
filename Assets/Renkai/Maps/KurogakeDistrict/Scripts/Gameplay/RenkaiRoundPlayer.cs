@@ -61,6 +61,9 @@ namespace Renkai.Kurogake
             if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
             if (deathPresentation != null) deathPresentation.ResetPresentation();
 
+            KurokageHitReactionPresenter hitReaction = GetComponent<KurokageHitReactionPresenter>();
+            if (hitReaction != null) hitReaction.ResetPresentation();
+
             Transform agentVisual = transform.Find("AGENT_VISUAL");
             if (agentVisual != null)
             {
@@ -83,6 +86,12 @@ namespace Renkai.Kurogake
                 weapon.enabled = true;
                 weapon.ResetAmmo();
             }
+
+            KurokageSprintWeaponGate sprintGate = GetComponent<KurokageSprintWeaponGate>();
+            if (sprintGate != null) sprintGate.ResetGate();
+
+            KurokageViewmodelLightingPresenter viewmodelLighting = GetComponent<KurokageViewmodelLightingPresenter>();
+            if (viewmodelLighting != null) viewmodelLighting.ResetPresentation();
 
             KairiAbilityController kairi = GetComponent<KairiAbilityController>();
             if (kairi != null)
