@@ -8,6 +8,7 @@ public static class KurokageBrightCompetitiveVisualPass
 {
     private const string RootName = "KUROKAGE_BRIGHT_VISUAL_PASS";
     private const string MaterialFolder = "Assets/RenkaiKurokage/Art/GeneratedMaterials/";
+    private const string SkyboxPath = "Assets/RenkaiKurokage/Art/GeneratedMaterials/M_RenkaiSkybox.mat";
 
     public static bool ApplySilent()
     {
@@ -18,7 +19,10 @@ public static class KurokageBrightCompetitiveVisualPass
 
         ApplyWorldTone();
         ApplyMaterialTone();
+        ApplyCameraQuality();
         BuildReadabilityLighting(root.transform);
+        BuildReflectionSupport(root.transform);
+        ApplySkybox();
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         AssetDatabase.SaveAssets();
@@ -41,6 +45,7 @@ public static class KurokageBrightCompetitiveVisualPass
             light.color = new Color(0.96f, 0.975f, 1f);
             light.intensity = 1.32f;
             light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.74f;
         }
     }
 
@@ -57,12 +62,70 @@ public static class KurokageBrightCompetitiveVisualPass
         SetMaterial("M_Glass_Subtle", new Color(0.32f, 0.40f, 0.50f), 0.84f, 0.04f, Color.black);
     }
 
+    private static void ApplyCameraQuality()
+    {
+        foreach (Camera camera in Object.FindObjectsOfType<Camera>(true))
+        {
+            if (camera == null) continue;
+            camera.allowHDR = true;
+            camera.allowMSAA = true;
+            camera.farClipPlane = Mathf.Max(camera.farClipPlane, 360f);
+            camera.backgroundColor = new Color(0.46f, 0.56f, 0.70f, 1f);
+        }
+    }
+
     private static void BuildReadabilityLighting(Transform parent)
     {
         CreateFillLight(parent, "SHIBUYA_ZERO_FILL", new Vector3(0f, 8f, 4f), new Color(0.78f, 0.88f, 1f), 0.56f, 44f);
         CreateFillLight(parent, "CELESTIAL_ARCHIVE_FILL", new Vector3(-34f, 8f, 17f), new Color(0.88f, 0.94f, 1f), 0.74f, 38f);
         CreateFillLight(parent, "VOID_REACTOR_FILL", new Vector3(34f, 8f, 17f), new Color(0.66f, 0.76f, 1f), 0.52f, 36f);
         CreateFillLight(parent, "GHOST_LINE_FILL", new Vector3(0f, -0.8f, 26f), new Color(0.72f, 0.84f, 1f), 0.46f, 30f);
+    }
+
+    private static void BuildReflectionSupport(Transform parent)
+    {
+        GameObject probeGo = new GameObject("RENKAI_GLOBAL_REFLECTION_PROBE");
+        probeGo.transform.SetParent(parent, false);
+        probeGo.transform.position = new Vector3(0f, 12f, 4f);
+
+        ReflectionProbe probe = probeGo.AddComponent<ReflectionProbe>();
+        probe.mode = ReflectionProbeMode.Baked;
+        probe.refreshMode = ReflectionProbeRefreshMode.OnAwake;
+        probe.boxProjection = true;
+        probe.size = new Vector3(118f, 42f, 158f);
+        probe.intensity = 0.72f;
+        probe.blendDistance = 8f;
+        probe.importance = 1;
+        probe.resolution = 128;
+    }
+
+    private static void ApplySkybox()
+    {
+        Shader skyShader = Shader.Find("Skybox/Procedural");
+        if (skyShader == null) return;
+
+        Material sky = AssetDatabase.LoadAssetAtPath<Material>(SkyboxPath);
+        if (sky == null)
+        {
+            sky = new Material(skyShader) { name = "M_RenkaiSkybox" };
+            AssetDatabase.CreateAsset(sky, SkyboxPath);
+        }
+        else if (sky.shader != skyShader)
+        {
+            sky.shader = skyShader;
+        }
+
+        if (sky.HasProperty("_SunSize")) sky.SetFloat("_SunSize", 0.018f);
+        if (sky.HasProperty("_SunSizeConvergence")) sky.SetFloat("_SunSizeConvergence", 7f);
+        if (sky.HasProperty("_AtmosphereThickness")) sky.SetFloat("_AtmosphereThickness", 0.82f);
+        if (sky.HasProperty("_SkyTint")) sky.SetColor("_SkyTint", new Color(0.42f, 0.55f, 0.74f, 1f));
+        if (sky.HasProperty("_GroundColor")) sky.SetColor("_GroundColor", new Color(0.18f, 0.22f, 0.30f, 1f));
+        if (sky.HasProperty("_Exposure")) sky.SetFloat("_Exposure", 1.18f);
+
+        RenderSettings.skybox = sky;
+        RenderSettings.reflectionIntensity = 0.82f;
+        RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+        EditorUtility.SetDirty(sky);
     }
 
     private static void CreateFillLight(Transform parent, string name, Vector3 position, Color color, float intensity, float range)
