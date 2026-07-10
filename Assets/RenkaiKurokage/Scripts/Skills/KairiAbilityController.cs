@@ -11,6 +11,7 @@ namespace Renkai.Kurokage
         [SerializeField] private Camera playerCamera;
         [SerializeField] private RenkaiWeaponController weapon;
         [SerializeField] private RenkaiRoundPlayer roundPlayer;
+        [SerializeField] private KurokageAfterimagePresenter afterimages;
 
         [Header("Q — Directional Dash")]
         [SerializeField] private float dashDistance = 7.5f;
@@ -39,6 +40,7 @@ namespace Renkai.Kurokage
         public float XCooldown01 => Cooldown01(nextX, ultimateCooldown);
         public bool UltimateActive => ultimateActive;
         public bool MovementAbilityActive => movementAbilityActive;
+        public bool IsMomentumLeaping => isMomentumLeaping;
 
         private CharacterController controller;
         private RenkaiFPSController fps;
@@ -48,11 +50,14 @@ namespace Renkai.Kurokage
         private float nextX;
         private bool movementAbilityActive;
         private bool ultimateActive;
+        private bool isMomentumLeaping;
+        private bool waitingForLeapLanding;
         private float originalWalk;
         private float originalSprint;
         private float originalCrouch;
         private Coroutine movementRoutine;
         private Coroutine ultimateRoutine;
+        private Coroutine leapLandingRoutine;
 
         private void Awake()
         {
@@ -61,6 +66,7 @@ namespace Renkai.Kurokage
             if (playerCamera == null) playerCamera = GetComponentInChildren<Camera>();
             if (weapon == null) weapon = GetComponent<RenkaiWeaponController>();
             if (roundPlayer == null) roundPlayer = GetComponent<RenkaiRoundPlayer>();
+            if (afterimages == null) afterimages = GetComponent<KurokageAfterimagePresenter>();
 
             if (fps != null)
             {
@@ -108,10 +114,14 @@ namespace Renkai.Kurokage
         {
             if (movementRoutine != null) StopCoroutine(movementRoutine);
             if (ultimateRoutine != null) StopCoroutine(ultimateRoutine);
+            if (leapLandingRoutine != null) StopCoroutine(leapLandingRoutine);
             movementRoutine = null;
             ultimateRoutine = null;
+            leapLandingRoutine = null;
             movementAbilityActive = false;
             ultimateActive = false;
+            isMomentumLeaping = false;
+            waitingForLeapLanding = false;
 
             if (fps != null)
             {
@@ -119,6 +129,9 @@ namespace Renkai.Kurokage
                 fps.sprintSpeed = originalSprint;
                 fps.crouchSpeed = originalCrouch;
             }
+
+            if (afterimages != null)
+                afterimages.ClearAll();
 
             if (resetCooldowns)
             {
@@ -144,6 +157,7 @@ namespace Renkai.Kurokage
             input.Normalize();
 
             SpawnBurstTrail(new Color(0.12f, 0.55f, 1f, 1f), 0.22f);
+            if (afterimages != null) afterimages.SpawnDashSequence(dashDuration);
 
             float elapsed = 0f;
             float speed = dashDistance / Mathf.Max(0.01f, dashDuration);
@@ -165,6 +179,9 @@ namespace Renkai.Kurokage
         private IEnumerator MomentumLeapRoutine()
         {
             movementAbilityActive = true;
+            isMomentumLeaping = true;
+            waitingForLeapLanding = false;
+
             Vector3 forward = playerCamera != null ? playerCamera.transform.forward : transform.forward;
             forward.y = 0f;
             forward.Normalize();
@@ -187,6 +204,55 @@ namespace Renkai.Kurokage
 
             movementAbilityActive = false;
             movementRoutine = null;
+            waitingForLeapLanding = true;
+            leapLandingRoutine = StartCoroutine(WaitForLeapLanding());
+        }
+
+        private IEnumerator WaitForLeapLanding()
+        {
+            float safetyTimeout = Time.time + 4f;
+            while (waitingForLeapLanding && Time.time < safetyTimeout)
+            {
+                if (controller != null && controller.enabled && controller.isGrounded)
+                {
+                    waitingForLeapLanding = false;
+                    isMomentumLeaping = false;
+                    SpawnLeapLandingShockwave();
+                    leapLandingRoutine = null;
+                    yield break;
+                }
+                yield return null;
+            }
+
+            waitingForLeapLanding = false;
+            isMomentumLeaping = false;
+            leapLandingRoutine = null;
+        }
+
+        private void SpawnLeapLandingShockwave()
+        {
+            Vector3 ground = transform.position + Vector3.up * 0.03f;
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cylinder,
+                "MOMENTUM_LEAP_LANDING_RING",
+                ground,
+                Quaternion.identity,
+                new Vector3(1.8f, 0.025f, 1.8f),
+                new Color(0.28f, 0.64f, 1f, 1f),
+                4.2f,
+                0.34f
+            );
+
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Sphere,
+                "MOMENTUM_LEAP_LANDING_CORE",
+                transform.position + Vector3.up * 0.25f,
+                Quaternion.identity,
+                Vector3.one * 0.42f,
+                new Color(0.42f, 0.30f, 1f, 1f),
+                3.8f,
+                0.22f
+            );
         }
 
         private void SpawnDecoy()
@@ -208,6 +274,9 @@ namespace Renkai.Kurokage
 
                 foreach (Collider c in visualClone.GetComponentsInChildren<Collider>(true))
                     c.enabled = false;
+
+                foreach (KurokageHitZone zone in visualClone.GetComponentsInChildren<KurokageHitZone>(true))
+                    Object.Destroy(zone);
 
                 ApplyHologramMaterial(visualClone);
             }
