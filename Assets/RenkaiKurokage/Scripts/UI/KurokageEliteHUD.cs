@@ -11,6 +11,7 @@ namespace Renkai.Kurokage
         private RenkaiRoundManager roundManager;
         private CharacterController controller;
         private KurokageArmor armor;
+        private RenkaiRoundPlayer[] roster;
 
         private Text healthText;
         private Text armorText;
@@ -23,6 +24,10 @@ namespace Renkai.Kurokage
         private Image healthFill;
         private Image armorFill;
         private RectTransform crosshairRoot;
+        private float nextRosterRefresh;
+
+        private readonly Color healthNormal = new Color(0.95f, 0.98f, 1f, 1f);
+        private readonly Color healthCritical = new Color(1f, 0.30f, 0.42f, 1f);
 
         private void Awake()
         {
@@ -34,6 +39,7 @@ namespace Renkai.Kurokage
                 armor = weapon.GetComponent<KurokageArmor>();
             }
             roundManager = FindObjectOfType<RenkaiRoundManager>();
+            RefreshRoster();
             Build();
         }
 
@@ -41,8 +47,21 @@ namespace Renkai.Kurokage
         {
             float hp = player != null ? player.health : 100f;
             float maxHp = player != null ? player.maxHealth : 100f;
+            float health01 = maxHp > 0f ? Mathf.Clamp01(hp / maxHp) : 0f;
             healthText.text = Mathf.CeilToInt(hp).ToString();
-            healthFill.fillAmount = maxHp > 0f ? Mathf.Clamp01(hp / maxHp) : 0f;
+            healthFill.fillAmount = health01;
+
+            if (health01 <= 0.28f)
+            {
+                float pulse = 0.68f + Mathf.Abs(Mathf.Sin(Time.unscaledTime * 5.5f)) * 0.32f;
+                healthText.color = Color.Lerp(healthNormal, healthCritical, pulse);
+                healthFill.color = Color.Lerp(new Color(0.16f, 0.48f, 1f, 1f), healthCritical, pulse * 0.82f);
+            }
+            else
+            {
+                healthText.color = healthNormal;
+                healthFill.color = new Color(0.16f, 0.48f, 1f, 1f);
+            }
 
             if (armor != null)
             {
@@ -76,26 +95,35 @@ namespace Renkai.Kurokage
                     reserveText.text = string.Empty;
                 }
 
-                bool reloadHeld = Input.GetKey(KeyCode.R) && weapon.slot != RenkaiWeaponSlot.Sword;
-                reloadText.gameObject.SetActive(reloadHeld);
-                reloadText.text = reloadHeld ? "RELOAD" : string.Empty;
+                bool reloading = weapon.IsReloading;
+                reloadText.gameObject.SetActive(reloading);
+                reloadText.text = reloading
+                    ? "RELOAD // " + Mathf.RoundToInt(weapon.ReloadNormalized * 100f) + "%"
+                    : string.Empty;
             }
 
             if (roundManager != null)
                 scoreText.text = "ATK " + roundManager.attackersScore + "  -  " + roundManager.defendersScore + " DEF";
 
+            if (roster == null || Time.unscaledTime >= nextRosterRefresh)
+                RefreshRoster();
+
             int atkAlive = 0, atkTotal = 0, defAlive = 0, defTotal = 0;
-            foreach (RenkaiRoundPlayer p in FindObjectsOfType<RenkaiRoundPlayer>(true))
+            if (roster != null)
             {
-                if (p.team == RenkaiTeam.Attackers)
+                foreach (RenkaiRoundPlayer p in roster)
                 {
-                    atkTotal++;
-                    if (p.isAlive) atkAlive++;
-                }
-                else
-                {
-                    defTotal++;
-                    if (p.isAlive) defAlive++;
+                    if (p == null) continue;
+                    if (p.team == RenkaiTeam.Attackers)
+                    {
+                        atkTotal++;
+                        if (p.isAlive) atkAlive++;
+                    }
+                    else
+                    {
+                        defTotal++;
+                        if (p.isAlive) defAlive++;
+                    }
                 }
             }
             aliveText.text = "A " + atkAlive + "/" + atkTotal + "   D " + defAlive + "/" + defTotal;
@@ -105,14 +133,24 @@ namespace Renkai.Kurokage
             crosshairRoot.sizeDelta = Vector2.Lerp(crosshairRoot.sizeDelta, Vector2.one * target, 14f * Time.deltaTime);
         }
 
+        private void RefreshRoster()
+        {
+            roster = FindObjectsOfType<RenkaiRoundPlayer>(true);
+            nextRosterRefresh = Time.unscaledTime + 0.75f;
+        }
+
         private void Build()
         {
-            Canvas canvas = gameObject.AddComponent<Canvas>();
+            Canvas canvas = gameObject.GetComponent<Canvas>();
+            if (canvas == null) canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
+            canvas.sortingOrder = 10;
+
+            CanvasScaler scaler = gameObject.GetComponent<CanvasScaler>();
+            if (scaler == null) scaler = gameObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
-            gameObject.AddComponent<GraphicRaycaster>();
+            if (gameObject.GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
 
             Color panel = new Color(0.025f, 0.04f, 0.07f, 0.82f);
             Color text = new Color(0.95f, 0.98f, 1f, 1f);
@@ -126,19 +164,19 @@ namespace Renkai.Kurokage
             GameObject left = Panel("BOTTOM_LEFT", transform, Vector2.zero, new Vector2(150f, 96f), new Vector2(390f, 112f), panel);
             Label("HealthTitle", left.transform, new Vector2(-130f, 28f), new Vector2(120f, 20f), 15, TextAnchor.MiddleLeft, accent).text = "HEALTH";
             healthText = Label("HealthValue", left.transform, new Vector2(-126f, -3f), new Vector2(100f, 42f), 38, TextAnchor.MiddleLeft, text);
-            GameObject hpBg = Panel("HealthBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, 6f), new Vector2(190f, 14f), new Color(0.08f,0.11f,0.17f,0.95f));
+            GameObject hpBg = Panel("HealthBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, 6f), new Vector2(190f, 14f), new Color(0.08f, 0.11f, 0.17f, 0.95f));
             healthFill = Fill("HealthFill", hpBg.transform, accent);
 
             Label("ArmorTitle", left.transform, new Vector2(-130f, -34f), new Vector2(120f, 20f), 14, TextAnchor.MiddleLeft, armorColor).text = "ARMOR";
             armorText = Label("ArmorValue", left.transform, new Vector2(-48f, -34f), new Vector2(70f, 20f), 18, TextAnchor.MiddleLeft, armorColor);
-            GameObject armorBg = Panel("ArmorBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, -34f), new Vector2(190f, 10f), new Color(0.08f,0.11f,0.17f,0.95f));
+            GameObject armorBg = Panel("ArmorBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, -34f), new Vector2(190f, 10f), new Color(0.08f, 0.11f, 0.17f, 0.95f));
             armorFill = Fill("ArmorFill", armorBg.transform, armorColor);
 
             GameObject right = Panel("BOTTOM_RIGHT", transform, Vector2.one, new Vector2(-150f, -90f), new Vector2(420f, 110f), panel);
             weaponText = Label("Weapon", right.transform, new Vector2(-110f, 28f), new Vector2(260f, 24f), 18, TextAnchor.MiddleLeft, accent);
             ammoText = Label("Ammo", right.transform, new Vector2(-110f, -12f), new Vector2(120f, 48f), 42, TextAnchor.MiddleLeft, text);
-            reserveText = Label("Reserve", right.transform, new Vector2(65f, -12f), new Vector2(90f, 30f), 22, TextAnchor.MiddleLeft, new Color(0.72f,0.78f,0.88f,1f));
-            reloadText = Label("Reload", right.transform, new Vector2(100f, 28f), new Vector2(150f, 22f), 16, TextAnchor.MiddleLeft, new Color(1f,0.72f,0.28f,1f));
+            reserveText = Label("Reserve", right.transform, new Vector2(65f, -12f), new Vector2(90f, 30f), 22, TextAnchor.MiddleLeft, new Color(0.72f, 0.78f, 0.88f, 1f));
+            reloadText = Label("Reload", right.transform, new Vector2(100f, 28f), new Vector2(180f, 22f), 16, TextAnchor.MiddleLeft, new Color(0.56f, 0.78f, 1f, 1f));
 
             crosshairRoot = new GameObject("Crosshair").AddComponent<RectTransform>();
             crosshairRoot.SetParent(transform, false);
@@ -183,13 +221,16 @@ namespace Renkai.Kurokage
         {
             Text t = new GameObject(name).AddComponent<Text>();
             t.transform.SetParent(parent, false);
-            t.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font == null) font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            t.font = font;
             t.fontSize = fontSize;
             t.alignment = alignment;
             t.color = color;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.raycastTarget = false;
             RectTransform rt = t.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f,0.5f);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = pos;
             rt.sizeDelta = size;
             return t;
@@ -200,8 +241,9 @@ namespace Renkai.Kurokage
             Image image = new GameObject("Line").AddComponent<Image>();
             image.transform.SetParent(crosshairRoot, false);
             image.color = Color.white;
+            image.raycastTarget = false;
             RectTransform rt = image.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f,0.5f);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = pos;
             rt.sizeDelta = size;
         }
