@@ -3,6 +3,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Renkai.Kurogake;
+using Renkai.Kurokage;
 
 public static class KurokageAgentVisualInstaller
 {
@@ -39,7 +40,7 @@ public static class KurokageAgentVisualInstaller
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         Selection.activeGameObject = players[0].gameObject;
-        EditorUtility.DisplayDialog("Renkai", "Karakter görselleri uygulandı. Capsule renderer görünümleri gizlendi.", "OK");
+        EditorUtility.DisplayDialog("Renkai", "Karakter görselleri uygulandı. Capsule renderer gizlendi ve locomotion presentation driver bağlandı.", "OK");
     }
 
     private static void ApplyVisual(RenkaiRoundPlayer roundPlayer, string assetPath)
@@ -88,6 +89,10 @@ public static class KurokageAgentVisualInstaller
             : new Color(0.78f, 0.35f, 0.95f, 1f);
 
         ApplyAccent(instance, accent);
+
+        KurokageAgentAnimationDriver driver = visualRoot.GetComponent<KurokageAgentAnimationDriver>();
+        if (driver == null)
+            visualRoot.AddComponent<KurokageAgentAnimationDriver>();
     }
 
     private static void NormalizeVisual(Transform visual, float targetHeight)
