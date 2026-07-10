@@ -8,6 +8,8 @@ using Renkai.Kurokage;
 
 public static class KurokageGameplayUpgradeInstaller
 {
+    private const string MaterialFolder = "Assets/RenkaiKurokage/Art/GeneratedMaterials/";
+
     [MenuItem("Renkai/Upgrade Current Scene Gameplay Feel")]
     public static void Upgrade()
     {
@@ -77,18 +79,27 @@ public static class KurokageGameplayUpgradeInstaller
         GameObject holder = new GameObject("KX9_KURO_VIEW");
         holder.transform.SetParent(root, false);
 
-        Material dark = MakeMaterial(new Color(0.055f, 0.065f, 0.085f), 0.55f, 0f);
-        Material accent = MakeMaterial(new Color(0.06f, 0.42f, 0.95f), 0.45f, 0.5f);
-        Material light = MakeMaterial(new Color(0.58f, 0.62f, 0.70f), 0.42f, 0f);
+        Material dark = SharedOrFallback("M_DarkCeramic", new Color(0.035f, 0.045f, 0.065f), 0.72f, 0f);
+        Material navy = SharedOrFallback("M_NavyMetal", new Color(0.055f, 0.08f, 0.12f), 0.62f, 0f);
+        Material accent = SharedOrFallback("M_Accent_Blue", new Color(0.06f, 0.42f, 0.95f), 0.48f, 1.4f);
+        Material light = SharedOrFallback("M_LightComposite", new Color(0.66f, 0.70f, 0.74f), 0.52f, 0f);
 
-        Part("Receiver", holder.transform, new Vector3(0f, 0f, 0.28f), new Vector3(0.18f, 0.16f, 0.58f), dark);
-        Part("UpperReceiver", holder.transform, new Vector3(0f, 0.075f, 0.34f), new Vector3(0.13f, 0.06f, 0.34f), light);
-        Part("Barrel", holder.transform, new Vector3(0f, 0.015f, 0.78f), new Vector3(0.055f, 0.055f, 0.55f), dark);
-        Part("Handguard", holder.transform, new Vector3(0f, 0f, 0.60f), new Vector3(0.12f, 0.11f, 0.26f), light);
-        Part("Grip", holder.transform, new Vector3(0.02f, -0.16f, 0.22f), new Vector3(0.09f, 0.25f, 0.11f), dark, new Vector3(12f, 0f, 0f));
-        Part("Magazine", holder.transform, new Vector3(0f, -0.14f, 0.30f), new Vector3(0.075f, 0.22f, 0.12f), light, new Vector3(8f, 0f, 0f));
-        Part("Stock", holder.transform, new Vector3(0f, -0.015f, -0.14f), new Vector3(0.14f, 0.12f, 0.30f), dark);
-        Part("BlueRail", holder.transform, new Vector3(0f, 0.115f, 0.35f), new Vector3(0.035f, 0.025f, 0.52f), accent);
+        Part("Receiver_Core", holder.transform, new Vector3(0f, 0f, 0.27f), new Vector3(0.19f, 0.17f, 0.54f), dark);
+        Part("Receiver_LeftShell", holder.transform, new Vector3(-0.11f, 0.015f, 0.30f), new Vector3(0.055f, 0.13f, 0.40f), light, new Vector3(0f, -6f, 0f));
+        Part("Receiver_RightTech", holder.transform, new Vector3(0.105f, 0.025f, 0.33f), new Vector3(0.045f, 0.12f, 0.28f), navy, new Vector3(0f, 7f, 0f));
+        Part("UpperReceiver", holder.transform, new Vector3(0f, 0.083f, 0.33f), new Vector3(0.13f, 0.055f, 0.33f), light);
+        Part("BarrelCore", holder.transform, new Vector3(0f, 0.012f, 0.82f), new Vector3(0.045f, 0.045f, 0.50f), dark);
+        Part("MuzzleCrown", holder.transform, new Vector3(0f, 0.012f, 1.08f), new Vector3(0.10f, 0.10f, 0.12f), navy);
+        Part("Handguard", holder.transform, new Vector3(0f, -0.005f, 0.62f), new Vector3(0.13f, 0.11f, 0.28f), light);
+        Part("HandguardLower", holder.transform, new Vector3(0f, -0.083f, 0.60f), new Vector3(0.09f, 0.045f, 0.24f), navy);
+        Part("Grip", holder.transform, new Vector3(0.02f, -0.17f, 0.21f), new Vector3(0.09f, 0.25f, 0.11f), dark, new Vector3(12f, 0f, 0f));
+        Part("Magazine", holder.transform, new Vector3(0f, -0.15f, 0.31f), new Vector3(0.08f, 0.23f, 0.12f), light, new Vector3(10f, 0f, 0f));
+        Part("MagazineEnergyWindow", holder.transform, new Vector3(0.041f, -0.15f, 0.31f), new Vector3(0.012f, 0.12f, 0.07f), accent, new Vector3(10f, 0f, 0f));
+        Part("StockBridge", holder.transform, new Vector3(0f, 0.015f, -0.04f), new Vector3(0.12f, 0.08f, 0.22f), navy);
+        Part("StockShoulder", holder.transform, new Vector3(0f, -0.015f, -0.22f), new Vector3(0.16f, 0.15f, 0.20f), dark, new Vector3(-4f, 0f, 0f));
+        Part("BlueRail", holder.transform, new Vector3(0f, 0.125f, 0.36f), new Vector3(0.032f, 0.022f, 0.48f), accent);
+        Part("SightBase", holder.transform, new Vector3(0f, 0.145f, 0.22f), new Vector3(0.11f, 0.05f, 0.13f), navy);
+        Part("SightGlass", holder.transform, new Vector3(0f, 0.205f, 0.22f), new Vector3(0.07f, 0.065f, 0.015f), accent);
         return holder;
     }
 
@@ -101,15 +112,21 @@ public static class KurokageGameplayUpgradeInstaller
         holder.transform.SetParent(root, false);
         holder.transform.localPosition = new Vector3(0.06f, -0.03f, 0.08f);
 
-        Material light = MakeMaterial(new Color(0.48f, 0.52f, 0.58f), 0.5f, 0f);
-        Material dark = MakeMaterial(new Color(0.05f, 0.055f, 0.07f), 0.4f, 0f);
-        Material accent = MakeMaterial(new Color(0.70f, 0.34f, 0.96f), 0.55f, 0.40f);
+        Material light = SharedOrFallback("M_LightComposite", new Color(0.66f, 0.70f, 0.74f), 0.52f, 0f);
+        Material dark = SharedOrFallback("M_DarkCeramic", new Color(0.035f, 0.045f, 0.065f), 0.68f, 0f);
+        Material accent = SharedOrFallback("M_Accent_Violet", new Color(0.34f, 0.16f, 0.70f), 0.48f, 1.1f);
+        Material blue = SharedOrFallback("M_Accent_Blue", new Color(0.06f, 0.42f, 0.95f), 0.48f, 1.0f);
 
-        Part("Slide", holder.transform, new Vector3(0f, 0f, 0.20f), new Vector3(0.14f, 0.12f, 0.42f), light);
-        Part("Barrel", holder.transform, new Vector3(0f, -0.01f, 0.42f), new Vector3(0.05f, 0.04f, 0.18f), dark);
-        Part("Grip", holder.transform, new Vector3(0f, -0.17f, 0.05f), new Vector3(0.10f, 0.26f, 0.13f), dark, new Vector3(10f, 0f, 0f));
+        Part("Frame", holder.transform, new Vector3(0f, -0.02f, 0.19f), new Vector3(0.13f, 0.09f, 0.38f), dark);
+        Part("Slide", holder.transform, new Vector3(0f, 0.035f, 0.23f), new Vector3(0.145f, 0.10f, 0.40f), light);
+        Part("SlideCutLeft", holder.transform, new Vector3(-0.078f, 0.05f, 0.30f), new Vector3(0.015f, 0.055f, 0.16f), accent, new Vector3(0f, -5f, 0f));
+        Part("Barrel", holder.transform, new Vector3(0f, 0.01f, 0.48f), new Vector3(0.05f, 0.045f, 0.20f), dark);
+        Part("MuzzleBlock", holder.transform, new Vector3(0f, 0.01f, 0.59f), new Vector3(0.10f, 0.08f, 0.08f), dark);
+        Part("Grip", holder.transform, new Vector3(0f, -0.18f, 0.05f), new Vector3(0.105f, 0.27f, 0.13f), dark, new Vector3(11f, 0f, 0f));
         Part("Magazine", holder.transform, new Vector3(0f, -0.14f, 0.30f), new Vector3(0.055f, 0.16f, 0.07f), dark, new Vector3(7f, 0f, 0f));
-        Part("Accent", holder.transform, new Vector3(0f, 0.05f, 0.16f), new Vector3(0.08f, 0.025f, 0.15f), accent);
+        Part("EnergyChannel", holder.transform, new Vector3(0f, -0.005f, 0.27f), new Vector3(0.045f, 0.025f, 0.24f), blue);
+        Part("RearSight", holder.transform, new Vector3(0f, 0.105f, 0.08f), new Vector3(0.10f, 0.035f, 0.05f), dark);
+        Part("FrontSight", holder.transform, new Vector3(0f, 0.105f, 0.43f), new Vector3(0.05f, 0.035f, 0.04f), accent);
         return holder;
     }
 
@@ -123,12 +140,19 @@ public static class KurokageGameplayUpgradeInstaller
         holder.transform.localPosition = new Vector3(0.10f, -0.03f, 0.05f);
         holder.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
 
-        Material blade = MakeMaterial(new Color(0.12f, 0.46f, 1f), 0.7f, 0.8f);
-        Material grip = MakeMaterial(new Color(0.035f, 0.04f, 0.055f), 0.3f, 0f);
+        Material dark = SharedOrFallback("M_DarkCeramic", new Color(0.035f, 0.045f, 0.065f), 0.72f, 0f);
+        Material light = SharedOrFallback("M_LightComposite", new Color(0.66f, 0.70f, 0.74f), 0.52f, 0f);
+        Material blue = SharedOrFallback("M_Accent_Blue", new Color(0.06f, 0.42f, 0.95f), 0.48f, 1.7f);
+        Material violet = SharedOrFallback("M_Accent_Violet", new Color(0.34f, 0.16f, 0.70f), 0.48f, 1.2f);
 
-        Part("Blade", holder.transform, new Vector3(0f, 0.02f, 0.58f), new Vector3(0.055f, 0.025f, 1.0f), blade);
-        Part("EnergyCore", holder.transform, new Vector3(0f, 0.025f, 0.42f), new Vector3(0.018f, 0.035f, 0.48f), blade);
-        Part("Grip", holder.transform, new Vector3(0f, -0.03f, -0.05f), new Vector3(0.09f, 0.09f, 0.28f), grip);
+        Part("BladeSpine", holder.transform, new Vector3(0f, 0.01f, 0.62f), new Vector3(0.07f, 0.035f, 1.05f), dark);
+        Part("BladeCore", holder.transform, new Vector3(-0.018f, 0.028f, 0.65f), new Vector3(0.026f, 0.025f, 0.92f), blue);
+        Part("BladeEdge", holder.transform, new Vector3(0.044f, 0.025f, 0.67f), new Vector3(0.016f, 0.018f, 0.88f), violet, new Vector3(0f, 0f, -2f));
+        Part("BladeTip", holder.transform, new Vector3(0f, 0.02f, 1.20f), new Vector3(0.045f, 0.028f, 0.14f), blue, new Vector3(0f, 0f, 18f));
+        Part("GuardCore", holder.transform, new Vector3(0f, -0.01f, 0.08f), new Vector3(0.28f, 0.06f, 0.12f), light, new Vector3(0f, 0f, 8f));
+        Part("GuardDark", holder.transform, new Vector3(0f, -0.02f, 0.03f), new Vector3(0.20f, 0.08f, 0.10f), dark);
+        Part("Grip", holder.transform, new Vector3(0f, -0.03f, -0.16f), new Vector3(0.10f, 0.10f, 0.32f), dark);
+        Part("PommelCore", holder.transform, new Vector3(0f, -0.03f, -0.35f), new Vector3(0.08f, 0.08f, 0.10f), violet);
         return holder;
     }
 
@@ -144,6 +168,12 @@ public static class KurokageGameplayUpgradeInstaller
         if (col != null) Object.DestroyImmediate(col);
         go.GetComponent<Renderer>().sharedMaterial = mat;
         return go;
+    }
+
+    private static Material SharedOrFallback(string assetName, Color color, float smoothness, float emission)
+    {
+        Material shared = AssetDatabase.LoadAssetAtPath<Material>(MaterialFolder + assetName + ".mat");
+        return shared != null ? shared : MakeMaterial(color, smoothness, emission);
     }
 
     private static Material MakeMaterial(Color color, float smoothness, float emission)
