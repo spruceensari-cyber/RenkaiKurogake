@@ -32,8 +32,11 @@ public static class KurokageFinalUpgradeInstaller
             "- FBX agent visuals\n" +
             "- health + armor combat pipeline\n" +
             "- elite HUD\n" +
+            "- hitmarker + headshot + reload progress HUD\n" +
+            "- world/body/armor/headshot impact VFX\n" +
+            "- unified recoil ownership\n" +
             "- round banners and kill feed\n" +
-            "- centralized gameplay audio hooks\n" +
+            "- event-driven gameplay audio hooks\n" +
             "- Zodiac Core objective + VFX\n" +
             "- Kairi Q/E/C/X ability kit\n" +
             "- Eclipse Blade combo combat\n" +
@@ -49,8 +52,9 @@ public static class KurokageFinalUpgradeInstaller
         KurokageGameplayUpgradeInstaller.Upgrade();
         KurokageFiveVFiveInstaller.Install();
         KurokageAgentVisualInstaller.Install();
-        EnsureArmorAndAudio();
+        EnsureArmorAudioAndCombatVfx();
         EnsureEliteHud();
+        EnsureCombatFeedbackHud();
         EnsureMatchPresentationHud();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
@@ -76,15 +80,21 @@ public static class KurokageFinalUpgradeInstaller
         buildMarker.SetBuildId(ProductionBuildId);
     }
 
-    private static void EnsureArmorAndAudio()
+    private static void EnsureArmorAudioAndCombatVfx()
     {
         foreach (RenkaiRoundPlayer player in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
         {
             if (player.GetComponent<KurokageArmor>() == null)
                 player.gameObject.AddComponent<KurokageArmor>();
 
-            if (player.isHumanPlayer && player.GetComponent<KurokageAudioHooks>() == null)
-                player.gameObject.AddComponent<KurokageAudioHooks>();
+            if (player.isHumanPlayer)
+            {
+                if (player.GetComponent<KurokageAudioHooks>() == null)
+                    player.gameObject.AddComponent<KurokageAudioHooks>();
+
+                if (player.GetComponent<KurokageCombatVfxPresenter>() == null)
+                    player.gameObject.AddComponent<KurokageCombatVfxPresenter>();
+            }
         }
     }
 
@@ -100,6 +110,16 @@ public static class KurokageFinalUpgradeInstaller
         KurokageCompetitiveHUD oldPremium = Object.FindObjectOfType<KurokageCompetitiveHUD>();
         if (oldPremium != null && oldPremium.gameObject != existing)
             oldPremium.gameObject.SetActive(false);
+    }
+
+    private static void EnsureCombatFeedbackHud()
+    {
+        GameObject existing = GameObject.Find("KUROKAGE_COMBAT_FEEDBACK_HUD");
+        if (existing == null)
+        {
+            existing = new GameObject("KUROKAGE_COMBAT_FEEDBACK_HUD");
+            existing.AddComponent<KurokageCombatFeedbackHUD>();
+        }
     }
 
     private static void EnsureMatchPresentationHud()
