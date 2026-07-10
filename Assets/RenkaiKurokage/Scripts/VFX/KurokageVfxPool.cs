@@ -86,7 +86,11 @@ namespace Renkai.Kurokage
             entry.GameObject.transform.position = position;
             entry.GameObject.transform.rotation = rotation;
             entry.GameObject.transform.localScale = scale;
-            entry.Renderer.sharedMaterial = GetMaterial(color, emission);
+
+            Material material = GetMaterial(color, emission);
+            if (entry.Renderer != null && material != null)
+                entry.Renderer.sharedMaterial = material;
+
             entry.GameObject.SetActive(true);
             active.Add(entry);
             return entry.GameObject;
@@ -95,9 +99,7 @@ namespace Renkai.Kurokage
         public void ClearAll()
         {
             for (int i = active.Count - 1; i >= 0; i--)
-            {
                 Release(active[i]);
-            }
             active.Clear();
         }
 
@@ -120,8 +122,13 @@ namespace Renkai.Kurokage
 
             GameObject go = GameObject.CreatePrimitive(primitive);
             go.transform.SetParent(transform, false);
+
             Collider collider = go.GetComponent<Collider>();
-            if (collider != null) Destroy(collider);
+            if (collider != null)
+            {
+                collider.enabled = false;
+                Destroy(collider);
+            }
 
             PooledEntry entry = new PooledEntry
             {
@@ -146,7 +153,7 @@ namespace Renkai.Kurokage
 
         private Material GetMaterial(Color color, float emission)
         {
-            string key = ColorUtility.ToHtmlStringRGBA(color) + "_" + emission.ToString("F2");
+            string key = ColorUtility.ToHtmlStringRGBA(color) + "_" + emission.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
             Material material;
             if (materialCache.TryGetValue(key, out material)) return material;
 
@@ -155,6 +162,11 @@ namespace Renkai.Kurokage
             if (shader == null) shader = Shader.Find("Standard");
             if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
             if (shader == null) shader = Shader.Find("Diffuse");
+            if (shader == null)
+            {
+                Debug.LogError("KurokageVfxPool could not resolve a compatible shader.");
+                return null;
+            }
 
             material = new Material(shader);
             if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
