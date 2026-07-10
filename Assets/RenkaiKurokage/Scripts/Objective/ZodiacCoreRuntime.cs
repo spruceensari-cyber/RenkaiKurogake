@@ -11,8 +11,10 @@ namespace Renkai.Kurokage
 
         public ZodiacLinkState State { get; private set; } = ZodiacLinkState.Idle;
         public float Progress01 { get; private set; }
+        public Transform Carrier { get; private set; }
 
         public event Action<Transform> CorePickedUp;
+        public event Action<Vector3> CoreDropped;
         public event Action LinkStarted;
         public event Action LinkCompleted;
         public event Action SynchronizationCompleted;
@@ -68,6 +70,8 @@ namespace Renkai.Kurokage
         public void SetCarried(Transform carrier)
         {
             if (carrier == null) return;
+
+            Carrier = carrier;
             transform.SetParent(carrier, false);
             transform.localPosition = new Vector3(0f, 1.15f, -0.38f);
             transform.localRotation = Quaternion.identity;
@@ -75,9 +79,23 @@ namespace Renkai.Kurokage
             CorePickedUp?.Invoke(carrier);
         }
 
+        public void Drop(Vector3 worldPosition)
+        {
+            if (State != ZodiacLinkState.Carried || Carrier == null) return;
+
+            Carrier = null;
+            transform.SetParent(resetParent, true);
+            transform.position = worldPosition;
+            transform.rotation = resetRotation;
+            SetState(ZodiacLinkState.Idle);
+            CoreDropped?.Invoke(worldPosition);
+        }
+
         public bool BeginLink()
         {
             if (State != ZodiacLinkState.Carried && State != ZodiacLinkState.Idle) return false;
+
+            Carrier = null;
             SetState(ZodiacLinkState.Linking);
             LinkStarted?.Invoke();
             return true;
@@ -99,6 +117,7 @@ namespace Renkai.Kurokage
 
         public void ResetObjective()
         {
+            Carrier = null;
             transform.SetParent(resetParent, true);
             transform.position = resetPosition;
             transform.rotation = resetRotation;
