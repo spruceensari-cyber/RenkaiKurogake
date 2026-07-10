@@ -25,9 +25,11 @@ namespace Renkai.Kurogake
 
         private Vector3 spawnPosition;
         private Quaternion spawnRotation;
+        private KurokageArmor armor;
 
         private void Awake()
         {
+            armor = GetComponent<KurokageArmor>();
             RememberSpawn();
         }
 
@@ -42,6 +44,9 @@ namespace Renkai.Kurogake
             isAlive = true;
             health = maxHealth;
             gameObject.SetActive(true);
+
+            if (armor == null) armor = GetComponent<KurokageArmor>();
+            if (armor != null) armor.ResetArmor();
 
             CharacterController controller = GetComponent<CharacterController>();
             if (controller != null) controller.enabled = false;
@@ -81,8 +86,11 @@ namespace Renkai.Kurogake
         {
             if (!isAlive) return;
 
-            health = Mathf.Max(0f, health - amount);
-            Debug.Log(agentName + " took " + amount + " damage. HP: " + health);
+            if (armor == null) armor = GetComponent<KurokageArmor>();
+            float healthDamage = armor != null ? armor.AbsorbDamage(amount) : amount;
+
+            health = Mathf.Max(0f, health - healthDamage);
+            Debug.Log(agentName + " took " + amount + " incoming damage. Health damage: " + healthDamage + ". HP: " + health);
 
             RenkaiHUDController hud = Object.FindObjectOfType<RenkaiHUDController>();
             if (hud != null && isHumanPlayer)
