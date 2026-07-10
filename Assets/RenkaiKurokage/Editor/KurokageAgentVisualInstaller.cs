@@ -27,7 +27,7 @@ public static class KurokageAgentVisualInstaller
         bool ok = InstallSilent();
         EditorUtility.DisplayDialog(
             "Renkai",
-            ok ? "Karakter görselleri uygulandı. Capsule renderer gizlendi ve locomotion presentation driver bağlandı." : "Karakter görselleri uygulanamadı. FBX asset yollarını ve 5v5 kurulumunu kontrol et.",
+            ok ? "Karakter görselleri ve competitive hit zones uygulandı." : "Karakter görselleri uygulanamadı. FBX asset yollarını ve 5v5 kurulumunu kontrol et.",
             ok ? "OK" : "REVIEW"
         );
     }
@@ -100,11 +100,14 @@ public static class KurokageAgentVisualInstaller
 
         ApplyAccent(instance, accent);
 
-        KurokageAgentAnimationDriver driver = visualRoot.GetComponent<KurokageAgentAnimationDriver>();
-        if (driver == null)
+        if (visualRoot.GetComponent<KurokageAgentAnimationDriver>() == null)
             visualRoot.AddComponent<KurokageAgentAnimationDriver>();
 
-        return true;
+        KurokageHitZoneBinder binder = roundPlayer.GetComponent<KurokageHitZoneBinder>();
+        if (binder == null) binder = roundPlayer.gameObject.AddComponent<KurokageHitZoneBinder>();
+        binder.Bind();
+
+        return binder.BoundZoneCount >= 3;
     }
 
     private static void NormalizeVisual(Transform visual, float targetHeight)
