@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Rendering;
 using Renkai.Kurokage;
 
 namespace Renkai.Kurogake
@@ -95,7 +94,6 @@ namespace Renkai.Kurogake
         private CharacterController characterController;
         private RenkaiFPSController fpsController;
         private KurokageCombatVfxPresenter combatVfx;
-        private KurokageAudioHooks audioHooks;
 
         private void Awake()
         {
@@ -105,7 +103,6 @@ namespace Renkai.Kurogake
             characterController = GetComponent<CharacterController>();
             fpsController = GetComponent<RenkaiFPSController>();
             combatVfx = GetComponent<KurokageCombatVfxPresenter>();
-            audioHooks = GetComponent<KurokageAudioHooks>();
 
             if (muzzlePoint == null && playerCamera != null)
             {
@@ -219,7 +216,7 @@ namespace Renkai.Kurogake
             Ray ray = new Ray(playerCamera.transform.position, direction);
             Vector3 end = ray.origin + ray.direction * range;
 
-            if (Physics.Raycast(ray, out RaycastHit hit, range, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out RaycastHit hit, range, ~0, QueryTriggerInteraction.Collide))
             {
                 end = hit.point;
                 ProcessHit(hit);
@@ -236,10 +233,16 @@ namespace Renkai.Kurogake
         {
             RenkaiRoundPlayer roundPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
             RenkaiHealth legacyHealth = hit.collider.GetComponentInParent<RenkaiHealth>();
-            bool headshot = hit.collider.name.ToLowerInvariant().Contains("head");
+            KurokageHitZone hitZone = hit.collider.GetComponent<KurokageHitZone>();
+
+            KurokageHitZoneType zoneType = hitZone != null ? hitZone.ZoneType : KurokageHitZoneType.Torso;
+            bool fallbackHeadshot = hit.collider.name.ToLowerInvariant().Contains("head");
+            bool headshot = zoneType == KurokageHitZoneType.Head || fallbackHeadshot;
+
             float bodyDamage = slot == RenkaiWeaponSlot.Rifle ? rifleBodyDamage : pistolBodyDamage;
             float headMultiplier = slot == RenkaiWeaponSlot.Rifle ? rifleHeadMultiplier : pistolHeadMultiplier;
-            float damage = bodyDamage * (headshot ? headMultiplier : 1f);
+            float zoneMultiplier = hitZone != null ? hitZone.DamageMultiplier : (headshot ? headMultiplier : 1f);
+            float damage = bodyDamage * zoneMultiplier;
 
             if (roundPlayer != null)
             {
@@ -249,7 +252,16 @@ namespace Renkai.Kurogake
 
                 if (self == null || roundPlayer.team != self.team)
                 {
-                    roundPlayer.TakeDamage(damage, self);
+                    KurokageDamageInfo info = new KurokageDamageInfo(
+                        damage,
+                        self,
+                        hit.point,
+                        hit.normal,
+                        KurokageDamageType.Ballistic,
+                        zoneType,
+                        ActiveWeaponName
+                    );
+                    roundPlayer.ApplyDamage(info);
                     ShowHit(headshot);
                     if (combatVfx != null)
                     {
@@ -261,7 +273,7 @@ namespace Renkai.Kurogake
                 }
             }
 
-            if (legacyHealth != null)
+            if (legacyHealth != null && roundPlayer == null)
             {
                 legacyHealth.TakeDamage(damage);
                 ShowHit(headshot);
@@ -355,19 +367,29 @@ namespace Renkai.Kurogake
             nextFireTime = Time.time + 0.55f;
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
-            if (Physics.SphereCast(ray, 0.85f, out RaycastHit hit, 3.2f, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.SphereCast(ray, 0.85f, out RaycastHit hit, 3.2f, ~0, QueryTriggerInteraction.Collide))
             {
                 RenkaiRoundPlayer victim = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
                 RenkaiRoundPlayer self = GetComponent<RenkaiRoundPlayer>();
+                KurokageHitZone zone = hit.collider.GetComponent<KurokageHitZone>();
+                KurokageHitZoneType zoneType = zone != null ? zone.ZoneType : KurokageHitZoneType.Torso;
 
                 if (victim != null && (self == null || victim.team != self.team))
                 {
-                    victim.TakeDamage(55f, self);
+                    KurokageDamageInfo info = new KurokageDamageInfo(
+                        55f,
+                        self,
+                        hit.point,
+                        hit.normal,
+                        KurokageDamageType.Blade,
+                        zoneType,
+                        "ECLIPSE BLADE"
+                    );
+                    victim.ApplyDamage(info);
                     ShowHit(false);
                     if (combatVfx != null) combatVfx.SpawnBodyImpact(hit.point, hit.normal);
-                    if (audioHooks != null) audioHooks.PlayBladeSlash();
                 }
-                else
+                else if (victim == null)
                 {
                     RenkaiHealth health = hit.collider.GetComponentInParent<RenkaiHealth>();
                     if (health != null)
@@ -378,15 +400,16 @@ namespace Renkai.Kurogake
                 }
             }
 
-            GameObject slash = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Destroy(slash.GetComponent<Collider>());
-            slash.name = "Renkai_Sword_Slash";
-            slash.transform.SetParent(playerCamera.transform);
-            slash.transform.localPosition = new Vector3(0f, -0.05f, 1.35f);
-            slash.transform.localRotation = Quaternion.Euler(0f, 0f, 35f);
-            slash.transform.localScale = new Vector3(1.6f, 0.045f, 0.18f);
-            Paint(slash, new Color(0.2f, 0.55f, 1f), 3.5f);
-            Destroy(slash, 0.12f);
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cube,
+                "Renkai_Sword_Slash",
+                playerCamera.transform.TransformPoint(new Vector3(0f, -0.05f, 1.35f)),
+                playerCamera.transform.rotation * Quaternion.Euler(0f, 0f, 35f),
+                new Vector3(1.6f, 0.045f, 0.18f),
+                new Color(0.2f, 0.55f, 1f),
+                3.5f,
+                0.12f
+            );
             ShotFired?.Invoke();
         }
 
@@ -394,48 +417,49 @@ namespace Renkai.Kurogake
         {
             if (Vector3.Distance(from, to) < 0.1f) return;
 
-            GameObject tracer = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Destroy(tracer.GetComponent<Collider>());
-            tracer.name = "Renkai_Tracer";
-
             Vector3 mid = (from + to) * 0.5f;
             float length = Vector3.Distance(from, to);
-            tracer.transform.position = mid;
-            tracer.transform.rotation = Quaternion.LookRotation(to - from);
-            tracer.transform.localScale = new Vector3(0.018f, 0.018f, length);
-
-            Paint(tracer, color, 2.2f);
-            Destroy(tracer, life);
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cube,
+                "Renkai_Tracer",
+                mid,
+                Quaternion.LookRotation(to - from),
+                new Vector3(0.018f, 0.018f, length),
+                color,
+                2.2f,
+                life
+            );
         }
 
         private void SpawnMuzzleFlash()
         {
             if (muzzlePoint == null) return;
 
-            GameObject flash = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            Destroy(flash.GetComponent<Collider>());
-            flash.transform.position = muzzlePoint.position;
-            flash.transform.localScale = Vector3.one * 0.11f;
-            Paint(flash, new Color(1f, 0.62f, 0.18f), 3.5f);
-            Destroy(flash, 0.04f);
-        }
+            Color flashColor = slot == RenkaiWeaponSlot.Rifle
+                ? new Color(1f, 0.62f, 0.18f)
+                : new Color(0.82f, 0.56f, 1f);
 
-        private void Paint(GameObject go, Color color, float emission)
-        {
-            bool srpActive = GraphicsSettings.currentRenderPipeline != null;
-            Shader shader = srpActive ? Shader.Find("Universal Render Pipeline/Lit") : Shader.Find("Standard");
-            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader == null) shader = Shader.Find("Standard");
-            if (shader == null) shader = Shader.Find("Diffuse");
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Sphere,
+                "MUZZLE_FLASH_CORE",
+                muzzlePoint.position,
+                muzzlePoint.rotation,
+                Vector3.one * (slot == RenkaiWeaponSlot.Rifle ? 0.11f : 0.085f),
+                flashColor,
+                3.5f,
+                0.04f
+            );
 
-            Material mat = new Material(shader);
-            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-            if (mat.HasProperty("_Color")) mat.SetColor("_Color", color);
-            mat.EnableKeyword("_EMISSION");
-            if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", color * emission);
-
-            Renderer renderer = go.GetComponent<Renderer>();
-            if (renderer != null) renderer.sharedMaterial = mat;
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cube,
+                "MUZZLE_FLASH_CONE",
+                muzzlePoint.position + muzzlePoint.forward * 0.10f,
+                muzzlePoint.rotation * Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 180f)),
+                new Vector3(0.055f, 0.055f, slot == RenkaiWeaponSlot.Rifle ? 0.28f : 0.18f),
+                flashColor,
+                4.2f,
+                0.035f
+            );
         }
 
         private void ShowHit(bool headshot)
