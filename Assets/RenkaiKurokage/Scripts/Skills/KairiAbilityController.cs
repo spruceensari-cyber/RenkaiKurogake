@@ -31,7 +31,6 @@ namespace Renkai.Kurokage
         [Header("X — Eclipse Blade Protocol")]
         [SerializeField] private float ultimateDuration = 12f;
         [SerializeField] private float ultimateCooldown = 45f;
-        [SerializeField] private float ultimateSwordDamageMultiplier = 1.65f;
         [SerializeField] private float ultimateMoveBoost = 1.18f;
 
         public float QCooldown01 => Cooldown01(nextQ, dashCooldown);
@@ -146,33 +145,64 @@ namespace Renkai.Kurokage
 
         private void SpawnDecoy()
         {
-            GameObject decoy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            decoy.name = "KAIRI_HOLOGRAPHIC_DECOY";
-            decoy.transform.position = transform.position + transform.forward * 1.2f;
-            decoy.transform.rotation = transform.rotation;
-            Collider c = decoy.GetComponent<Collider>();
-            if (c != null) c.isTrigger = true;
+            GameObject decoyRoot = new GameObject("KAIRI_HOLOGRAPHIC_DECOY");
+            decoyRoot.transform.position = transform.position + transform.forward * 1.2f;
+            decoyRoot.transform.rotation = transform.rotation;
 
-            Renderer r = decoy.GetComponent<Renderer>();
-            if (r != null)
+            Transform sourceVisual = transform.Find("AGENT_VISUAL");
+            if (sourceVisual != null)
             {
-                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-                if (shader == null) shader = Shader.Find("Standard");
-                Material m = new Material(shader);
-                Color holo = new Color(0.10f, 0.55f, 1f, 0.55f);
-                if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", holo);
-                if (m.HasProperty("_Color")) m.SetColor("_Color", holo);
-                if (m.HasProperty("_EmissionColor"))
-                {
-                    m.EnableKeyword("_EMISSION");
-                    m.SetColor("_EmissionColor", holo * 2.2f);
-                }
-                r.sharedMaterial = m;
+                GameObject visualClone = Object.Instantiate(sourceVisual.gameObject, decoyRoot.transform);
+                visualClone.name = "HOLOGRAM_VISUAL";
+                visualClone.transform.localPosition = Vector3.zero;
+                visualClone.transform.localRotation = Quaternion.identity;
+
+                foreach (MonoBehaviour behaviour in visualClone.GetComponentsInChildren<MonoBehaviour>(true))
+                    behaviour.enabled = false;
+
+                foreach (Collider c in visualClone.GetComponentsInChildren<Collider>(true))
+                    c.enabled = false;
+
+                ApplyHologramMaterial(visualClone);
+            }
+            else
+            {
+                GameObject fallback = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                fallback.name = "HOLOGRAM_FALLBACK";
+                fallback.transform.SetParent(decoyRoot.transform, false);
+                Collider c = fallback.GetComponent<Collider>();
+                if (c != null) Object.Destroy(c);
+                ApplyHologramMaterial(fallback);
             }
 
-            KurokageDecoyRuntime runtime = decoy.AddComponent<KurokageDecoyRuntime>();
+            KurokageDecoyRuntime runtime = decoyRoot.AddComponent<KurokageDecoyRuntime>();
             runtime.Initialize(transform.forward, decoySpeed, decoyLifetime);
-            SpawnBurstTrail(new Color(0.10f, 0.70f, 1f, 1f), 0.28f, decoy.transform.position);
+            SpawnBurstTrail(new Color(0.10f, 0.70f, 1f, 1f), 0.28f, decoyRoot.transform.position);
+        }
+
+        private static void ApplyHologramMaterial(GameObject root)
+        {
+            Color holo = new Color(0.10f, 0.55f, 1f, 0.68f);
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null) shader = Shader.Find("Standard");
+
+            foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
+            {
+                Material[] mats = r.materials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    Material m = new Material(shader);
+                    if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", holo);
+                    if (m.HasProperty("_Color")) m.SetColor("_Color", holo);
+                    if (m.HasProperty("_EmissionColor"))
+                    {
+                        m.EnableKeyword("_EMISSION");
+                        m.SetColor("_EmissionColor", holo * 2.4f);
+                    }
+                    mats[i] = m;
+                }
+                r.materials = mats;
+            }
         }
 
         private IEnumerator UltimateRoutine()
