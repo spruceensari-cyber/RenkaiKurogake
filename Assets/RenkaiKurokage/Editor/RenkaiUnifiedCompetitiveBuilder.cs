@@ -30,6 +30,18 @@ public static class RenkaiUnifiedCompetitiveBuilder
             return;
         }
 
+        BuildSilent();
+        EditorUtility.DisplayDialog(
+            "Renkai: Kurokage",
+            "Tek sürüm rekabetçi sahne oluşturuldu.\n\n" + ScenePath,
+            "OK"
+        );
+    }
+
+    public static bool BuildSilent()
+    {
+        if (EditorApplication.isPlaying) return false;
+
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         CreateMaterials();
 
@@ -46,13 +58,7 @@ public static class RenkaiUnifiedCompetitiveBuilder
         Directory.CreateDirectory("Assets/RenkaiKurokage/Scenes");
         EditorSceneManager.SaveScene(scene, ScenePath);
         Selection.activeGameObject = root;
-
-        EditorUtility.DisplayDialog(
-            "Renkai: Kurokage",
-            "Tek sürüm rekabetçi sahne oluşturuldu.\n\n" + ScenePath +
-            "\n\nEski V2.x kurulum menüleri artık kullanılmamalı.",
-            "OK"
-        );
+        return true;
     }
 
     [MenuItem("Renkai/Repair Current Unified Scene Materials")]
