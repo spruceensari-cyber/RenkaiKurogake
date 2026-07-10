@@ -7,7 +7,10 @@ using Renkai.Kurokage;
 
 public static class KurokageFinalUpgradeInstaller
 {
-    [MenuItem("Renkai/Run Final Competitive Upgrade")]
+    private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_01";
+
+    [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
     {
         if (EditorApplication.isPlaying)
@@ -16,6 +19,29 @@ public static class KurokageFinalUpgradeInstaller
             return;
         }
 
+        BuildProductionVersion();
+
+        EditorUtility.DisplayDialog(
+            "Renkai: Kurokage",
+            "Tek üretim sürümü hazırlandı.\n\n" +
+            "Bu noktadan sonra eski V2/V3 tarzı ayrı kurulum zincirlerini kullanma.\n" +
+            "Ana akış: main branch + Renkai_Kurogake_Competitive scene + Build Production Version.\n\n" +
+            "Kurulan sistemler:\n" +
+            "- unified competitive scene\n" +
+            "- gameplay feel and viewmodels\n" +
+            "- 5v5 test match\n" +
+            "- FBX agent visuals\n" +
+            "- elite HUD\n" +
+            "- Zodiac Core objective\n" +
+            "- Kairi Q/E/C/X ability kit\n" +
+            "- ability cooldown HUD\n\n" +
+            "Build ID: " + ProductionBuildId,
+            "OK"
+        );
+    }
+
+    public static void BuildProductionVersion()
+    {
         RenkaiUnifiedCompetitiveBuilder.Build();
         KurokageGameplayUpgradeInstaller.Upgrade();
         KurokageFiveVFiveInstaller.Install();
@@ -23,17 +49,26 @@ public static class KurokageFinalUpgradeInstaller
         EnsureEliteHud();
         EnsureZodiacObjective();
         EnsureKairiAbilityKit();
+        EnsureProductionMarker();
 
-        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        Scene scene = SceneManager.GetActiveScene();
+        EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
 
-        EditorUtility.DisplayDialog(
-            "Renkai: Kurokage",
-            "Final competitive upgrade tamamlandı.\n\n- unified scene\n- gameplay feel\n- 5v5 test match\n- FBX agent visuals\n- elite HUD\n- Zodiac Core objective loop\n- Kairi Q/E/C/X ability kit\n- ability cooldown HUD\n\nPlay'e basıp test et.",
-            "OK"
-        );
+    private static void EnsureProductionMarker()
+    {
+        GameObject marker = GameObject.Find(ProductionMarkerName);
+        if (marker == null)
+            marker = new GameObject(ProductionMarkerName);
+
+        KurokageProductionBuildMarker buildMarker = marker.GetComponent<KurokageProductionBuildMarker>();
+        if (buildMarker == null)
+            buildMarker = marker.AddComponent<KurokageProductionBuildMarker>();
+
+        buildMarker.SetBuildId(ProductionBuildId);
     }
 
     private static void EnsureEliteHud()
