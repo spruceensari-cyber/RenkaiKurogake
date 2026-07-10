@@ -38,6 +38,8 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAfterimagePresenter>("Kairi afterimage presenter", 1, ref errors, report);
         ValidateCount<KurokageEclipseProtocolPresenter>("Eclipse Protocol presenter", 1, ref errors, report);
         ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
+        ValidateCount<KurokageMatchStatsTracker>("Match stats tracker", 1, ref errors, report);
+        ValidateCount<KurokageScoreboardHUD>("Scoreboard HUD", 1, ref errors, report);
         ValidateCount<KurokageEliteHUD>("Elite HUD", 1, ref errors, report);
         ValidateCount<KurokageCombatFeedbackHUD>("Combat feedback HUD", 1, ref errors, report);
         ValidateCount<KurokageDamageDirectionHUD>("Damage direction HUD", 1, ref errors, report);
@@ -141,6 +143,8 @@ public static class KurokageProductionValidator
             "KUROKAGE_COMBAT_FEEDBACK_HUD",
             "KUROKAGE_DAMAGE_DIRECTION_HUD",
             "KUROKAGE_MATCH_PRESENTATION_HUD",
+            "KUROKAGE_MATCH_STATS",
+            "KUROKAGE_SCOREBOARD_HUD",
             "KUROKAGE_ABILITY_HUD",
             "KUROKAGE_ZODIAC_HUD",
             "KUROKAGE_VFX_POOL",
