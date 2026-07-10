@@ -26,10 +26,12 @@ namespace Renkai.Kurogake
         private Vector3 spawnPosition;
         private Quaternion spawnRotation;
         private KurokageArmor armor;
+        private KurokageAgentDeathPresentation deathPresentation;
 
         private void Awake()
         {
             armor = GetComponent<KurokageArmor>();
+            deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
             RememberSpawn();
         }
 
@@ -55,6 +57,9 @@ namespace Renkai.Kurogake
             transform.rotation = spawnRotation;
 
             if (controller != null) controller.enabled = true;
+
+            if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+            if (deathPresentation != null) deathPresentation.ResetPresentation();
 
             foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
                 r.enabled = true;
@@ -146,6 +151,10 @@ namespace Renkai.Kurogake
                     hud.SetStatus("YOU ARE DOWN - WAIT FOR ROUND END");
             }
 
+            if (deathPresentation == null) deathPresentation = GetComponent<KurokageAgentDeathPresentation>();
+            Vector3 hitDirection = killer != null ? transform.position - killer.transform.position : -transform.forward;
+            if (deathPresentation != null) deathPresentation.PlayDeath(hitDirection);
+
             if (isHumanPlayer)
             {
                 RenkaiFPSController fps = GetComponent<RenkaiFPSController>();
@@ -162,8 +171,11 @@ namespace Renkai.Kurogake
                 RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
                 if (tacticalBot != null) tacticalBot.enabled = false;
 
-                foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
-                    r.enabled = false;
+                if (deathPresentation == null)
+                {
+                    foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
+                        r.enabled = false;
+                }
 
                 foreach (Collider c in GetComponentsInChildren<Collider>(true))
                     if (!c.isTrigger) c.enabled = false;
