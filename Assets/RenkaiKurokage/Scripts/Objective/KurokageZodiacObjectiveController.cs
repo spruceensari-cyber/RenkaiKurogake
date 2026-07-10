@@ -18,8 +18,27 @@ namespace Renkai.Kurokage
         public string StatusText { get; private set; } = "CORE READY";
 
         private bool roundResultSent;
+        private RenkaiRoundPlayer[] cachedPlayers;
+        private float nextRosterRefresh;
 
         private void Awake()
+        {
+            ResolveReferences();
+            RefreshRoster();
+        }
+
+        private void OnEnable()
+        {
+            ResolveReferences();
+            if (core != null) core.ObjectiveReset += OnObjectiveReset;
+        }
+
+        private void OnDisable()
+        {
+            if (core != null) core.ObjectiveReset -= OnObjectiveReset;
+        }
+
+        private void ResolveReferences()
         {
             if (core == null) core = FindObjectOfType<ZodiacCoreRuntime>();
             if (sites == null || sites.Length == 0) sites = FindObjectsOfType<ZodiacNexusSite>(true);
@@ -37,9 +56,16 @@ namespace Renkai.Kurokage
             }
         }
 
+        private void RefreshRoster()
+        {
+            cachedPlayers = FindObjectsOfType<RenkaiRoundPlayer>(true);
+            nextRosterRefresh = Time.time + 1f;
+        }
+
         private void Update()
         {
             if (core == null || humanPlayer == null) return;
+            if (Time.time >= nextRosterRefresh) RefreshRoster();
 
             if (core.State == ZodiacLinkState.Idle)
             {
@@ -111,16 +137,25 @@ namespace Renkai.Kurokage
         private void TryStartDefenderSever()
         {
             if (core.State != ZodiacLinkState.Synchronized) return;
+            if (cachedPlayers == null || cachedPlayers.Length == 0) RefreshRoster();
 
-            foreach (RenkaiRoundPlayer p in FindObjectsOfType<RenkaiRoundPlayer>(true))
+            foreach (RenkaiRoundPlayer p in cachedPlayers)
             {
-                if (!p.isAlive || p.team != RenkaiTeam.Defenders) continue;
+                if (p == null || !p.isAlive || p.team != RenkaiTeam.Defenders) continue;
                 if (Vector3.Distance(p.transform.position, core.transform.position) <= defenderSeverDistance)
                 {
                     core.BeginSever();
                     return;
                 }
             }
+        }
+
+        private void OnObjectiveReset()
+        {
+            roundResultSent = false;
+            ActiveSiteId = string.Empty;
+            StatusText = "CORE READY";
+            RefreshRoster();
         }
 
         private void SendRoundResult(RenkaiTeam winner, string reason)
