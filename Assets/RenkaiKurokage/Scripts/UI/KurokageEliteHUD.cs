@@ -10,8 +10,10 @@ namespace Renkai.Kurokage
         private RenkaiRoundPlayer player;
         private RenkaiRoundManager roundManager;
         private CharacterController controller;
+        private KurokageArmor armor;
 
         private Text healthText;
+        private Text armorText;
         private Text ammoText;
         private Text reserveText;
         private Text weaponText;
@@ -19,6 +21,7 @@ namespace Renkai.Kurokage
         private Text aliveText;
         private Text reloadText;
         private Image healthFill;
+        private Image armorFill;
         private RectTransform crosshairRoot;
 
         private void Awake()
@@ -28,6 +31,7 @@ namespace Renkai.Kurokage
             {
                 player = weapon.GetComponent<RenkaiRoundPlayer>();
                 controller = weapon.GetComponent<CharacterController>();
+                armor = weapon.GetComponent<KurokageArmor>();
             }
             roundManager = FindObjectOfType<RenkaiRoundManager>();
             Build();
@@ -39,6 +43,17 @@ namespace Renkai.Kurokage
             float maxHp = player != null ? player.maxHealth : 100f;
             healthText.text = Mathf.CeilToInt(hp).ToString();
             healthFill.fillAmount = maxHp > 0f ? Mathf.Clamp01(hp / maxHp) : 0f;
+
+            if (armor != null)
+            {
+                armorText.text = Mathf.CeilToInt(armor.CurrentArmor).ToString();
+                armorFill.fillAmount = armor.Armor01;
+            }
+            else
+            {
+                armorText.text = "0";
+                armorFill.fillAmount = 0f;
+            }
 
             if (weapon != null)
             {
@@ -102,26 +117,22 @@ namespace Renkai.Kurokage
             Color panel = new Color(0.025f, 0.04f, 0.07f, 0.82f);
             Color text = new Color(0.95f, 0.98f, 1f, 1f);
             Color accent = new Color(0.16f, 0.48f, 1f, 1f);
+            Color armorColor = new Color(0.40f, 0.76f, 1f, 1f);
 
             GameObject top = Panel("TOP_CENTER", transform, new Vector2(0.5f, 1f), new Vector2(0f, -36f), new Vector2(620f, 62f), panel);
             scoreText = Label("Score", top.transform, Vector2.zero, new Vector2(360f, 30f), 24, TextAnchor.MiddleCenter, text);
             aliveText = Label("Alive", top.transform, new Vector2(0f, -20f), new Vector2(360f, 22f), 16, TextAnchor.MiddleCenter, accent);
 
-            GameObject left = Panel("BOTTOM_LEFT", transform, Vector2.zero, new Vector2(130f, 88f), new Vector2(350f, 88f), panel);
-            Label("HealthTitle", left.transform, new Vector2(-115f, 22f), new Vector2(120f, 20f), 15, TextAnchor.MiddleLeft, accent).text = "HEALTH";
-            healthText = Label("HealthValue", left.transform, new Vector2(-110f, -12f), new Vector2(100f, 42f), 38, TextAnchor.MiddleLeft, text);
-            GameObject hpBg = Panel("HealthBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, -12f), new Vector2(170f, 16f), new Color(0.08f,0.11f,0.17f,0.95f));
-            healthFill = new GameObject("HealthFill").AddComponent<Image>();
-            healthFill.transform.SetParent(hpBg.transform, false);
-            healthFill.color = accent;
-            healthFill.type = Image.Type.Filled;
-            healthFill.fillMethod = Image.FillMethod.Horizontal;
-            healthFill.fillOrigin = (int)Image.OriginHorizontal.Left;
-            RectTransform hpRt = healthFill.rectTransform;
-            hpRt.anchorMin = Vector2.zero;
-            hpRt.anchorMax = Vector2.one;
-            hpRt.offsetMin = Vector2.zero;
-            hpRt.offsetMax = Vector2.zero;
+            GameObject left = Panel("BOTTOM_LEFT", transform, Vector2.zero, new Vector2(150f, 96f), new Vector2(390f, 112f), panel);
+            Label("HealthTitle", left.transform, new Vector2(-130f, 28f), new Vector2(120f, 20f), 15, TextAnchor.MiddleLeft, accent).text = "HEALTH";
+            healthText = Label("HealthValue", left.transform, new Vector2(-126f, -3f), new Vector2(100f, 42f), 38, TextAnchor.MiddleLeft, text);
+            GameObject hpBg = Panel("HealthBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, 6f), new Vector2(190f, 14f), new Color(0.08f,0.11f,0.17f,0.95f));
+            healthFill = Fill("HealthFill", hpBg.transform, accent);
+
+            Label("ArmorTitle", left.transform, new Vector2(-130f, -34f), new Vector2(120f, 20f), 14, TextAnchor.MiddleLeft, armorColor).text = "ARMOR";
+            armorText = Label("ArmorValue", left.transform, new Vector2(-48f, -34f), new Vector2(70f, 20f), 18, TextAnchor.MiddleLeft, armorColor);
+            GameObject armorBg = Panel("ArmorBG", left.transform, new Vector2(0.5f, 0.5f), new Vector2(55f, -34f), new Vector2(190f, 10f), new Color(0.08f,0.11f,0.17f,0.95f));
+            armorFill = Fill("ArmorFill", armorBg.transform, armorColor);
 
             GameObject right = Panel("BOTTOM_RIGHT", transform, Vector2.one, new Vector2(-150f, -90f), new Vector2(420f, 110f), panel);
             weaponText = Label("Weapon", right.transform, new Vector2(-110f, 28f), new Vector2(260f, 24f), 18, TextAnchor.MiddleLeft, accent);
@@ -137,6 +148,22 @@ namespace Renkai.Kurokage
             CrosshairLine(new Vector2(0f, -7f), new Vector2(2f, 6f));
             CrosshairLine(new Vector2(7f, 0f), new Vector2(6f, 2f));
             CrosshairLine(new Vector2(-7f, 0f), new Vector2(6f, 2f));
+        }
+
+        private static Image Fill(string name, Transform parent, Color color)
+        {
+            Image fill = new GameObject(name).AddComponent<Image>();
+            fill.transform.SetParent(parent, false);
+            fill.color = color;
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = (int)Image.OriginHorizontal.Left;
+            RectTransform rt = fill.rectTransform;
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            return fill;
         }
 
         private static GameObject Panel(string name, Transform parent, Vector2 anchor, Vector2 pos, Vector2 size, Color color)
