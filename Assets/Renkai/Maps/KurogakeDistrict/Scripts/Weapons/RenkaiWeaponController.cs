@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using Renkai.Kurokage;
 
 namespace Renkai.Kurogake
 {
@@ -52,20 +54,48 @@ namespace Renkai.Kurogake
         public float pistolVerticalRecoil = 1.0f;
         public float pistolHorizontalRecoil = 0.18f;
 
+        [Header("ADS")]
+        public float hipFov = 90f;
+        public float adsFov = 72f;
+        public float adsLerpSpeed = 11f;
+        public float adsSpreadMultiplier = 0.72f;
+        public float adsRecoilMultiplier = 0.82f;
+
         [Header("Feel")]
         public float range = 120f;
-        public float recoilReturnSpeed = 9f;
         public float tracerLife = 0.045f;
         public Color rifleTracerColor = new Color(0.18f, 0.55f, 1f);
         public Color pistolTracerColor = new Color(0.75f, 0.35f, 1f);
 
+        public bool IsReloading => reloading;
+        public bool IsAiming { get; private set; }
+        public float ReloadNormalized
+        {
+            get
+            {
+                if (!reloading || reloadDuration <= 0f) return 0f;
+                return Mathf.Clamp01((Time.time - reloadStartTime) / reloadDuration);
+            }
+        }
+        public int CurrentAmmo => slot == RenkaiWeaponSlot.Rifle ? rifleAmmo : slot == RenkaiWeaponSlot.Pistol ? pistolAmmo : -1;
+        public int CurrentReserve => slot == RenkaiWeaponSlot.Rifle ? rifleReserve : slot == RenkaiWeaponSlot.Pistol ? pistolReserve : -1;
+        public string ActiveWeaponName => slot == RenkaiWeaponSlot.Rifle ? "KX-9 KURO" : slot == RenkaiWeaponSlot.Pistol ? "SHIRO SIDEARM" : "ECLIPSE BLADE";
+
+        public event Action ShotFired;
+        public event Action ReloadStarted;
+        public event Action ReloadFinished;
+        public event Action<bool> HitConfirmed;
+
         private float nextFireTime;
         private float reloadEndTime;
+        private float reloadStartTime;
+        private float reloadDuration;
         private float hitTextUntil;
         private bool reloading;
         private CharacterController characterController;
-        private Vector2 recoilOffset;
-        private Vector2 recoilVelocity;
+        private RenkaiFPSController fpsController;
+        private KurokageCombatVfxPresenter combatVfx;
+        private KurokageAudioHooks audioHooks;
 
         private void Awake()
         {
@@ -73,6 +103,9 @@ namespace Renkai.Kurogake
                 playerCamera = GetComponentInChildren<Camera>();
 
             characterController = GetComponent<CharacterController>();
+            fpsController = GetComponent<RenkaiFPSController>();
+            combatVfx = GetComponent<KurokageCombatVfxPresenter>();
+            audioHooks = GetComponent<KurokageAudioHooks>();
 
             if (muzzlePoint == null && playerCamera != null)
             {
@@ -82,6 +115,9 @@ namespace Renkai.Kurogake
                 muzzlePoint = muzzle.transform;
             }
 
+            if (playerCamera != null)
+                playerCamera.fieldOfView = hipFov;
+
             SelectWeapon(0);
         }
 
@@ -90,6 +126,9 @@ namespace Renkai.Kurogake
             if (Input.GetKeyDown(KeyCode.Alpha1)) SelectWeapon(0);
             if (Input.GetKeyDown(KeyCode.Alpha2)) SelectWeapon(1);
             if (Input.GetKeyDown(KeyCode.Alpha3)) SelectWeapon(2);
+
+            IsAiming = !reloading && slot != RenkaiWeaponSlot.Sword && Input.GetMouseButton(1);
+            UpdateAds();
 
             if (reloading && Time.time >= reloadEndTime)
                 FinishReload();
@@ -105,9 +144,6 @@ namespace Renkai.Kurogake
             }
 
             if (Input.GetKeyDown(KeyCode.R)) StartReload();
-            if (Input.GetKeyDown(KeyCode.V)) Slash();
-
-            UpdateRecoilRecovery();
 
             if (hitText != null && hitText.enabled && Time.time > hitTextUntil)
                 hitText.enabled = false;
@@ -125,9 +161,16 @@ namespace Renkai.Kurogake
             SelectWeapon(0);
         }
 
+        private void UpdateAds()
+        {
+            if (playerCamera == null) return;
+            float target = IsAiming ? adsFov : hipFov;
+            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, target, adsLerpSpeed * Time.deltaTime);
+        }
+
         private void SelectWeapon(int index)
         {
-            if (reloading) reloading = false;
+            if (reloading) CancelReload();
 
             slot = index == 0
                 ? RenkaiWeaponSlot.Rifle
@@ -156,7 +199,9 @@ namespace Renkai.Kurogake
             nextFireTime = Time.time + 1f / Mathf.Max(0.1f, fireRate);
 
             float spreadDegrees = GetCurrentSpread();
-            Vector2 random = Random.insideUnitCircle * Mathf.Tan(spreadDegrees * Mathf.Deg2Rad);
+            if (IsAiming) spreadDegrees *= adsSpreadMultiplier;
+
+            Vector2 random = UnityEngine.Random.insideUnitCircle * Mathf.Tan(spreadDegrees * Mathf.Deg2Rad);
             Vector3 direction = (
                 playerCamera.transform.forward +
                 playerCamera.transform.right * random.x +
@@ -169,30 +214,71 @@ namespace Renkai.Kurogake
             if (Physics.Raycast(ray, out RaycastHit hit, range, ~0, QueryTriggerInteraction.Ignore))
             {
                 end = hit.point;
-
-                RenkaiHealth health = hit.collider.GetComponentInParent<RenkaiHealth>();
-                if (health != null)
-                {
-                    float bodyDamage = slot == RenkaiWeaponSlot.Rifle ? rifleBodyDamage : pistolBodyDamage;
-                    float headMultiplier = slot == RenkaiWeaponSlot.Rifle ? rifleHeadMultiplier : pistolHeadMultiplier;
-                    bool headshot = hit.collider.name.ToLowerInvariant().Contains("head");
-                    float damage = bodyDamage * (headshot ? headMultiplier : 1f);
-
-                    health.TakeDamage(damage);
-                    ShowHit(headshot);
-                }
+                ProcessHit(hit);
             }
 
             Color tracerColor = slot == RenkaiWeaponSlot.Rifle ? rifleTracerColor : pistolTracerColor;
-            SpawnTracer(muzzlePoint.position, end, tracerColor, tracerLife);
+            SpawnTracer(muzzlePoint != null ? muzzlePoint.position : ray.origin, end, tracerColor, tracerLife);
             SpawnMuzzleFlash();
             ApplyRecoil();
+            ShotFired?.Invoke();
+        }
+
+        private void ProcessHit(RaycastHit hit)
+        {
+            RenkaiRoundPlayer roundPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
+            RenkaiHealth legacyHealth = hit.collider.GetComponentInParent<RenkaiHealth>();
+            bool headshot = hit.collider.name.ToLowerInvariant().Contains("head");
+            float bodyDamage = slot == RenkaiWeaponSlot.Rifle ? rifleBodyDamage : pistolBodyDamage;
+            float headMultiplier = slot == RenkaiWeaponSlot.Rifle ? rifleHeadMultiplier : pistolHeadMultiplier;
+            float damage = bodyDamage * (headshot ? headMultiplier : 1f);
+
+            if (roundPlayer != null)
+            {
+                KurokageArmor targetArmor = roundPlayer.GetComponent<KurokageArmor>();
+                bool hadArmor = targetArmor != null && targetArmor.CurrentArmor > 0f;
+                RenkaiRoundPlayer self = GetComponent<RenkaiRoundPlayer>();
+
+                if (self == null || roundPlayer.team != self.team)
+                {
+                    roundPlayer.TakeDamage(damage, self);
+                    ShowHit(headshot);
+                    if (combatVfx != null)
+                    {
+                        if (headshot) combatVfx.SpawnHeadshotImpact(hit.point, hit.normal);
+                        else if (hadArmor) combatVfx.SpawnArmorImpact(hit.point, hit.normal);
+                        else combatVfx.SpawnBodyImpact(hit.point, hit.normal);
+                    }
+
+                    if (audioHooks != null)
+                    {
+                        if (headshot) audioHooks.PlayHeadshot();
+                        else audioHooks.PlayBodyHit();
+                    }
+                    return;
+                }
+            }
+
+            if (legacyHealth != null)
+            {
+                legacyHealth.TakeDamage(damage);
+                ShowHit(headshot);
+                if (combatVfx != null)
+                {
+                    if (headshot) combatVfx.SpawnHeadshotImpact(hit.point, hit.normal);
+                    else combatVfx.SpawnBodyImpact(hit.point, hit.normal);
+                }
+                return;
+            }
+
+            if (combatVfx != null)
+                combatVfx.SpawnWorldImpact(hit.point, hit.normal);
         }
 
         private float GetCurrentSpread()
         {
             bool grounded = characterController == null || characterController.isGrounded;
-            float speed = characterController == null ? 0f : characterController.velocity.magnitude;
+            float speed = characterController == null ? 0f : new Vector3(characterController.velocity.x, 0f, characterController.velocity.z).magnitude;
 
             if (slot == RenkaiWeaponSlot.Rifle)
             {
@@ -211,39 +297,33 @@ namespace Renkai.Kurogake
             float vertical = slot == RenkaiWeaponSlot.Rifle ? rifleVerticalRecoil : pistolVerticalRecoil;
             float horizontal = slot == RenkaiWeaponSlot.Rifle ? rifleHorizontalRecoil : pistolHorizontalRecoil;
 
-            recoilVelocity += new Vector2(
-                Random.Range(-horizontal, horizontal),
-                vertical
-            );
-        }
+            if (IsAiming)
+            {
+                vertical *= adsRecoilMultiplier;
+                horizontal *= adsRecoilMultiplier;
+            }
 
-        private void UpdateRecoilRecovery()
-        {
-            if (playerCamera == null) return;
-
-            recoilVelocity = Vector2.Lerp(recoilVelocity, Vector2.zero, recoilReturnSpeed * Time.deltaTime);
-            recoilOffset += recoilVelocity * Time.deltaTime * 8f;
-            recoilOffset = Vector2.Lerp(recoilOffset, Vector2.zero, recoilReturnSpeed * 0.7f * Time.deltaTime);
-
-            Vector3 euler = playerCamera.transform.localEulerAngles;
-            float x = euler.x > 180f ? euler.x - 360f : euler.x;
-            playerCamera.transform.localEulerAngles = new Vector3(
-                x - recoilVelocity.y * Time.deltaTime,
-                recoilVelocity.x * Time.deltaTime,
-                0f
-            );
+            if (fpsController != null)
+                fpsController.AddRecoil(vertical, UnityEngine.Random.Range(-horizontal, horizontal));
         }
 
         private void StartReload()
         {
             if (slot == RenkaiWeaponSlot.Sword || reloading) return;
-
             if (slot == RenkaiWeaponSlot.Rifle && (rifleAmmo >= 30 || rifleReserve <= 0)) return;
             if (slot == RenkaiWeaponSlot.Pistol && (pistolAmmo >= 12 || pistolReserve <= 0)) return;
 
             reloading = true;
-            reloadEndTime = Time.time + (slot == RenkaiWeaponSlot.Rifle ? rifleReloadTime : pistolReloadTime);
-            Debug.Log("RELOAD STARTED");
+            reloadDuration = slot == RenkaiWeaponSlot.Rifle ? rifleReloadTime : pistolReloadTime;
+            reloadStartTime = Time.time;
+            reloadEndTime = Time.time + reloadDuration;
+            ReloadStarted?.Invoke();
+        }
+
+        private void CancelReload()
+        {
+            reloading = false;
+            reloadDuration = 0f;
         }
 
         private void FinishReload()
@@ -262,7 +342,8 @@ namespace Renkai.Kurogake
             }
 
             reloading = false;
-            Debug.Log("RELOAD FINISHED");
+            reloadDuration = 0f;
+            ReloadFinished?.Invoke();
         }
 
         private void Slash()
@@ -272,11 +353,24 @@ namespace Renkai.Kurogake
 
             if (Physics.SphereCast(ray, 0.85f, out RaycastHit hit, 3.2f, ~0, QueryTriggerInteraction.Ignore))
             {
-                RenkaiHealth health = hit.collider.GetComponentInParent<RenkaiHealth>();
-                if (health != null)
+                RenkaiRoundPlayer victim = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
+                RenkaiRoundPlayer self = GetComponent<RenkaiRoundPlayer>();
+
+                if (victim != null && (self == null || victim.team != self.team))
                 {
-                    health.TakeDamage(55f);
+                    victim.TakeDamage(55f, self);
                     ShowHit(false);
+                    if (combatVfx != null) combatVfx.SpawnBodyImpact(hit.point, hit.normal);
+                    if (audioHooks != null) audioHooks.PlayBladeSlash();
+                }
+                else
+                {
+                    RenkaiHealth health = hit.collider.GetComponentInParent<RenkaiHealth>();
+                    if (health != null)
+                    {
+                        health.TakeDamage(55f);
+                        ShowHit(false);
+                    }
                 }
             }
 
@@ -289,6 +383,7 @@ namespace Renkai.Kurogake
             slash.transform.localScale = new Vector3(1.6f, 0.045f, 0.18f);
             Paint(slash, new Color(0.2f, 0.55f, 1f), 3.5f);
             Destroy(slash, 0.12f);
+            ShotFired?.Invoke();
         }
 
         public void SpawnTracer(Vector3 from, Vector3 to, Color color, float life)
@@ -341,31 +436,29 @@ namespace Renkai.Kurogake
 
         private void ShowHit(bool headshot)
         {
-            if (hitText == null) return;
-            hitText.text = headshot ? "HEADSHOT" : "HIT";
-            hitText.enabled = true;
-            hitTextUntil = Time.time + (headshot ? 0.22f : 0.13f);
+            if (hitText != null)
+            {
+                hitText.text = headshot ? "HEADSHOT" : "HIT";
+                hitText.enabled = true;
+                hitTextUntil = Time.time + (headshot ? 0.22f : 0.13f);
+            }
+
+            HitConfirmed?.Invoke(headshot);
         }
 
         private void UpdateUI()
         {
             if (weaponText != null)
-                weaponText.text = slot == RenkaiWeaponSlot.Rifle
-                    ? "KX-9 KURO"
-                    : slot == RenkaiWeaponSlot.Pistol
-                        ? "SHIRO SIDEARM"
-                        : "ECLIPSE BLADE";
+                weaponText.text = ActiveWeaponName;
 
             if (ammoText == null) return;
 
             if (slot == RenkaiWeaponSlot.Sword)
                 ammoText.text = "BLADE";
             else if (reloading)
-                ammoText.text = "RELOADING...";
+                ammoText.text = "RELOADING " + Mathf.RoundToInt(ReloadNormalized * 100f) + "%";
             else
-                ammoText.text = slot == RenkaiWeaponSlot.Rifle
-                    ? rifleAmmo + " / " + rifleReserve
-                    : pistolAmmo + " / " + pistolReserve;
+                ammoText.text = CurrentAmmo + " / " + CurrentReserve;
         }
     }
 }
