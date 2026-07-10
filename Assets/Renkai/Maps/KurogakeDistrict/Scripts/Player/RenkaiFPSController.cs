@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 namespace Renkai.Kurogake
@@ -7,9 +6,9 @@ namespace Renkai.Kurogake
     public class RenkaiFPSController : MonoBehaviour
     {
         [Header("Movement")]
-        public float walkSpeed = 6f;
-        public float sprintSpeed = 9f;
-        public float crouchSpeed = 3.2f;
+        public float walkSpeed = 5.6f;
+        public float sprintSpeed = 7.4f;
+        public float crouchSpeed = 3.1f;
         public float jumpHeight = 1.1f;
         public float gravity = -24f;
 
@@ -31,7 +30,8 @@ namespace Renkai.Kurogake
         [Header("Respawn / Safety")]
         public Transform respawnPoint;
         public float killY = -12f;
-        public KeyCode manualRespawnKey = KeyCode.R;
+        public bool allowManualRespawn = false;
+        public KeyCode manualRespawnKey = KeyCode.F9;
 
         private CharacterController controller;
         private float verticalVelocity;
@@ -55,6 +55,9 @@ namespace Renkai.Kurogake
 
         private void Update()
         {
+            if (controller == null || !controller.enabled || !gameObject.activeInHierarchy)
+                return;
+
             Look();
             HandleCrouch();
             Move();
@@ -79,8 +82,7 @@ namespace Renkai.Kurogake
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
             transform.Rotate(Vector3.up * mouseX);
-            pitch -= mouseY;
-            pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+            pitch = Mathf.Clamp(pitch - mouseY, minPitch, maxPitch);
 
             if (playerCamera != null)
                 playerCamera.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
@@ -88,14 +90,20 @@ namespace Renkai.Kurogake
 
         private void HandleCrouch()
         {
-            bool crouchHeld = Input.GetKey(crouchKey) || (allowLeftControlCrouch && Input.GetKey(KeyCode.LeftControl));
+            bool crouchHeld = Input.GetKey(crouchKey) ||
+                              (allowLeftControlCrouch && Input.GetKey(KeyCode.LeftControl));
+
             isCrouching = crouchHeld;
 
             float targetHeight = isCrouching ? crouchingHeight : standingHeight;
             float targetCenterY = targetHeight * 0.5f;
 
             controller.height = Mathf.Lerp(controller.height, targetHeight, Time.deltaTime * crouchSmooth);
-            controller.center = Vector3.Lerp(controller.center, new Vector3(0f, targetCenterY, 0f), Time.deltaTime * crouchSmooth);
+            controller.center = Vector3.Lerp(
+                controller.center,
+                new Vector3(0f, targetCenterY, 0f),
+                Time.deltaTime * crouchSmooth
+            );
 
             if (playerCamera != null)
             {
@@ -115,7 +123,7 @@ namespace Renkai.Kurogake
 
             float speed = walkSpeed;
             if (isCrouching) speed = crouchSpeed;
-            else if (Input.GetKey(KeyCode.LeftShift)) speed = sprintSpeed;
+            else if (Input.GetKey(KeyCode.LeftShift) && z > 0.1f) speed = sprintSpeed;
 
             Vector3 velocity = direction * speed;
 
@@ -136,14 +144,17 @@ namespace Renkai.Kurogake
 
         private void SafetyRespawnCheck()
         {
-            if (transform.position.y < killY || Input.GetKeyDown(manualRespawnKey))
-            {
+            bool fellOutOfMap = transform.position.y < killY;
+            bool manualRequested = allowManualRespawn && Input.GetKeyDown(manualRespawnKey);
+
+            if (fellOutOfMap || manualRequested)
                 Respawn();
-            }
         }
 
         public void Respawn()
         {
+            if (controller == null) return;
+
             controller.enabled = false;
 
             if (respawnPoint != null)
