@@ -11,6 +11,10 @@ namespace Renkai.Kurogake
         private Vector3 startPosition;
         private Quaternion startRotation;
 
+        public float CurrentHealth => currentHealth;
+        public float MaxHealth => maxHealth;
+        public bool IsAlive => currentHealth > 0f && gameObject.activeInHierarchy;
+
         private void Awake()
         {
             currentHealth = maxHealth;
@@ -27,7 +31,7 @@ namespace Renkai.Kurogake
                 return;
             }
 
-            currentHealth -= damage;
+            currentHealth = Mathf.Max(0f, currentHealth - damage);
             Debug.Log(name + " took " + damage + " damage. HP: " + currentHealth);
 
             if (currentHealth <= 0f)
@@ -44,6 +48,11 @@ namespace Renkai.Kurogake
                     gameObject.SetActive(false);
                 }
             }
+        }
+
+        public void ResetHealth()
+        {
+            currentHealth = maxHealth;
         }
     }
 }
