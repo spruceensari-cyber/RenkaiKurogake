@@ -5,6 +5,12 @@ namespace Renkai.Kurokage
         Kairi,
         Noa,
         Reiha,
-        Mio
+        Mio,
+        Sora,
+        Aiko,
+        Ren,
+        Hana,
+        Toma,
+        Yori
     }
 }

@@ -1,0 +1,1113 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Successfully connected to the License Client on channel: "LicenseClient-Ensari" at "2026-07-10T19:22:27.6799639Z"
+[Licensing::Client] Error: Code 10 while verifying Licensing Client signature (process Id: 20228, path: "C:/Program Files/Unity Hub/UnityLicensingClient_V1/Unity.Licensing.Client.exe")
+[Licensing::Module] Error: LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.17.4+4293ba1
+  Session Id:              85da418dc137423b9828be385b435b87
+  Correlation Id:          5069be3ebc1088df95eb1911d4b6b78c
+  External correlation Id: 7639525479314887958
+  Machine Id:              +6fycD4VSUsOJGoNm4jppgkwr7Y=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Ensari" (connect: 0.00s, validation: 0.01s, handshake: 0.03s)
+[Licensing::IpcConnector] Successfully connected to the License Notification on channel: "LicenseClient-Ensari-notifications" at "2026-07-10T19:22:27.7261755Z"
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully updated license
+Built from '2022.3/staging' branch; Version is '2022.3.50f1 (c3db7f8bf9b1) revision 12835711'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Core' Language: 'tr' Physical Memory: 32694 MB
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Serial number assigned to: "18968432865384-UnityPersXXXX"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+[Licensing::Client] Successfully resolved entitlement details
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Unity.exe
+-batchmode
+-quit
+-projectPath
+C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake
+-executeMethod
+KurokageFinalUpgradeInstaller.BuildProductionVersion
+-logFile
+C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\renkai-original-agents-20260710-222227.log
+Successfully changed project path to: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake
+C:/Users/Ensari/Music/RenkaiKurogake/RenkaiKurogake
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [22036]  Target information:
+
+Player connection [22036]  * "[IP] 192.168.0.4 [Port] 55504 [Flags] 2 [Guid] 3039611245 [EditorId] 3039611245 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-4IDU8OC) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [22036] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [22036] Host joined alternative multi-casting on [225.0.0.222:34997]...
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[Package Manager] UpmClient::Connect -- Connected to IPC stream "Upm-27048" after 0.3 seconds.
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 20 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.textmeshpro@3.0.6 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.textmeshpro@3.0.6)
+    com.unity.timeline@1.7.6 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.timeline@1.7.6)
+    com.unity.mathematics@1.2.6 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.mathematics@1.2.6)
+    com.unity.burst@1.8.18 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.burst@1.8.18)
+    com.unity.searcher@4.9.2 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.searcher@4.9.2)
+  Built-in packages:
+    com.unity.render-pipelines.universal@14.0.11 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.render-pipelines.universal@14.0.11)
+    com.unity.ugui@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.ugui@1.0.0)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.ai@1.0.0)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.animation@1.0.0)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.audio@1.0.0)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.imgui@1.0.0)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.physics@1.0.0)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.particlesystem@1.0.0)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.terrain@1.0.0)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.ui@1.0.0)
+    com.unity.modules.director@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.director@1.0.0)
+    com.unity.render-pipelines.core@14.0.11 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.render-pipelines.core@14.0.11)
+    com.unity.shadergraph@14.0.11 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.shadergraph@14.0.11)
+    com.unity.render-pipelines.universal-config@14.0.10 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.render-pipelines.universal-config@14.0.10)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0)
+[Subsystems] No new subsystems found in resolved package list.
+Package Manager log level set to [2]
+[Package Manager] Done registering packages in 0.09 seconds
+Refreshing native plugins compatible for Editor in 3.32 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.50f1 (c3db7f8bf9b1)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Ensari/Music/RenkaiKurogake/RenkaiKurogake/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 5060 (ID=0x2d05)
+    Vendor:   NVIDIA
+    VRAM:     7895 MB
+    Driver:   32.0.16.1062
+[Licensing::Client] Successfully resolved entitlement details
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56048
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+[Licensing::Client] Successfully resolved entitlement details
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+[Licensing::Client] Successfully resolved entitlement details
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2022.3.50f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.030285 seconds.
+- Loaded All Assemblies, in  0.308 seconds
+Native extension for WindowsStandalone target not found
+[usbmuxd] Start listen thread
+[usbmuxd] Listen thread started
+Native extension for iOS target not found
+Native extension for Android target not found
+Android Extension - Scanning For ADB Devices 2213 ms
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.461 seconds
+Domain Reload Profiling: 2768ms
+	BeginReloadAssembly (81ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (27ms)
+	RebuildNativeTypeToScriptingClass (8ms)
+	initialDomainReloadingComplete (73ms)
+	LoadAllAssembliesAndSetupDomain (119ms)
+		LoadAssemblies (80ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (117ms)
+			TypeCache.Refresh (115ms)
+				TypeCache.ScanAssembly (104ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (2461ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (2425ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2288ms)
+			SetLoadedEditorAssemblies (3ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (2ms)
+			ProcessInitializeOnLoadAttributes (96ms)
+			ProcessInitializeOnLoadMethodAttributes (35ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Ensari\Music\RenkaiKurogake\RenkaiKurogake\
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 34.9599ms
+Starting: C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\bee_backend.exe --dont-print-to-structured-log --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/Ensari/Music/RenkaiKurogake/RenkaiKurogake
+DisplayProgressbar: Compiling Scripts
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.runtime.interopservices.windowsruntime has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll" in favor of "C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\NetStandard\Extensions\2.0.0\System.Runtime.InteropServices.WindowsRuntime.dll"
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.componentmodel.composition has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\System.ComponentModel.Composition.dll" in favor of "C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.ComponentModel.Composition.dll"
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Unity.Burst.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.burst@1.8.18\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc - - 200 - application/grpc 44.8878ms
+ExitCode: 4 Duration: 1s13ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+[304/382    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[305/382    0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll (+2 others)
+*** Tundra requires additional run (0.98 seconds), 2 items updated, 303 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\Tools\netcorerun\netcorerun.exe "C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/Ensari/Music/RenkaiKurogake/RenkaiKurogake
+ExitCode: 0 Duration: 0s313ms
+Starting: C:\Program Files\Unity\Hub\Editor\2022.3.50f1\Editor\Data\bee_backend.exe --dont-print-to-structured-log --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/Ensari/Music/RenkaiKurogake/RenkaiKurogake
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Current configuration matches the requested one, skipping
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/ConfigurePostProcessors'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/ConfigurePostProcessors application/grpc - - 200 - application/grpc 1.2466ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll, with 119 defines and 210 references
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      processors: zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Resolved Unity.Burst.Cecil.Rocks, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e with Library\PackageCache\com.unity.burst@1.8.18\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc - - 200 - application/grpc 178.6343ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 117 defines and 241 references
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      processors: zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Unity.ILPP.Runner.PostProcessingPipeline[0]
+      running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/PostProcessAssembly'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/PostProcessAssembly application/grpc - - 200 - application/grpc 7.2308ms
+ExitCode: 0 Duration: 0s884ms
+Finished compiling graph: 385 nodes, 4069 flattened edges (3381 ToBuild, 52 ToUse), maximum node priority 330
+[230/382    0s] WriteText Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.rsp
+[304/382    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[374/382    0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll (+2 others)
+[375/382    0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[376/382    0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll, with 119 defines and 210 references
+
+processors: zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[377/382    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[378/382    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[379/382    0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 117 defines and 241 references
+
+processors: zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[380/382    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+[381/382    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+*** Tundra build success (0.78 seconds), 10 items updated, 382 evaluated
+AssetDatabase: script compilation time: 2.638686s
+Begin MonoManager ReloadAssembly
+Total cache size 268404736
+Total cache size after purge 268404736
+- Loaded All Assemblies, in  0.452 seconds
+Refreshing native plugins compatible for Editor in 1.15 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Start importing Assets/RenkaiKurokage/Scripts/Presentation/KurokageAgentArchetype.cs using Guid(b011038c944e3024789529c02fad8dd4) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3d35720816a2222308a49abc796fc6bc') in 0.009239 seconds
+Start importing Assets/RenkaiKurokage/Scripts/Presentation/KurokageOriginalAgentPose.cs using Guid(618e3865e6a99c241af7fc65258de283) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cc8f83ab40ef2b5ed589636c6b9d4871') in 0.003811 seconds
+Start importing Assets/RenkaiKurokage/Editor/KurokageProductionValidator.cs using Guid(b9a4e5bd03a280e4ab76fa368a849a53) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b23f804aed7305d5da057a472b1f4092') in 0.001764 seconds
+Start importing Assets/RenkaiKurokage/Editor/KurokageAgentVisualInstaller.cs using Guid(f9c3e9cfeaf8a044f90734c15f7b6988) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd30965c4ec33a9061f395cd8ee581390') in 0.001634 seconds
+Refreshing native plugins compatible for Editor in 0.90 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for iOS target not found
+Native extension for Android target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.521 seconds
+Domain Reload Profiling: 1972ms
+	BeginReloadAssembly (160ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (6ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (32ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (26ms)
+	LoadAllAssembliesAndSetupDomain (225ms)
+		LoadAssemblies (209ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (90ms)
+			TypeCache.Refresh (70ms)
+				TypeCache.ScanAssembly (59ms)
+			ScanForSourceGeneratedMonoScriptInfo (12ms)
+			ResolveRequiredComponents (7ms)
+	FinalizeReload (1522ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1397ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (24ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (24ms)
+			ProcessInitializeOnLoadAttributes (1281ms)
+			ProcessInitializeOnLoadMethodAttributes (58ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (6ms)
+Refreshing native plugins compatible for Editor in 1.68 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=9278a561c62897d4da28b259eb74afd2): Total: 5.531 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=4 (actual=4, local cache=0, cache server=0)
+		Asset DB Process Time: managed=3 ms, native=806 ms
+		Asset DB Callback time: managed=39 ms, native=3 ms
+		Scripting: domain reloads=1, domain reload time=2014 ms, compile time=2639 ms, other=23 ms
+		Project Asset Count: scripts=3101, non-scripts=1152
+		Asset File Changes: new=1, changed=4, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeBeforeRefreshCallbacks: 0.498ms
+	ApplyChangesToAssetFolders: 0.024ms
+	Scan: 36.945ms
+	OnSourceAssetsModified: 1.632ms
+	GetAllGuidsForCategorization: 0.608ms
+	CategorizeAssets: 67.056ms
+	ImportOutOfDateAssets: 1568.978ms (-1108.803ms without children)
+		ImportManagerImport: 20.691ms (3.288ms without children)
+			ImportInProcess: 17.356ms
+			UpdateCategorizedAssets: 0.047ms
+		CompileScripts: 2638.810ms
+		ReloadNativeAssets: 0.001ms
+		UnloadImportedAssets: 15.768ms
+		ReloadImportedAssets: 0.647ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.346ms
+		InitializingProgressBar: 0.006ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 0.513ms
+	PostProcessAllAssets: 37.961ms
+	Hotreload: 3.036ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.001ms
+	UnloadStreamsBegin: 0.973ms
+	PersistCurrentRevisions: 0.170ms
+	UnloadStreamsEnd: 0.028ms
+	GenerateScriptTypeHashes: 1.635ms
+	Untracked: 3812.836ms
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.04 seconds
+Scanning for USB devices : 8.591ms
+Initializing Unity extensions:
+[Licensing::Client] Successfully resolved entitlement details
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-RenkaiKurogakeDistrictV2_2_1_CompileFix_Unity
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ProgressiveSceneManager::Cancel()
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 55 unused Assets / (1.2 MB). Loaded Objects now: 3123.
+Memory consumption went from 114.8 MB to 113.6 MB.
+Total: 4.100200 ms (FindLiveObjects: 0.209100 ms CreateObjectMapping: 0.125200 ms MarkObjects: 3.299900 ms  DeleteObjects: 0.465700 ms)
+
+Opening scene 'Assets/RenkaiKurokage/Scenes/Renkai_Kurogake_Competitive.unity'
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/RenkaiKurokage/Scenes/Renkai_Kurogake_Competitive.unity'
+	Deserialize:            50.560 ms
+	Integration:            104.184 ms
+	Integration of assets:  0.035 ms
+	Thread Wait Time:       0.043 ms
+	Total Operation Time:   154.821 ms
+Unloading 3 unused Assets / (1.9 KB). Loaded Objects now: 7600.
+Memory consumption went from 117.3 MB to 117.3 MB.
+Total: 3.605400 ms (FindLiveObjects: 0.534100 ms CreateObjectMapping: 0.157800 ms MarkObjects: 2.894800 ms  DeleteObjects: 0.018200 ms)
+
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_LightComposite.mat using Guid(51ea9a9be6387cf4db149bd2b0c40346) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '38cf59d78d6b1ea09903ebd364504e80') in 0.002255 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Hologram.mat using Guid(62b26858fd24215499f5c91d605c5305) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2985b0538d773f4dc3f7bfaa194f6db3') in 0.001603 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_CoverNeutral.mat using Guid(f33251f4fc5dbdc43b0f1bd1155e6052) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2c13e49d1ee20790a86d48fc3bb7647a') in 0.001784 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Glass_Subtle.mat using Guid(65e523796acecde4787c5dc338d348cb) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '415ff076985f1b4b713d1aa931b5462e') in 0.001501 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Accent_Violet.mat using Guid(e6b9686436a331b40aa4ae5ee2cfacc4) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a81a73cce90bafd19941131efee24881') in 0.001471 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Accent_Blue.mat using Guid(089c95118c991c8489f337964b92107e) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ce9458f0dfa849f3d2b83fd175bfa190') in 0.001501 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_DarkCeramic.mat using Guid(cb154bcdcb239e64ab82409293f34baa) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '05d0b122d4f73949f08e64dfc7a9b9d7') in 0.001383 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Energy_Core.mat using Guid(4e89375d9580acb428e7cc8c4afc8874) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f785825ea04d6e7e910f0aab7fe353f5') in 0.001490 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_NavyMetal.mat using Guid(4f2bb76de43aef5499f37418e77f08d2) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5ace452d566d8946767a0f156f3aead7') in 0.001482 seconds
+Refreshing native plugins compatible for Editor in 0.79 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=0647a1f7c9563a94bb40525a8858d9a1): Total: 0.044 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_LightComposite.mat using Guid(51ea9a9be6387cf4db149bd2b0c40346) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '079cb7a084420f3e92e3bf4f0c1dfbf1') in 0.002184 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Hologram.mat using Guid(62b26858fd24215499f5c91d605c5305) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e316f62478ba0a647ff44b003ddbe618') in 0.001637 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_CoverNeutral.mat using Guid(f33251f4fc5dbdc43b0f1bd1155e6052) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '175a040a603bbf131eee7387e71af4e8') in 0.001689 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_RenkaiSkybox.mat using Guid(15dab4ef7dce5f64bb2da02232018283) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd69528db2366b9f1bd731c77cb1a1759') in 0.001440 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Glass_Subtle.mat using Guid(65e523796acecde4787c5dc338d348cb) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7a68b26fe68aef4a6cceb385fa51feec') in 0.001380 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Accent_Violet.mat using Guid(e6b9686436a331b40aa4ae5ee2cfacc4) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b8496457aeb0e361cdc51058af1f109d') in 0.001540 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Accent_Blue.mat using Guid(089c95118c991c8489f337964b92107e) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0ceb3c1bb27d7accfd35d1b5f5367167') in 0.001448 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_DarkCeramic.mat using Guid(cb154bcdcb239e64ab82409293f34baa) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '647cd9fe30c48bcd927c02a3f6b47a06') in 0.001497 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_Energy_Core.mat using Guid(4e89375d9580acb428e7cc8c4afc8874) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2e560799fadb034eabfbc301b827226b') in 0.001667 seconds
+Start importing Assets/RenkaiKurokage/Art/GeneratedMaterials/M_NavyMetal.mat using Guid(4f2bb76de43aef5499f37418e77f08d2) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'faaebd07f6d2b0b542f5260faaa3f537') in 0.001427 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=262389b963548a042a9ecb2818e7482d): Total: 0.043 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials using Guid(312e31b6327caeb459bae5fc1134b03a) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '40086fa3545bc45886fb7cc764481bc3') in 0.001980 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=1c839f3b455b12a4589339401c8c7f1c): Total: 0.036 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Body.mat using Guid(925da9e711f64a44aaf5d9d31def723b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '55076c631daa819fd8c919c63af34e48') in 0.002194 seconds
+Refreshing native plugins compatible for Editor in 0.91 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=af30da6b047686545800aa10c7da4641): Total: 0.020 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Fabric.mat using Guid(e37397e784c889a4c9be9c076915d426) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8bbec3bba346bd1e85b71c1a4ce13ffa') in 0.002708 seconds
+Refreshing native plugins compatible for Editor in 0.82 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=47578befa144b0a44ac6bf366c1d5448): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Accent.mat using Guid(8eccf7249d28fec44a42cc4c17043be1) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '410904a314d1ff064295f57783af862f') in 0.002003 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=15b476b974c52834fb4ee1d09560a1bf): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Visor.mat using Guid(faab36daa7d6bcf4ea44002dbb5b88c0) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8eb621943fe21474a06a553cb376836b') in 0.002188 seconds
+Refreshing native plugins compatible for Editor in 0.94 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=eae32f78a42438b43a478663cb739f74): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_Alpha_Signal.mat using Guid(eb330ee75a057684497c7bd2b34e09cf) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f4b9e4009459780ea990a7925df90790') in 0.002348 seconds
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=8c1e9275b5080f2428bf83aa37b73bad): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_DarkMetal.mat using Guid(51dc4e6b62239af4c977bd34b9bd1514) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8fe7df791eda39b075b7d15e57413710') in 0.002400 seconds
+Refreshing native plugins compatible for Editor in 0.87 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=18054598bee0965489c4ac77710c954d): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Body.mat using Guid(8f8f3ef696b66794898137508ce85147) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4030222cbbcad30045d3e4c437c80823') in 0.002445 seconds
+Refreshing native plugins compatible for Editor in 1.20 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=840bac88d83b759458634245998ce943): Total: 0.027 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Fabric.mat using Guid(e51c5312d12ae8341ba4b17fa942f5de) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd947b5ff5355a6f3f4952a53abdda5a7') in 0.002266 seconds
+Refreshing native plugins compatible for Editor in 1.01 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=30f96aef8babdd9409e34950de16e787): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Accent.mat using Guid(d1f8c9f0ace39834dbc11b16d914b2e0) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '22dd28fd8404bbe8e1aebec77f6d452d') in 0.002410 seconds
+Refreshing native plugins compatible for Editor in 0.85 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=30f4e609f91e6284c8473c9b60f1bb50): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Visor.mat using Guid(717bf09dfc0b68d4bbea90ee93be8d01) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8fbf7ef0bc889a7c60219f5e4e7dc0d9') in 0.002249 seconds
+Refreshing native plugins compatible for Editor in 1.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=d51c27be912fb344d8d0589c8ad320cf): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Body.mat using Guid(40dcb9a310b2c984285e25ad944a9b5d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '64fa0104cf30999e1e1c567ca41f6881') in 0.002234 seconds
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=7931f44c7fa53ce4096888060e0b06e5): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Fabric.mat using Guid(d459a375974c13c4eb77bb6feced3102) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e4afae3428f22d856abe997ed7f60b85') in 0.002273 seconds
+Refreshing native plugins compatible for Editor in 1.03 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=192d2e2449d525f458f09ba27de6c0b6): Total: 0.024 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Accent.mat using Guid(a19c6611529877943a6b6811d6123fce) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '61629436766e230bdc779dad7cdd450d') in 0.002208 seconds
+Refreshing native plugins compatible for Editor in 0.80 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=acc13fd312e8a0e47b8bbb7da96f2515): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Visor.mat using Guid(0540d88dfc2500549b49dbd2a59981a3) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0eaaed3166e14e2eaa40e4d3438d22cf') in 0.002192 seconds
+Refreshing native plugins compatible for Editor in 0.96 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=b3a46941f76cc8243b1037ba04cf09c6): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Body.mat using Guid(73f62eaf1c0c0d44396df6d370c74a49) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '50be28846a3682ef4c4419bdce749309') in 0.002112 seconds
+Refreshing native plugins compatible for Editor in 0.85 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=260d1a8b4805d834388ca14e745ae551): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Fabric.mat using Guid(f7d36a7c7bbe0164aae356906c05c309) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd0902adcbe25ded39db2442074f7b29b') in 0.002293 seconds
+Refreshing native plugins compatible for Editor in 0.86 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=7ef18c9b59081b34e8f0e34e301ddf68): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Accent.mat using Guid(5fa3dc0df7993a54a805d0b5d10460f1) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f71bcee111a1bcc205b9ea10c810c796') in 0.002386 seconds
+Refreshing native plugins compatible for Editor in 0.80 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=69977101ce48f7f42b00e3ce6094d614): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Visor.mat using Guid(9c6b34242b5b19d43a932f527fd1fbc2) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '39efe17ffee3432ba67de9468fb02212') in 0.002460 seconds
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=c333c8b5f25a3ce438787af7231668f8): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Body.mat using Guid(56b22312ab2c35a46ab5a055f54a060c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5d23193bbb700f03cc6a5cef84fe32ca') in 0.002189 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=5fb3fb26d1c289547ac48b03bcd90f2b): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Fabric.mat using Guid(512c67107ce08c0488b2bb82a6fb31ef) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ee4313457a491e5d56bf8ca3b8881f93') in 0.002159 seconds
+Refreshing native plugins compatible for Editor in 0.82 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=f00fdc574b683124b9dea19ae82e19db): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Accent.mat using Guid(3412f51a081f7d045b1da44ed871ff6d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bdbc634a6daf13c2006ba687bb2e195b') in 0.002294 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=ee8cd0abe3d05d746964105d64f629d5): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Visor.mat using Guid(10ea6df88e13d8d4285bf2f183f6b23c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7e7e0877d8b332fe80d98b618f602a7e') in 0.002236 seconds
+Refreshing native plugins compatible for Editor in 0.85 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=cd9fb71401de1c14796410be884fc902): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Body.mat using Guid(c96b4ada271acd141bff3585a4e7887b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a9f8b53f68068814e0483fa0e431a75d') in 0.002919 seconds
+Refreshing native plugins compatible for Editor in 0.90 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=e51e67ffea29b8e4eb0d8c3fdc325e6e): Total: 0.028 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Fabric.mat using Guid(8b58d135458243b48a9e7679f596a90c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '684dd6ceaf7835196946a6f7c7388c1a') in 0.002241 seconds
+Refreshing native plugins compatible for Editor in 1.38 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=dc493410be803124c8d4263326bce5f7): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Accent.mat using Guid(c424ada5238ffb6459bc1de9e58f918d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5a21bfbf7c53b105cf8c360fb7c3b979') in 0.002287 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=580159a4a19cd0047af7ca386da9db0e): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Visor.mat using Guid(48d31ed9e78cb634cb9b30b271408d68) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '80cba9a66b84c68f9d2bc09a9365241f') in 0.002297 seconds
+Refreshing native plugins compatible for Editor in 0.83 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=2b16f005900c893428ad9efed54a5536): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_Omega_Signal.mat using Guid(3a66a07521f0421469bf5a9e29ac51a3) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a6dbf366466309945f2b0dfd1a09bb0a') in 0.002432 seconds
+Refreshing native plugins compatible for Editor in 0.82 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=f61e58cb10658fa49b85087522770676): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Body.mat using Guid(dc91aa03cd35c274b9fa791388b44c22) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ec19e0cc28d03c3bcae33a5384c35a99') in 0.002219 seconds
+Refreshing native plugins compatible for Editor in 0.96 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=fa33b4876b99ae745857dde25dfa10c0): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Fabric.mat using Guid(42aedbb135b9cc84b9b528a71d734da7) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a29b164a723e37971198efa307bda381') in 0.002412 seconds
+Refreshing native plugins compatible for Editor in 1.03 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=fbd3490b0eeb71f42a86fb9375f13633): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Accent.mat using Guid(d5e41750bed47e347a9f0bd3ca2dae05) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cceecc989d9c28eb63a90aa5093c9878') in 0.002159 seconds
+Refreshing native plugins compatible for Editor in 1.06 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=4965e265ecb656e49a256ff3970fba1d): Total: 0.022 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Visor.mat using Guid(ccd69cdfe51a4bd41bbcb43938ce48e8) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a52a603e5dfd465702429e66cdafd442') in 0.003167 seconds
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=e80d8f7c96af6424993b3bb0b5f4f116): Total: 0.025 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Body.mat using Guid(672f1c1efdac11e47b948db7b93ebdb8) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ef7d077839a7635096dcf431e9de3fca') in 0.002784 seconds
+Refreshing native plugins compatible for Editor in 0.87 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=f14f2b5c078f6854d9d15c2515ca6a14): Total: 0.024 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Fabric.mat using Guid(30265a770b6b61e4799c5612d93d7782) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5d756ded89687bc4a4a8a6630516bca4') in 0.002348 seconds
+Refreshing native plugins compatible for Editor in 0.80 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=a104a3a3bf84d364a8617e334511621f): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Accent.mat using Guid(90565e9eed230ef4e9a017d35c8b0158) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c496a219f835c2860e97f0e0eb35570e') in 0.002125 seconds
+Refreshing native plugins compatible for Editor in 0.82 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=bd6eba949a2e9764692c358c93c971b7): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Visor.mat using Guid(4b5faf74665216e4a9ab72e610d2ad46) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '449bc8ca7d1d71e62d5b6cbac13cca18') in 0.002140 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=b641da34b25ea254d94276a2c3d7e353): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Body.mat using Guid(fb904ff3f7267c44c806c1e8bd5f239d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f3656f33255755495dd8e0c77c906c51') in 0.002139 seconds
+Refreshing native plugins compatible for Editor in 0.89 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=865097c126c59a34dbcbaea653ae89e4): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Fabric.mat using Guid(698100e8b10563e43b0e030f01603503) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cbe00a4b85f1cfa3202bb25e54060893') in 0.002040 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=9132b15e9b092f04bb2d2c6ddbcb8cdc): Total: 0.020 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Accent.mat using Guid(2756a50b83acae2428d0151d3f26c559) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4416718f84357a68039d91219979b2c8') in 0.002272 seconds
+Refreshing native plugins compatible for Editor in 0.79 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=2d503f2bc0e49274aa9f6e63499642cc): Total: 0.020 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Visor.mat using Guid(15608923a000461499f041d35d18c9b4) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd57ada3a5c6d22eac162f2de6ba7d3f5') in 0.002179 seconds
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=752f84ff49a4c714ab851f483cdb310b): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Body.mat using Guid(dfbca48af2ecad24f99b31c57eebd5f7) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7863eceda6195de23edf4814003cd7df') in 0.002174 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=b098e55e9196f1e44aa35b086efcc639): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Fabric.mat using Guid(564b214862d84384187e60a652592132) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '974de05c6236d85eb786315f150feb94') in 0.002137 seconds
+Refreshing native plugins compatible for Editor in 0.83 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=04b2aa6c62ddc0a40abab41cba450cf3): Total: 0.020 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Accent.mat using Guid(7abff5989f55d4c4f9de017f9a66ba8e) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4c7c9d965961a8ece146ef828fddbc85') in 0.002161 seconds
+Refreshing native plugins compatible for Editor in 0.83 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=1e6b6f8e99226f646a835a8e7bdc3bd8): Total: 0.021 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Visor.mat using Guid(32522c26661dd5845a0e2cc784d8842b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fa3f899943998e95a3b00e369951db5f') in 0.002287 seconds
+Refreshing native plugins compatible for Editor in 0.81 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=f857614f83294f3439005c68f554e97a): Total: 0.020 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Refreshing native plugins compatible for Editor in 0.84 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=53646993db0cfe1428c239343eb85bc5): Total: 0.019 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Visor.mat using Guid(10ea6df88e13d8d4285bf2f183f6b23c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fbbda6981d5f0469d4bb80b45661687e') in 0.002453 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Fabric.mat using Guid(30265a770b6b61e4799c5612d93d7782) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3c2fc752d3c5ebbe80786ae9f426f928') in 0.002220 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Body.mat using Guid(40dcb9a310b2c984285e25ad944a9b5d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '95a1c68de47aa8e7802f02e072b7803d') in 0.002016 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Accent.mat using Guid(90565e9eed230ef4e9a017d35c8b0158) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6e35f0e692dc24e39fbc337610ebed64') in 0.001920 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Fabric.mat using Guid(512c67107ce08c0488b2bb82a6fb31ef) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b3bc173f5ba34935755e5f5fab360b24') in 0.001774 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_DarkMetal.mat using Guid(51dc4e6b62239af4c977bd34b9bd1514) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c85baa3c2c1e5daa58b3aacee560a8dd') in 0.001683 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Visor.mat using Guid(717bf09dfc0b68d4bbea90ee93be8d01) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '769bb51dd1305c8bea760b171289384a') in 0.001648 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Accent.mat using Guid(a19c6611529877943a6b6811d6123fce) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '671c1cdca7a6c1646c8bfe28c17d5fa5') in 0.001857 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Accent.mat using Guid(d1f8c9f0ace39834dbc11b16d914b2e0) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a51b5f38da392415422b7357e9946b50') in 0.001979 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Visor.mat using Guid(32522c26661dd5845a0e2cc784d8842b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3b55cb9b80a3dd23995f593054e93453') in 0.001692 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Fabric.mat using Guid(42aedbb135b9cc84b9b528a71d734da7) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '43f3c894ed3d845d4727728a4ffb4541') in 0.001712 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Body.mat using Guid(925da9e711f64a44aaf5d9d31def723b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'de3949afb13c06b8baeeb129b5d8b1cf') in 0.001846 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Body.mat using Guid(73f62eaf1c0c0d44396df6d370c74a49) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e7f2eba914eae58976776d333081b3b4') in 0.001730 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Fabric.mat using Guid(e37397e784c889a4c9be9c076915d426) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1b6e9443c585311489dbbf1c3fbc53bb') in 0.001990 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Accent.mat using Guid(3412f51a081f7d045b1da44ed871ff6d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4ad19cec169edbf7856941cb6dfe630f') in 0.002099 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Accent.mat using Guid(c424ada5238ffb6459bc1de9e58f918d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ba83976c082910975d61b8f084f51543') in 0.001724 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Fabric.mat using Guid(d459a375974c13c4eb77bb6feced3102) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2f4bdbd3e579acb6a0c3a1509782240b') in 0.001699 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REIHA_Visor.mat using Guid(0540d88dfc2500549b49dbd2a59981a3) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '48065cac8e518467f11d07c802059e49') in 0.001542 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Visor.mat using Guid(15608923a000461499f041d35d18c9b4) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '72246f6be6b2cda9ada5118c018b4c56') in 0.001516 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Accent.mat using Guid(d5e41750bed47e347a9f0bd3ca2dae05) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '054f3c7223ea4ab2e65e38be70c2bb45') in 0.001593 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Fabric.mat using Guid(e51c5312d12ae8341ba4b17fa942f5de) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '95b33a5dcffcad37401189b0f84f7567') in 0.002021 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_SORA_Body.mat using Guid(56b22312ab2c35a46ab5a055f54a060c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ea8d1b91c78ba53d5944f936ae1dce85') in 0.002326 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Fabric.mat using Guid(564b214862d84384187e60a652592132) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5de79807cddf278878bb72f2dacff58d') in 0.002096 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Accent.mat using Guid(2756a50b83acae2428d0151d3f26c559) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '82b94e9ede3d324bd27e1ba05e6b09d0') in 0.001899 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Body.mat using Guid(672f1c1efdac11e47b948db7b93ebdb8) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5a6a0ae339c5a2851114371afe7aec38') in 0.001668 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Fabric.mat using Guid(f7d36a7c7bbe0164aae356906c05c309) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '30b62f0aab636057a5d8c2e2bcc486e5') in 0.001791 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Visor.mat using Guid(48d31ed9e78cb634cb9b30b271408d68) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9dc3c4fee91ed1755c41c62aff963ec9') in 0.002039 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Fabric.mat using Guid(698100e8b10563e43b0e030f01603503) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd11f17ef1ed3ae80c9c27a2e0feb810e') in 0.002215 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Body.mat using Guid(c96b4ada271acd141bff3585a4e7887b) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7d420002a871e3df321465e532c329ae') in 0.001950 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_Omega_Signal.mat using Guid(3a66a07521f0421469bf5a9e29ac51a3) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'aae02a7ddfebd2aef9e519c3334cc948') in 0.001784 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Accent.mat using Guid(7abff5989f55d4c4f9de017f9a66ba8e) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c64beedb847ddebe5ac23a19ef66f581') in 0.001751 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Visor.mat using Guid(faab36daa7d6bcf4ea44002dbb5b88c0) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '081db28e7c29f797c5b19497d6bd2a04') in 0.001741 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_HANA_Visor.mat using Guid(4b5faf74665216e4a9ab72e610d2ad46) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '957bf8997339028eff2cb89cf0e0c5ca') in 0.001582 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_AIKO_Fabric.mat using Guid(8b58d135458243b48a9e7679f596a90c) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c9138b1eb2046196c2c75e3724e529ad') in 0.001782 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_Alpha_Signal.mat using Guid(eb330ee75a057684497c7bd2b34e09cf) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b4993b51bf9a73959d184b215c0b1be3') in 0.002147 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_TOMA_Body.mat using Guid(fb904ff3f7267c44c806c1e8bd5f239d) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c24b3bb11959b2724392862bc767f57a') in 0.001712 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Visor.mat using Guid(9c6b34242b5b19d43a932f527fd1fbc2) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6d2291e9495bcdb98b65c1af7eb1ad59') in 0.001583 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Visor.mat using Guid(ccd69cdfe51a4bd41bbcb43938ce48e8) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5aef1fb55733af8fe78b92e772084d42') in 0.001611 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_REN_Body.mat using Guid(dc91aa03cd35c274b9fa791388b44c22) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e41c0c0f7ee6ffc3243deec11c1a277b') in 0.001439 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_KAIRI_Accent.mat using Guid(8eccf7249d28fec44a42cc4c17043be1) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cd4e4eb1906bb49bbbd991ed06ccd6ad') in 0.001407 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_MIO_Accent.mat using Guid(5fa3dc0df7993a54a805d0b5d10460f1) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '30034b6345da7786f2e61406deae3379') in 0.001393 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_NOA_Body.mat using Guid(8f8f3ef696b66794898137508ce85147) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '33040248c7775af0749b244831ecdcdf') in 0.001723 seconds
+Start importing Assets/RenkaiKurokage/Art/OriginalAgentMaterials/M_Original_YORI_Body.mat using Guid(dfbca48af2ecad24f99b31c57eebd5f7) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '56be22da3bce5bac3745ee80dd08257f') in 0.002082 seconds
+Refreshing native plugins compatible for Editor in 0.90 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=680f4b99b0fd8f541b34abe3534cca2b): Total: 0.151 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/RenkaiKurokage/Scenes/Renkai_Kurogake_Competitive.unity using Guid(b0e4334222edbb34383cb497288d9359) Importer(-1,00000000000000000000000000000000) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f75615e15ee3c8d8011e6d94bba2ad66') in 0.001615 seconds
+Refreshing native plugins compatible for Editor in 0.83 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=6140318f26d859c48960cacafb120d1e): Total: 0.023 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=1544d946e59735140bd1dac69222819b): Total: 0.007 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+RENKAI: KUROKAGE PRODUCTION VALIDATION
+====================================
+PASS  Human FPS controller: 1
+PASS  Round manager: 1
+PASS  Zodiac Core runtime: 1
+PASS  Zodiac objective controller: 1
+PASS  Zodiac VFX presenter: 1
+PASS  Zodiac Nexus VFX presenters: 2
+PASS  Kairi ability controller: 1
+PASS  Blade combat controller: 1
+PASS  Kairi afterimage presenter: 1
+PASS  Eclipse Protocol presenter: 1
+PASS  Agent death presenters: 10
+PASS  Agent readability presenters: 10
+PASS  Agent hit reaction presenters: 10
+PASS  Agent movement presentation drivers: 10
+PASS  Original agent pose drivers: 10
+PASS  Legacy procedural agent rig path removed
+PASS  Viewmodel lighting presenter: 1
+PASS  Sprint weapon readiness gate: 1
+PASS  Architectural resonance presenter: 1
+PASS  Match stats tracker: 1
+PASS  Unified presentation marker: 1
+PASS  Unified presentation HUD: 1
+PASS  Legacy HUD components: 0
+PASS  Shared VFX pool: 1
+PASS  Active camera: 1
+PASS  Active AudioListener: 1
+PASS  Original AGENT_VISUAL YORI // WRAITH-N2
+PASS  Imported FBX animators for YORI // WRAITH-N2: 0
+PASS  Hit zones YORI // WRAITH-N2: 7
+PASS  Original AGENT_VISUAL TOMA // ANCHOR-V8
+PASS  Imported FBX animators for TOMA // ANCHOR-V8: 0
+PASS  Hit zones TOMA // ANCHOR-V8: 7
+PASS  Original AGENT_VISUAL HANA // ORBIT-S1
+PASS  Imported FBX animators for HANA // ORBIT-S1: 0
+PASS  Hit zones HANA // ORBIT-S1: 7
+PASS  Original AGENT_VISUAL REN // FORGE-K6
+PASS  Imported FBX animators for REN // FORGE-K6: 0
+PASS  Hit zones REN // FORGE-K6: 7
+PASS  Original AGENT_VISUAL AIKO // LANCER-M9
+PASS  Imported FBX animators for AIKO // LANCER-M9: 0
+PASS  Hit zones AIKO // LANCER-M9: 7
+PASS  Original AGENT_VISUAL SORA // BASTION-R4
+PASS  Imported FBX animators for SORA // BASTION-R4: 0
+PASS  Hit zones SORA // BASTION-R4: 7
+PASS  Original AGENT_VISUAL MIO // GLINT-C2
+PASS  Imported FBX animators for MIO // GLINT-C2: 0
+PASS  Hit zones MIO // GLINT-C2: 7
+PASS  Original AGENT_VISUAL REIHA // VEIL-A3
+PASS  Imported FBX animators for REIHA // VEIL-A3: 0
+PASS  Hit zones REIHA // VEIL-A3: 7
+PASS  Original AGENT_VISUAL NOA // PULSE-D5
+PASS  Imported FBX animators for NOA // PULSE-D5: 0
+PASS  Hit zones NOA // PULSE-D5: 7
+PASS  Original AGENT_VISUAL KAIRI // RIFT-07
+PASS  Imported FBX animators for KAIRI // RIFT-07: 0
+PASS  Hit zones KAIRI // RIFT-07: 7
+PASS  Human player: 1
+PASS  Attackers: 5
+PASS  Defenders: 5
+PASS  Tactical bots: 9
+PASS  Kairi visual coverage: 1
+PASS  Noa visual coverage: 1
+PASS  Reiha visual coverage: 1
+PASS  Mio visual coverage: 1
+PASS  Unique original roster identities: 10
+WARN  Visible root player renderers: 9 (capsule placeholders may still be visible)
+PASS  Visible world health bars: 0
+PASS  Initial decoys: 0
+PASS  Landmark present: THE_ZERO_GATE
+PASS  Landmark present: THE_MEMORY_CHOIR
+PASS  Landmark present: THE_RESONANCE_CHAMBER
+PASS  Landmark present: Ghost_Platform_09
+PASS  Landmark present: CELESTIAL_NETWORK_ORBITAL_RING
+PASS  Shared material: M_DarkCeramic.mat
+PASS  Shared material: M_LightComposite.mat
+PASS  Shared material: M_NavyMetal.mat
+PASS  Shared material: M_Accent_Blue.mat
+PASS  Shared material: M_Accent_Violet.mat
+PASS  Shared material: M_Hologram.mat
+PASS  Shared material: M_Energy_Core.mat
+PASS  Zodiac Nexus sites: 2
+PASS  Nexus A art layer: ZODIAC_NEXUS_ART/NEXUS_FOUNDATION
+PASS  Nexus A art layer: ZODIAC_NEXUS_ART/NEXUS_RING_INNER
+PASS  Nexus A art layer: ZODIAC_NEXUS_ART/NEXUS_RING_OUTER
+PASS  Nexus A art layer: ZODIAC_NEXUS_ART/NEXUS_CROWN
+PASS  Nexus A art layer: ZODIAC_NEXUS_ART/NEXUS_ENERGY
+PASS  Nexus B art layer: ZODIAC_NEXUS_ART/NEXUS_FOUNDATION
+PASS  Nexus B art layer: ZODIAC_NEXUS_ART/NEXUS_RING_INNER
+PASS  Nexus B art layer: ZODIAC_NEXUS_ART/NEXUS_RING_OUTER
+PASS  Nexus B art layer: ZODIAC_NEXUS_ART/NEXUS_CROWN
+PASS  Nexus B art layer: ZODIAC_NEXUS_ART/NEXUS_ENERGY
+PASS  ZODIAC_CORE object present
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_INNER_ENERGY
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_SHELL_STRUCTURE
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_RING_A
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_RING_B
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_HALO_OUTER
+PASS  Zodiac Core art layer: ZODIAC_CORE_ART/CORE_CELESTIAL_SPINES
+PASS  Root present: KUROKAGE_ENVIRONMENT_ART
+PASS  Root present: KUROKAGE_BRIGHT_VISUAL_PASS
+PASS  Root present: KUROKAGE_COMPETITIVE_ARCHITECTURE
+PASS  Root present: KUROKAGE_DISTRICT_IDENTITY
+PASS  Root present: KUROKAGE_SITE_READABILITY_LIGHTING
+PASS  Root present: KUROKAGE_MATCH_STATS
+PASS  Root present: KUROKAGE_VFX_POOL
+PASS  Root present: RENKAI_KUROKAGE_PRODUCTION_BUILD
+------------------------------------
+Errors: 0
+Warnings: 1
+RESULT: STRUCTURE VALIDATION PASSED
+Note: structural validation does not replace Unity compile, Play Mode, scale, collision, navigation, animation, audio or visual QA.
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+KurokageFinalUpgradeInstaller:BuildProductionVersionWithValidation (string&) (at Assets/RenkaiKurokage/Editor/KurokageFinalUpgradeInstaller.cs:87)
+KurokageFinalUpgradeInstaller:BuildProductionVersion () (at Assets/RenkaiKurokage/Editor/KurokageFinalUpgradeInstaller.cs:94)
+
+(Filename: Assets/RenkaiKurokage/Editor/KurokageFinalUpgradeInstaller.cs Line: 87)
+
+Batchmode quit successfully invoked - shutting down!
+Killing ADB server in 0,0436683 seconds.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[Licensing::IpcConnector] License Notification channel disconnected successfully.
+[Licensing::IpcConnector] License Client channel disconnected successfully.
+Cleanup mono
+abort_threads: Failed aborting id: 0000000000003F24, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 00000000000056D0, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000003F24, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 00000000000056D0, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 6492
+[usbmuxd] Stop listen thread
+[usbmuxd] Listen thread exiting
+[Performance] WinEditorMain                                                                                                  :        1 samples, Peak.  1.39 s (1.0x), Avg.  1.39 s, Total. 1.390 s (9.3%)
+[Performance] WinEditorMain.ConfigureCrashHandler                                                                            :        1 samples, Peak.   150 us (1.0x), Avg.   150 us, Total. 149.9 us (0.0%)
+[Performance] WinEditorMain.CurlRequestInitialize                                                                            :        1 samples, Peak.  1.49 ms (1.0x), Avg.  1.49 ms, Total. 1.488 ms (0.0%)
+[Performance] WinEditorMain.SetupLogFile                                                                                     :        1 samples, Peak.   602 us (1.0x), Avg.   602 us, Total. 601.7 us (0.0%)
+[Performance] WinEditorMain.RunNativeTestsIfRequiredAndExit                                                                  :        1 samples, Peak.   200 ns (1.0x), Avg.   200 ns, Total. 200.0 ns (0.0%)
+[Performance] WinEditorMain.Licensing                                                                                        :        1 samples, Peak.  1.37 s (1.0x), Avg.  1.37 s, Total. 1.373 s (9.2%)
+[Performance] WinEditorMain.InitializeCrashHandler                                                                           :        1 samples, Peak.  11.7 ms (1.0x), Avg.  11.7 ms, Total. 11.74 ms (0.1%)
+[Performance] WinEditorMain.CreateApplication                                                                                :        1 samples, Peak.   245 us (1.0x), Avg.   245 us, Total. 245.3 us (0.0%)
+[Performance] Application.InitializeProject                                                                                  :        1 samples, Peak.  9.55 s (1.0x), Avg.  9.55 s, Total. 9.550 s (64.2%)
+[Performance] Application.PackageManager.StartServer                                                                         :        1 samples, Peak.  3.53 ms (1.0x), Avg.  3.53 ms, Total. 3.531 ms (0.0%)
+[Performance] Application.AcquireProjectLock                                                                                 :        1 samples, Peak.  4.41 ms (1.0x), Avg.  4.41 ms, Total. 4.413 ms (0.0%)
+[Performance] Application.InitializeEngineNoGraphics                                                                         :        1 samples, Peak.  51.6 ms (1.0x), Avg.  51.6 ms, Total. 51.57 ms (0.3%)
+[Performance] Application.PackageManager.Initialize                                                                          :        1 samples, Peak.   310 ms (1.0x), Avg.   310 ms, Total. 310.3 ms (2.1%)
+[Performance] Connecting to Package Manager                                                                                  :       32 samples, Peak.  57.0 us (14.9x), Avg.  3.83 us, Total. 122.5 us (0.0%)
+[Performance] Application.EngineGraphics.Initialize                                                                          :        1 samples, Peak.   265 ms (1.0x), Avg.   265 ms, Total. 264.9 ms (1.8%)
+[Performance] Application.GI.Initialize                                                                                      :        1 samples, Peak.  3.04 ms (1.0x), Avg.  3.04 ms, Total. 3.043 ms (0.0%)
+[Performance] Application.LoadAllDefaultResourcesFromEditor                                                                  :        1 samples, Peak.  1.69 ms (1.0x), Avg.  1.69 ms, Total. 1.692 ms (0.0%)
+[Performance] Application.LoadMonoAssemblies                                                                                 :        1 samples, Peak.  2.78 s (1.0x), Avg.  2.78 s, Total. 2.783 s (18.7%)
+[Performance] RestoreManagedReferences                                                                                       :        2 samples, Peak.  38.9 ms (2.0x), Avg.  19.4 ms, Total. 38.87 ms (0.3%)
+[Performance] InitializeOnLoad PlayModeDownload                                                                              :        2 samples, Peak.  3.68 ms (1.7x), Avg.  2.20 ms, Total. 4.408 ms (0.0%)
+[Performance] InitializeOnLoad DrivenRectTransformUndo                                                                       :        2 samples, Peak.   222 us (1.1x), Avg.   205 us, Total. 409.1 us (0.0%)
+[Performance] InitializeOnLoad NativeFormatImporterUtility                                                                   :        2 samples, Peak.  2.20 ms (1.0x), Avg.  2.14 ms, Total. 4.281 ms (0.0%)
+[Performance] InitializeOnLoad ProjectSearch                                                                                 :        2 samples, Peak.   189 us (1.3x), Avg.   141 us, Total. 282.1 us (0.0%)
+[Performance] InitializeOnLoad UnityConnect                                                                                  :        2 samples, Peak.  62.1 us (1.2x), Avg.  53.8 us, Total. 107.5 us (0.0%)
+[Performance] InitializeOnLoad PrefabInstanceChangedListener                                                                 :        2 samples, Peak.   169 us (1.1x), Avg.   157 us, Total. 314.6 us (0.0%)
+[Performance] InitializeOnLoad MenuItems                                                                                     :        2 samples, Peak.   289 us (1.1x), Avg.   273 us, Total. 545.9 us (0.0%)
+[Performance] InitializeOnLoad SettingsService                                                                               :        2 samples, Peak.  16.5 us (1.4x), Avg.  11.8 us, Total. 23.60 us (0.0%)
+[Performance] InitializeOnLoad CloudBuild                                                                                    :        2 samples, Peak.  3.90 us (1.2x), Avg.  3.30 us, Total. 6.600 us (0.0%)
+[Performance] InitializeOnLoad WindowLayout                                                                                  :        2 samples, Peak.  45.6 us (1.1x), Avg.  42.1 us, Total. 84.10 us (0.0%)
+[Performance] InitializeOnLoad AssetStoreContext                                                                             :        2 samples, Peak.  21.2 ms (1.7x), Avg.  12.3 ms, Total. 24.56 ms (0.2%)
+[Performance] InitializeOnLoad MixerEffectDefinitionReloader                                                                 :        2 samples, Peak.  2.19 ms (1.2x), Avg.  1.77 ms, Total. 3.542 ms (0.0%)
+[Performance] InitializeOnLoad ObjectSelectorSearch                                                                          :        2 samples, Peak.  67.1 us (1.2x), Avg.  57.8 us, Total. 115.5 us (0.0%)
+[Performance] InitializeOnLoad ManagedDebugger                                                                               :        2 samples, Peak.   543 us (1.6x), Avg.   338 us, Total. 676.9 us (0.0%)
+[Performance] InitializeOnLoad EditMode                                                                                      :        2 samples, Peak.   343 us (1.0x), Avg.   329 us, Total. 657.9 us (0.0%)
+[Performance] InitializeOnLoad ShortcutIntegration                                                                           :        2 samples, Peak.  51.7 us (1.0x), Avg.  50.3 us, Total. 100.7 us (0.0%)
+[Performance] InitializeOnLoad SceneSearch                                                                                   :        2 samples, Peak.   104 us (1.5x), Avg.  68.3 us, Total. 136.6 us (0.0%)
+[Performance] InitializeOnLoad ManagedDebuggerWindow                                                                         :        2 samples, Peak.   106 us (1.0x), Avg.   105 us, Total. 210.7 us (0.0%)
+[Performance] InitializeOnLoad CacheServerWindow                                                                             :        2 samples, Peak.  10.7 us (1.3x), Avg.  8.35 us, Total. 16.70 us (0.0%)
+[Performance] InitializeOnLoad SearchService                                                                                 :        2 samples, Peak.  95.7 us (1.1x), Avg.  90.9 us, Total. 181.7 us (0.0%)
+[Performance] InitializeOnLoad AddComponentWindow                                                                            :        2 samples, Peak.   905 us (1.8x), Avg.   501 us, Total. 1.002 ms (0.0%)
+[Performance] InitializeOnLoad UISystemProfilerRenderService                                                                 :        2 samples, Peak.  8.00 us (1.2x), Avg.  6.80 us, Total. 13.60 us (0.0%)
+[Performance] InitializeOnLoad EditorMonitor                                                                                 :        2 samples, Peak.   565 us (1.2x), Avg.   465 us, Total. 929.9 us (0.0%)
+[Performance] InitializeOnLoad RetainedMode                                                                                  :        2 samples, Peak.  2.03 ms (1.0x), Avg.  1.97 ms, Total. 3.936 ms (0.0%)
+[Performance] InitializeOnLoad EditorShaderLoader                                                                            :        2 samples, Peak.   570 us (1.0x), Avg.   559 us, Total. 1.118 ms (0.0%)
+[Performance] InitializeOnLoad EditorDelegateRegistration                                                                    :        2 samples, Peak.   472 us (1.2x), Avg.   410 us, Total. 819.5 us (0.0%)
+[Performance] InitializeOnLoad UIDocumentHierarchyWatcher                                                                    :        2 samples, Peak.  67.6 us (1.0x), Avg.  65.9 us, Total. 131.9 us (0.0%)
+[Performance] InitializeOnLoad LiveReloadTrackerCreator                                                                      :        2 samples, Peak.   156 us (1.2x), Avg.   134 us, Total. 268.4 us (0.0%)
+[Performance] InitializeOnLoad UxmlObjectEditorFactories                                                                     :        2 samples, Peak.   488 us (1.2x), Avg.   424 us, Total. 847.7 us (0.0%)
+[Performance] InitializeOnLoad UXMLEditorFactories                                                                           :        2 samples, Peak.  53.6 ms (1.1x), Avg.  49.8 ms, Total. 99.58 ms (0.7%)
+[Performance] InitializeOnLoad PurchasingService                                                                             :        2 samples, Peak.  6.03 ms (1.0x), Avg.  5.77 ms, Total. 11.54 ms (0.1%)
+[Performance] InitializeOnLoad CloudBuildPoller                                                                              :        2 samples, Peak.   108 us (1.1x), Avg.  98.5 us, Total. 196.9 us (0.0%)
+[Performance] InitializeOnLoad EditorGameServicesAnalytics                                                                   :        2 samples, Peak.  5.15 ms (1.9x), Avg.  2.75 ms, Total. 5.502 ms (0.0%)
+[Performance] InitializeOnLoad AnalyticsService                                                                              :        2 samples, Peak.   161 us (1.0x), Avg.   155 us, Total. 309.4 us (0.0%)
+[Performance] InitializeOnLoad BuildService                                                                                  :        2 samples, Peak.   134 us (1.0x), Avg.   131 us, Total. 261.4 us (0.0%)
+[Performance] InitializeOnLoad AdsService                                                                                    :        2 samples, Peak.   335 us (1.0x), Avg.   331 us, Total. 662.0 us (0.0%)
+[Performance] InitializeOnLoad UDPService                                                                                    :        2 samples, Peak.   132 us (1.0x), Avg.   130 us, Total. 260.6 us (0.0%)
+[Performance] InitializeOnLoad CrashService                                                                                  :        2 samples, Peak.   125 us (1.0x), Avg.   122 us, Total. 244.1 us (0.0%)
+[Performance] InitializeOnLoad ServicesRepository                                                                            :        2 samples, Peak.   400 ns (1.0x), Avg.   400 ns, Total. 800.0 ns (0.0%)
+[Performance] InitializeOnLoad SearchWindow                                                                                  :        2 samples, Peak.   126 us (1.2x), Avg.   109 us, Total. 218.0 us (0.0%)
+[Performance] InitializeOnLoad CustomIndexers                                                                                :        2 samples, Peak.  14.6 ms (1.0x), Avg.  14.3 ms, Total. 28.66 ms (0.2%)
+[Performance] InitializeOnLoad SearchMonitor                                                                                 :        2 samples, Peak.  1.19 ms (1.1x), Avg.  1.09 ms, Total. 2.190 ms (0.0%)
+[Performance] InitializeOnLoad ParameterControllerEditor                                                                     :        2 samples, Peak.  21.9 us (1.2x), Avg.  18.4 us, Total. 36.80 us (0.0%)
+[Performance] InitializeOnLoad LayerSettingsWindow                                                                           :        2 samples, Peak.  20.7 us (1.6x), Avg.  13.0 us, Total. 25.90 us (0.0%)
+[Performance] InitializeOnLoad PackageManagerHookGUIDConverter.RegisterPackagesEventHandler                                  :        2 samples, Peak.   689 us (1.7x), Avg.   395 us, Total. 789.8 us (0.0%)
+[Performance] InitializeOnLoad EditorDragAndDrop.RegisterEditorClient                                                        :        2 samples, Peak.   228 us (1.1x), Avg.   203 us, Total. 406.2 us (0.0%)
+[Performance] InitializeOnLoad EditorEventCallbacks.InitializeFontAssetResourceChangeCallBacks                               :        2 samples, Peak.  1.01 ms (1.1x), Avg.   955 us, Total. 1.910 ms (0.0%)
+[Performance] InitializeOnLoad SceneTemplateService.Init                                                                     :        2 samples, Peak.  1.04 ms (1.0x), Avg.  1.01 ms, Total. 2.020 ms (0.0%)
+[Performance] InitializeOnLoad DiagnosticSwitchesConsoleMessage.Init                                                         :        2 samples, Peak.  4.79 ms (1.7x), Avg.  2.76 ms, Total. 5.517 ms (0.0%)
+[Performance] InitializeOnLoad ToolShortcutContext.Init                                                                      :        2 samples, Peak.   130 us (1.0x), Avg.   129 us, Total. 257.9 us (0.0%)
+[Performance] InitializeOnLoad SysrootManager.Initialize                                                                     :        2 samples, Peak.   455 us (1.0x), Avg.   441 us, Total. 882.4 us (0.0%)
+[Performance] InitializeOnLoad ScopedRegistryAddedPopup.SubscribeToRegistriesAdded                                           :        2 samples, Peak.  19.9 ms (1.5x), Avg.  13.3 ms, Total. 26.59 ms (0.2%)
+[Performance] InitializeOnLoad SceneVisibilityManager.Initialize                                                             :        2 samples, Peak.  2.70 ms (1.5x), Avg.  1.76 ms, Total. 3.520 ms (0.0%)
+[Performance] InitializeOnLoad AssetPostprocessingInternal.RefreshCustomDependencies                                         :        2 samples, Peak.  2.59 ms (1.3x), Avg.  1.98 ms, Total. 3.952 ms (0.0%)
+[Performance] InitializeOnLoad MemoryProfilerCompilationGuard.InjectCompileGuard                                             :        2 samples, Peak.   138 us (1.3x), Avg.   103 us, Total. 205.8 us (0.0%)
+[Performance] InitializeOnLoad EditorWindow.Initialize                                                                       :        2 samples, Peak.   211 us (1.1x), Avg.   195 us, Total. 389.7 us (0.0%)
+[Performance] InitializeOnLoad SceneViewMotion.RegisterShortcutContexts                                                      :        2 samples, Peak.   215 us (1.4x), Avg.   157 us, Total. 313.2 us (0.0%)
+[Performance] InitializeOnLoad PackageManagerWindow.EditorInitializedInSafeMode                                              :        2 samples, Peak.   182 us (1.1x), Avg.   173 us, Total. 346.8 us (0.0%)
+[Performance] InitializeOnLoad RectSelection.RegisterShortcutContext                                                         :        2 samples, Peak.   307 us (1.4x), Avg.   218 us, Total. 436.6 us (0.0%)
+[Performance] AssemblyReloadEvents.afterAssemblyReload: UnityEditor.SceneTemplate.SceneTemplateService.AfterAssemblyReload   :        2 samples, Peak.  3.02 ms (1.8x), Avg.  1.64 ms, Total. 3.274 ms (0.0%)
+[Performance] ProcessService.EditorAfterLoadAllAssemblies                                                                    :        2 samples, Peak.   302 us (1.2x), Avg.   258 us, Total. 516.4 us (0.0%)
+[Performance] Application.ReadLicenseInfo                                                                                    :        1 samples, Peak.  12.7 ms (1.0x), Avg.  12.7 ms, Total. 12.72 ms (0.1%)
+[Performance] Application.InitialRefresh                                                                                     :        1 samples, Peak.  5.53 s (1.0x), Avg.  5.53 s, Total. 5.532 s (37.2%)
+[Performance] BuilderAssetModificationProcessor.OnWillCreateAsset                                                            :       89 samples, Peak.   819 us (34.7x), Avg.  23.6 us, Total. 2.102 ms (0.0%)
+[Performance] ShaderImporter.SourceAssetModified                                                                             :       51 samples, Peak.  1.30 us (2.0x), Avg.   639 ns, Total. 32.60 us (0.0%)
+[Performance] ShaderIncludeImporter.SourceAssetModified                                                                      :       51 samples, Peak.  1.60 us (2.3x), Avg.   692 ns, Total. 35.30 us (0.0%)
+[Performance] Compiling Scripts                                                                                              :        1 samples, Peak.  2.64 s (1.0x), Avg.  2.64 s, Total. 2.639 s (17.7%)
+[Performance] AssemblyReloadEvents.beforeAssemblyReload: UnityEditor.SceneTemplate.SceneTemplateService.BeforeAssemblyReload :        1 samples, Peak.   457 us (1.0x), Avg.   457 us, Total. 457.3 us (0.0%)
+[Performance] PresetManagerPostProcessor.OnPreprocessAsset                                                                   :      111 samples, Peak.  1.19 ms (50.7x), Avg.  23.5 us, Total. 2.610 ms (0.0%)
+[Performance] CancelSplashScreenOnAssetChange.OnPreprocessAsset                                                              :      111 samples, Peak.   160 us (46.5x), Avg.  3.44 us, Total. 382.1 us (0.0%)
+[Performance] ShaderGraphAssetPostProcessor.OnPreprocessAsset                                                                :      111 samples, Peak.   175 us (35.5x), Avg.  4.92 us, Total. 545.6 us (0.0%)
+[Performance] InitializeOnLoad KurokageAutoProductionPass                                                                    :        1 samples, Peak.   174 us (1.0x), Avg.   174 us, Total. 174.3 us (0.0%)
+[Performance] InitializeOnLoad BurstLoader                                                                                   :        1 samples, Peak.  1.16 s (1.0x), Avg.  1.16 s, Total. 1.162 s (7.8%)
+[Performance] InitializeOnLoad ShadowCasterGroup2DManager                                                                    :        1 samples, Peak.   156 us (1.0x), Avg.   156 us, Total. 156.0 us (0.0%)
+[Performance] InitializeOnLoad ProbeGIBaking                                                                                 :        1 samples, Peak.  2.04 ms (1.0x), Avg.  2.04 ms, Total. 2.043 ms (0.0%)
+[Performance] InitializeOnLoad FilterWindow                                                                                  :        1 samples, Peak.  32.2 us (1.0x), Avg.  32.2 us, Total. 32.20 us (0.0%)
+[Performance] InitializeOnLoad RealtimeProbeSubdivisionDebug                                                                 :        1 samples, Peak.   136 us (1.0x), Avg.   136 us, Total. 135.8 us (0.0%)
+[Performance] InitializeOnLoad NodeClassCache                                                                                :        1 samples, Peak.  6.00 us (1.0x), Avg.  6.00 us, Total. 6.000 us (0.0%)
+[Performance] InitializeOnLoad ShaderGraphMaterialsUpdater                                                                   :        2 samples, Peak.   330 us (1.7x), Avg.   197 us, Total. 393.7 us (0.0%)
+[Performance] InitializeOnLoad PrefabLayoutRebuilder                                                                         :        1 samples, Peak.   210 us (1.0x), Avg.   210 us, Total. 209.7 us (0.0%)
+[Performance] InitializeOnLoad EditorToolManager                                                                             :        1 samples, Peak.  1.87 ms (1.0x), Avg.  1.87 ms, Total. 1.873 ms (0.0%)
+[Performance] InitializeOnLoad Renderer2DAnalytics                                                                           :        1 samples, Peak.  76.1 us (1.0x), Avg.  76.1 us, Total. 76.10 us (0.0%)
+[Performance] InitializeOnLoad MaterialReimporter.RegisterUpgraderReimport                                                   :        2 samples, Peak.   152 us (1.7x), Avg.  88.3 us, Total. 176.6 us (0.0%)
+[Performance] InitializeOnLoad CoreRenderPipelinePreferences.InitPreferenceProviders                                         :        1 samples, Peak.  42.3 ms (1.0x), Avg.  42.3 ms, Total. 42.26 ms (0.3%)
+[Performance] InitializeOnLoad VolumeGizmoDrawer.InitVolumeGizmoCallbacks                                                    :        1 samples, Peak.   602 us (1.0x), Avg.   602 us, Total. 602.0 us (0.0%)
+[Performance] InitializeOnLoad DebugManagerWindowLifetimeAnalytic.SubscribeToDebugManagerOpenCloseWindows                    :        1 samples, Peak.   551 us (1.0x), Avg.   551 us, Total. 550.8 us (0.0%)
+[Performance] DidReloadScriptsVolumeComponentEditor.OnEditorReload                                                           :        1 samples, Peak.  18.5 ms (1.0x), Avg.  18.5 ms, Total. 18.53 ms (0.1%)
+[Performance] DidReloadScriptsDebugWindow.OnEditorReload                                                                     :        1 samples, Peak.  7.79 ms (1.0x), Avg.  7.79 ms, Total. 7.787 ms (0.1%)
+[Performance] DidReloadScriptsLookDev.OnEditorReload                                                                         :        1 samples, Peak.   174 us (1.0x), Avg.   174 us, Total. 173.8 us (0.0%)
+[Performance] DidReloadScriptsAdvancedDropdownWindow.OnScriptReload                                                          :        1 samples, Peak.   326 us (1.0x), Avg.   326 us, Total. 325.8 us (0.0%)
+[Performance] AssetDatabase.ImportAssets                                                                                     :       58 samples, Peak.   151 ms (36.7x), Avg.  4.11 ms, Total. 238.5 ms (1.6%)
+[Performance] VersionControl.Task.Wait                                                                                       :        1 samples, Peak.  9.70 us (1.0x), Avg.  9.70 us, Total. 9.700 us (0.0%)
+[Performance] TMPro_TexturePostProcessor.OnPostprocessAllAssets                                                              :      100 samples, Peak.   495 us (17.7x), Avg.  27.9 us, Total. 2.786 ms (0.0%)
+[Performance] BuilderAssetPostprocessor.OnPostprocessAllAssets                                                               :      100 samples, Peak.  2.35 ms (27.5x), Avg.  85.2 us, Total. 8.524 ms (0.1%)
+[Performance] ArtifactBrowserPostProcessor.OnPostprocessAllAssets                                                            :      100 samples, Peak.   430 us (37.9x), Avg.  11.4 us, Total. 1.136 ms (0.0%)
+[Performance] AssetEvents.OnPostprocessAllAssets                                                                             :      200 samples, Peak.   185 us (30.3x), Avg.  6.08 us, Total. 1.216 ms (0.0%)
+[Performance] AudioMixerPostprocessor.OnPostprocessAllAssets                                                                 :      100 samples, Peak.   267 us (36.0x), Avg.  7.42 us, Total. 741.9 us (0.0%)
+[Performance] StyleCatalogPostProcessor.OnPostprocessAllAssets                                                               :      100 samples, Peak.  14.9 ms (48.4x), Avg.   308 us, Total. 30.77 ms (0.2%)
+[Performance] BuildCatalog                                                                                                   :        1 samples, Peak.  14.1 ms (1.0x), Avg.  14.1 ms, Total. 14.05 ms (0.1%)
+[Performance] ModelImporterPostProcessor.OnPostprocessAllAssets                                                              :      100 samples, Peak.  12.4 ms (17.6x), Avg.   703 us, Total. 70.26 ms (0.5%)
+[Performance] MaterialPostprocessor.OnPostprocessAllAssets                                                                   :      200 samples, Peak.   653 us (12.3x), Avg.  53.1 us, Total. 10.62 ms (0.1%)
+[Performance] UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets                                      :      100 samples, Peak.  1.11 ms (42.3x), Avg.  26.2 us, Total. 2.619 ms (0.0%)
+[Performance] RetainedModeAssetPostprocessor.OnPostprocessAllAssets                                                          :      100 samples, Peak.  1.91 ms (36.1x), Avg.  53.0 us, Total. 5.304 ms (0.0%)
+[Performance] AssetChangedListener.OnPostprocessAllAssets                                                                    :      100 samples, Peak.  1.21 ms (25.5x), Avg.  47.5 us, Total. 4.749 ms (0.0%)
+[Performance] PostProcessor.OnPostprocessAllAssets                                                                           :      100 samples, Peak.   223 us (11.0x), Avg.  20.3 us, Total. 2.031 ms (0.0%)
+[Performance] ShaderGraphAssetPostProcessor.OnPostprocessAllAssets                                                           :      100 samples, Peak.  1.23 ms (11.7x), Avg.   105 us, Total. 10.53 ms (0.1%)
+[Performance] SpeedTreePostProcessor.OnPostprocessAllAssets                                                                  :      100 samples, Peak.   165 us (12.4x), Avg.  13.3 us, Total. 1.334 ms (0.0%)
+[Performance] TextAssetPostProcessor.OnPostprocessAllAssets                                                                  :      100 samples, Peak.   352 us (25.0x), Avg.  14.1 us, Total. 1.411 ms (0.0%)
+[Performance] SyncVS.PostprocessSyncProject                                                                                  :       50 samples, Peak.  1.28 ms (22.9x), Avg.  56.1 us, Total. 2.807 ms (0.0%)
+[Performance] EditorApplication.projectChanged: UnityEditor.Audio.MixerEffectDefinitionReloader.OnProjectChanged             :       46 samples, Peak.   567 us (1.8x), Avg.   312 us, Total. 14.37 ms (0.1%)
+[Performance] Application.ImportPackagesAndSetTemplateWhenCreatingProject                                                    :        1 samples, Peak.  11.0 ms (1.0x), Avg.  11.0 ms, Total. 11.01 ms (0.1%)
+[Performance] Application.SyncCurrentColorSpace                                                                              :        1 samples, Peak.   130 ms (1.0x), Avg.   130 ms, Total. 130.3 ms (0.9%)
+[Performance] Application.OnUsbDevicesChanged                                                                                :        1 samples, Peak.  8.64 ms (1.0x), Avg.  8.64 ms, Total. 8.642 ms (0.1%)
+[Performance] Application.AssetInstanceCacheUpdate                                                                           :        1 samples, Peak.   200 ns (1.0x), Avg.   200 ns, Total. 200.0 ns (0.0%)
+[Performance] Application.UnityExtensions.Initialize                                                                         :        1 samples, Peak.  2.87 ms (1.0x), Avg.  2.87 ms, Total. 2.867 ms (0.0%)
+[Performance] CodeEditorProjectSync.SyncEditorProject                                                                        :        1 samples, Peak.   107 us (1.0x), Avg.   107 us, Total. 107.0 us (0.0%)
+[Performance] Application.ExecuteStartups                                                                                    :        1 samples, Peak.  56.6 ms (1.0x), Avg.  56.6 ms, Total. 56.63 ms (0.4%)
+[Performance] Menu.RegisterMenuInterface                                                                                     :       26 samples, Peak.  1.10 us (5.4x), Avg.   204 ns, Total. 5.300 us (0.0%)
+[Performance] Gizmo.RebuildRenderers                                                                                         :        1 samples, Peak.  55.6 ms (1.0x), Avg.  55.6 ms, Total. 55.64 ms (0.4%)
+[Performance] Gizmo.AddGizmoRenderers                                                                                        :       56 samples, Peak.  2.10 ms (35.4x), Avg.  59.4 us, Total. 3.325 ms (0.0%)
+[Performance] Application.editorInitializingProject                                                                          :        1 samples, Peak.  94.0 ms (1.0x), Avg.  94.0 ms, Total. 94.01 ms (0.6%)
+[Performance] Application.InitializeMenu                                                                                     :        1 samples, Peak.   661 ms (1.0x), Avg.   661 ms, Total. 661.2 ms (4.4%)
+[Performance] Menu.RebuildAll                                                                                                :        1 samples, Peak.   661 ms (1.0x), Avg.   661 ms, Total. 661.2 ms (4.4%)
+[Performance] Menu.BuildRegisteredMenuInterfaces                                                                             :        1 samples, Peak.   659 ms (1.0x), Avg.   659 ms, Total. 658.6 ms (4.4%)
+[Performance] Menu.FilterMenuItem                                                                                            :      681 samples, Peak.  31.9 ms (676.3x), Avg.  47.2 us, Total. 32.14 ms (0.2%)
+[Performance] UpdateAllMenus                                                                                                 :        1 samples, Peak.   512 us (1.0x), Avg.   512 us, Total. 512.0 us (0.0%)
+[Performance] Menu.RebuildOSMainMenu                                                                                         :        2 samples, Peak.  2.10 ms (1.0x), Avg.  2.01 ms, Total. 4.023 ms (0.0%)
+[Performance] EditorSceneManager.sceneClosing: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnSceneClosing           :        2 samples, Peak.   235 us (2.0x), Avg.   119 us, Total. 238.5 us (0.0%)
+[Performance] GUIView.RepaintAll.PlayerLoopController                                                                        :        1 samples, Peak.  1.10 us (1.0x), Avg.  1.10 us, Total. 1.100 us (0.0%)
+[Performance] EditorSceneManager.newSceneCreated: UnityEditor.SceneTemplate.SceneTemplateService.OnNewSceneCreated           :        1 samples, Peak.   208 us (1.0x), Avg.   208 us, Total. 207.8 us (0.0%)
+[Performance] EditorSceneManager.newSceneCreated: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnNewSceneCreated     :        1 samples, Peak.   161 us (1.0x), Avg.   161 us, Total. 161.2 us (0.0%)
+[Performance] EditorSceneManager.newSceneCreated: UnityEditor.SceneManagement.StageNavigationManager.OnNewSceneCreated       :        1 samples, Peak.  50.3 us (1.0x), Avg.  50.3 us, Total. 50.30 us (0.0%)
+[Performance] Application.InvokeFinishedLoadingProject                                                                       :        1 samples, Peak.  6.84 ms (1.0x), Avg.  6.84 ms, Total. 6.838 ms (0.0%)
+[Performance] ProcessService.OnProjectLoaded                                                                                 :        1 samples, Peak.  42.2 us (1.0x), Avg.  42.2 us, Total. 42.20 us (0.0%)
+[Performance] EditorSceneManager.sceneOpening: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnSceneOpening           :        1 samples, Peak.   122 us (1.0x), Avg.   122 us, Total. 121.6 us (0.0%)
+[Performance] Inspector.InitOrRebuild                                                                                        :        2 samples, Peak.  12.6 ms (1.9x), Avg.  6.47 ms, Total. 12.93 ms (0.1%)
+[Performance] EditorSceneManager.sceneOpened: UnityEditor.SceneTemplate.SceneTemplateService.OnSceneOpened                   :        1 samples, Peak.   176 us (1.0x), Avg.   176 us, Total. 175.9 us (0.0%)
+[Performance] EditorSceneManager.sceneOpened: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnSceneOpened             :        1 samples, Peak.  86.9 us (1.0x), Avg.  86.9 us, Total. 86.90 us (0.0%)
+[Performance] EditorSceneManager.sceneOpened: UnityEditor.SceneManagement.StageNavigationManager.OnSceneOpened               :        1 samples, Peak.  61.2 us (1.0x), Avg.  61.2 us, Total. 61.20 us (0.0%)
+[Performance] BuilderAssetModificationProcessor.OnWillSaveAssets                                                             :        6 samples, Peak.   318 us (5.5x), Avg.  57.5 us, Total. 344.9 us (0.0%)
+[Performance] TerrainModificationProcessor.OnWillSaveAssets                                                                  :        6 samples, Peak.   558 us (5.9x), Avg.  94.4 us, Total. 566.2 us (0.0%)
+[Performance] SceneDataContainer.TransformHierarchyChangedSetParentCallback                                                  :     3567 samples, Peak.  20.2 us (30.6x), Avg.   661 ns, Total. 2.357 ms (0.0%)
+[Performance] SceneVisibilityState.IsFlagSetInParents                                                                        :    16767 samples, Peak.  2.30 us (9.1x), Avg.   253 ns, Total. 4.243 ms (0.0%)
+[Performance] AssetDatabase.ImportAsset                                                                                      :        2 samples, Peak.  39.8 ms (1.3x), Avg.  31.4 ms, Total. 62.84 ms (0.4%)
+[Performance] MaterialModificationProcessor.OnWillCreateAsset                                                                :      176 samples, Peak.   195 us (19.5x), Avg.  9.98 us, Total. 1.756 ms (0.0%)
+[Performance] Selection.selectionChanged: UnityEditor.PackageManager.UI.Internal.SelectionProxy.OnSelectionChanged           :        1 samples, Peak.   553 us (1.0x), Avg.   553 us, Total. 552.9 us (0.0%)
+[Performance] Selection.selectionChanged: UnityEditorInternal.EditMode.OnSelectionChange                                     :        1 samples, Peak.   228 us (1.0x), Avg.   228 us, Total. 227.9 us (0.0%)
+[Performance] AssetDatabase.DeleteAssets                                                                                     :        1 samples, Peak.  23.0 ms (1.0x), Avg.  23.0 ms, Total. 23.02 ms (0.2%)
+[Performance] BuilderAssetModificationProcessor.OnWillDeleteAsset                                                            :        1 samples, Peak.   261 us (1.0x), Avg.   261 us, Total. 261.4 us (0.0%)
+[Performance] TMP_FontAssetPostProcessor.OnWillDeleteAsset                                                                   :        1 samples, Peak.   158 us (1.0x), Avg.   158 us, Total. 157.9 us (0.0%)
+[Performance] CancelSplashScreenOnAssetDelete.OnWillDeleteAsset                                                              :        1 samples, Peak.  93.1 us (1.0x), Avg.  93.1 us, Total. 93.10 us (0.0%)
+[Performance] EditorSceneManager.sceneSaving: UnityEditor.SceneTemplate.SceneTemplateService.OnSceneSaving                   :        1 samples, Peak.   216 us (1.0x), Avg.   216 us, Total. 216.1 us (0.0%)
+[Performance] EditorSceneManager.sceneSaving: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnSceneSaving             :        1 samples, Peak.   101 us (1.0x), Avg.   101 us, Total. 101.3 us (0.0%)
+[Performance] EditorSceneManager.sceneSaved: UnityEditor.SceneTemplate.SceneTemplateService.OnSceneSaved                     :        1 samples, Peak.  26.6 ms (1.0x), Avg.  26.6 ms, Total. 26.60 ms (0.2%)
+[Performance] EditorSceneManager.sceneSaved: UnityEditor.SceneVisibilityManager.EditorSceneManagerOnSceneSaved               :        1 samples, Peak.   104 us (1.0x), Avg.   104 us, Total. 104.1 us (0.0%)
+[Performance] AssetDatabase.Refresh                                                                                          :        1 samples, Peak.  6.91 ms (1.0x), Avg.  6.91 ms, Total. 6.909 ms (0.0%)
+[Performance] EditorApplication.quitting: Unity.Burst.Editor.BurstLoader.OnEditorApplicationQuitting                         :        1 samples, Peak.  32.1 us (1.0x), Avg.  32.1 us, Total. 32.10 us (0.0%)
+[Performance] EditorApplication.quitting: callback in UnityEditor.TextCore.Text.EditorEventCallbacks                         :        1 samples, Peak.  5.39 ms (1.0x), Avg.  5.39 ms, Total. 5.390 ms (0.0%)
+[Performance] Killing ADB server                                                                                             :        1 samples, Peak.  43.3 ms (1.0x), Avg.  43.3 ms, Total. 43.35 ms (0.3%)
+[Performance] Application.Shutdown.PauseProfilerSession                                                                      :        1 samples, Peak.  34.1 us (1.0x), Avg.  34.1 us, Total. 34.10 us (0.0%)
+[Performance] Application.Shutdown.PauseAssetImportWorkers                                                                   :        1 samples, Peak.   165 us (1.0x), Avg.   165 us, Total. 165.3 us (0.0%)
+[Performance] Application.Shutdown.SaveAssets                                                                                :        1 samples, Peak.  2.70 ms (1.0x), Avg.  2.70 ms, Total. 2.696 ms (0.0%)
+[Performance] Application.Shutdown.CleanupRenderPipeline                                                                     :        1 samples, Peak.  4.80 us (1.0x), Avg.  4.80 us, Total. 4.800 us (0.0%)
+[Performance] Application.Shutdown.StopPreloadManager                                                                        :        1 samples, Peak.  9.68 ms (1.0x), Avg.  9.68 ms, Total. 9.683 ms (0.1%)
+[Performance] Application.Shutdown.DestroyWorld                                                                              :        1 samples, Peak.  4.66 ms (1.0x), Avg.  4.66 ms, Total. 4.664 ms (0.0%)
+[Performance] Application.Shutdown.CleanupAfterLoad                                                                          :        1 samples, Peak.  74.5 ms (1.0x), Avg.  74.5 ms, Total. 74.51 ms (0.5%)
+[Performance] Application.Shutdown.Progress                                                                                  :        1 samples, Peak.  9.30 us (1.0x), Avg.  9.30 us, Total. 9.300 us (0.0%)
+[Performance] Application.Shutdown.GICleanupManagers                                                                         :        1 samples, Peak.   805 us (1.0x), Avg.   805 us, Total. 805.3 us (0.0%)
+[Performance] Application.Shutdown.MenuCleanupClass                                                                          :        1 samples, Peak.   206 us (1.0x), Avg.   206 us, Total. 206.3 us (0.0%)
+[Performance] Application.Shutdown.ADBSaveStateBeforeShutdown                                                                :        1 samples, Peak.  7.70 us (1.0x), Avg.  7.70 us, Total. 7.700 us (0.0%)
+[Performance] Application.Shutdown.RemoteShutdown                                                                            :        1 samples, Peak.  1000 ns (1.0x), Avg.  1000 ns, Total. 1000.0 ns (0.0%)
+[Performance] Application.Shutdown.CleanupVCProvider                                                                         :        1 samples, Peak.  12.2 us (1.0x), Avg.  12.2 us, Total. 12.20 us (0.0%)
+[Performance] Application.Shutdown.InputShutdown                                                                             :        1 samples, Peak.  2.60 us (1.0x), Avg.  2.60 us, Total. 2.600 us (0.0%)
+[Performance] Application.Shutdown.GizmoManagerDestroy                                                                       :        1 samples, Peak.   575 us (1.0x), Avg.   575 us, Total. 575.2 us (0.0%)
+[Performance] Application.Shutdown.ProfilerSession                                                                           :        1 samples, Peak.   270 us (1.0x), Avg.   270 us, Total. 269.8 us (0.0%)
+[Performance] Application.Shutdown.ReleaseGfxWindowOnAllGUIViews                                                             :        1 samples, Peak.   300 ns (1.0x), Avg.   300 ns, Total. 300.0 ns (0.0%)
+[Performance] Application.Shutdown.CleanupEngine                                                                             :        1 samples, Peak.   109 ms (1.0x), Avg.   109 ms, Total. 109.0 ms (0.7%)
+[Performance] Application.Shutdown.CleanupAssetDatabase                                                                      :        1 samples, Peak.  9.42 ms (1.0x), Avg.  9.42 ms, Total. 9.419 ms (0.1%)
+[Performance] Application.Shutdown.ScriptCompilationCleanUp                                                                  :        1 samples, Peak.  13.7 ms (1.0x), Avg.  13.7 ms, Total. 13.67 ms (0.1%)
+[Performance] Application.Shutdown.DestroyJobSystem                                                                          :        1 samples, Peak.  90.2 us (1.0x), Avg.  90.2 us, Total. 90.20 us (0.0%)
+[Performance] Application.Shutdown.CleanupPersistentManager                                                                  :        1 samples, Peak.  1.09 ms (1.0x), Avg.  1.09 ms, Total. 1.091 ms (0.0%)
+[Performance] Application.Shutdown.CleanupAsyncReadManager                                                                   :        1 samples, Peak.   374 us (1.0x), Avg.   374 us, Total. 374.1 us (0.0%)
+[Performance] Application.Shutdown.CleanupProgressBar                                                                        :        1 samples, Peak.   200 ns (1.0x), Avg.   200 ns, Total. 200.0 ns (0.0%)
+[Performance] Application.Shutdown.CleanupMono                                                                               :        1 samples, Peak.  63.1 ms (1.0x), Avg.  63.1 ms, Total. 63.12 ms (0.4%)
+[Performance] Application.Shutdown.CleanupStdConverters                                                                      :        1 samples, Peak.  8.80 us (1.0x), Avg.  8.80 us, Total. 8.800 us (0.0%)
+[Performance] Application.Shutdown.UnloadAllPlatformSupportModuleNativeDlls                                                  :        1 samples, Peak.   500 ns (1.0x), Avg.   500 ns, Total. 500.0 ns (0.0%)
+[Performance] Application.Shutdown.UnloadAllPlatformSupportNativeLibraries                                                   :        1 samples, Peak.  1.02 s (1.0x), Avg.  1.02 s, Total. 1.020 s (6.9%)
+[Performance] Application.Shutdown.CleanupAutoDocumentation                                                                  :        1 samples, Peak.   358 us (1.0x), Avg.   358 us, Total. 358.2 us (0.0%)
+[Performance] Application.Shutdown.ShaderNameManagerDestroy                                                                  :        1 samples, Peak.  60.0 us (1.0x), Avg.  60.0 us, Total. 60.00 us (0.0%)
+[Performance] Application.Shutdown.CleanupCacheServer                                                                        :        1 samples, Peak.   300 ns (1.0x), Avg.   300 ns, Total. 300.0 ns (0.0%)
+[Performance] Application.Shutdown.Virtualization_Shutdown                                                                   :        1 samples, Peak.   500 ns (1.0x), Avg.   500 ns, Total. 500.0 ns (0.0%)
+[Performance] Application.Shutdown.DevConnections                                                                            :        1 samples, Peak.   105 us (1.0x), Avg.   105 us, Total. 104.6 us (0.0%)
+Exiting batchmode successfully now!
+Exiting without the bug reporter. Application will terminate with return code 0

@@ -35,7 +35,8 @@ public static class KurokageProductionValidator
         ValidateCount<KurokageAgentDeathPresentation>("Agent death presenters", 10, ref errors, report);
         ValidateCount<KurokageAgentReadabilityPresenter>("Agent readability presenters", 10, ref errors, report);
         ValidateCount<KurokageHitReactionPresenter>("Agent hit reaction presenters", 10, ref errors, report);
-        ValidateCount<KurokageAgentAnimationDriver>("FBX agent animation drivers", 10, ref errors, report);
+        ValidateCount<KurokageAgentAnimationDriver>("Agent movement presentation drivers", 10, ref errors, report);
+        ValidateCount<KurokageOriginalAgentPose>("Original agent pose drivers", 10, ref errors, report);
         report.AppendLine("PASS  Legacy procedural agent rig path removed");
         ValidateCount<KurokageViewmodelLightingPresenter>("Viewmodel lighting presenter", 1, ref errors, report);
         ValidateCount<KurokageSprintWeaponGate>("Sprint weapon readiness gate", 1, ref errors, report);
@@ -68,6 +69,7 @@ public static class KurokageProductionValidator
         int noa = 0;
         int reiha = 0;
         int mio = 0;
+        System.Collections.Generic.HashSet<string> originalRoster = new System.Collections.Generic.HashSet<string>();
 
         foreach (RenkaiRoundPlayer player in players)
         {
@@ -83,15 +85,20 @@ public static class KurokageProductionValidator
 
             Transform visual = player.transform.Find("AGENT_VISUAL");
             Renderer bodyRenderer = visual != null ? visual.GetComponentInChildren<Renderer>(true) : null;
-            if (visual == null || bodyRenderer == null)
+            Transform originalAgent = FindOriginalAgentRoot(visual);
+            if (visual == null || bodyRenderer == null || originalAgent == null)
             {
                 errors++;
-                report.AppendLine("ERROR Missing FBX AGENT_VISUAL for " + player.agentName);
+                report.AppendLine("ERROR Missing original AGENT_VISUAL for " + player.agentName);
             }
             else
             {
-                report.AppendLine("PASS  FBX AGENT_VISUAL " + player.agentName);
+                originalRoster.Add(player.agentName);
+                report.AppendLine("PASS  Original AGENT_VISUAL " + player.agentName);
             }
+
+            int importedAnimators = visual != null ? visual.GetComponentsInChildren<Animator>(true).Length : 0;
+            ValidateExact("Imported FBX animators for " + player.agentName, importedAnimators, 0, ref errors, report);
 
             string identity = player.agentName.ToUpperInvariant();
             if (identity.StartsWith("KAIRI")) kairi++;
@@ -120,6 +127,7 @@ public static class KurokageProductionValidator
         ValidateAtLeast("Noa visual coverage", noa, 1, ref errors, report);
         ValidateAtLeast("Reiha visual coverage", reiha, 1, ref errors, report);
         ValidateAtLeast("Mio visual coverage", mio, 1, ref errors, report);
+        ValidateExact("Unique original roster identities", originalRoster.Count, 10, ref errors, report);
 
         if (visibleRootRenderers > 0)
         {
@@ -281,6 +289,14 @@ public static class KurokageProductionValidator
     {
         T[] objects = Object.FindObjectsOfType<T>(true);
         ValidateExact(label, objects.Length, expected, ref errors, report);
+    }
+
+    private static Transform FindOriginalAgentRoot(Transform visual)
+    {
+        if (visual == null) return null;
+        foreach (Transform transform in visual.GetComponentsInChildren<Transform>(true))
+            if (transform.name.StartsWith("ORIGINAL_AGENT_")) return transform;
+        return null;
     }
 
     private static int CountLegacyHudComponents()
