@@ -53,6 +53,11 @@ namespace Renkai.Kurogake
         public float pistolVerticalRecoil = 1.0f;
         public float pistolHorizontalRecoil = 0.18f;
 
+        [Header("Accuracy States")]
+        [SerializeField] private float crouchStationarySpreadMultiplier = 0.74f;
+        [SerializeField] private float crouchMovingSpreadMultiplier = 0.88f;
+        [SerializeField] private float movingThreshold = 0.2f;
+
         [Header("ADS")]
         public float hipFov = 90f;
         public float adsFov = 72f;
@@ -77,6 +82,8 @@ namespace Renkai.Kurogake
 
         public bool IsReloading => reloading;
         public bool IsAiming { get; private set; }
+        public bool IsFireLocked => externalFireLocked;
+        public bool CanFireNow => !externalFireLocked && !reloading && Time.time >= nextFireTime;
         public float ReloadNormalized
         {
             get
@@ -85,6 +92,7 @@ namespace Renkai.Kurogake
                 return Mathf.Clamp01((Time.time - reloadStartTime) / reloadDuration);
             }
         }
+
         public int CurrentAmmo => slot == RenkaiWeaponSlot.Rifle ? rifleAmmo : slot == RenkaiWeaponSlot.Pistol ? pistolAmmo : -1;
         public int CurrentReserve => slot == RenkaiWeaponSlot.Rifle ? rifleReserve : slot == RenkaiWeaponSlot.Pistol ? pistolReserve : -1;
         public string ActiveWeaponName => slot == RenkaiWeaponSlot.Rifle ? "KX-9 KURO" : slot == RenkaiWeaponSlot.Pistol ? "SHIRO SIDEARM" : "ECLIPSE BLADE";
@@ -101,10 +109,12 @@ namespace Renkai.Kurogake
         private float reloadDuration;
         private float hitTextUntil;
         private bool reloading;
+        private bool externalFireLocked;
         private CharacterController characterController;
         private RenkaiFPSController fpsController;
         private KurokageCombatVfxPresenter combatVfx;
         private KurokageBladeCombatController bladeCombat;
+        private RenkaiRoundPlayer selfPlayer;
         private int recoilPatternIndex;
         private float lastShotTime = -999f;
 
@@ -117,6 +127,7 @@ namespace Renkai.Kurogake
             fpsController = GetComponent<RenkaiFPSController>();
             combatVfx = GetComponent<KurokageCombatVfxPresenter>();
             bladeCombat = GetComponent<KurokageBladeCombatController>();
+            selfPlayer = GetComponent<RenkaiRoundPlayer>();
 
             if (muzzlePoint == null && playerCamera != null)
             {
@@ -144,7 +155,7 @@ namespace Renkai.Kurogake
             if (Input.GetKeyDown(KeyCode.Alpha2)) SelectWeapon(1);
             if (Input.GetKeyDown(KeyCode.Alpha3)) SelectWeapon(2);
 
-            IsAiming = !reloading && slot != RenkaiWeaponSlot.Sword && Input.GetMouseButton(1);
+            IsAiming = !externalFireLocked && !reloading && slot != RenkaiWeaponSlot.Sword && Input.GetMouseButton(1);
             UpdateAdsRequest();
 
             if (reloading && Time.time >= reloadEndTime)
@@ -154,7 +165,7 @@ namespace Renkai.Kurogake
                 ? Input.GetMouseButtonDown(0)
                 : Input.GetMouseButton(0);
 
-            if (!reloading && wantsFire && Time.time >= nextFireTime)
+            if (!externalFireLocked && !reloading && wantsFire && Time.time >= nextFireTime)
             {
                 if (slot == RenkaiWeaponSlot.Sword)
                 {
@@ -181,6 +192,16 @@ namespace Renkai.Kurogake
             UpdateUI();
         }
 
+        public void SetExternalFireLock(bool locked)
+        {
+            externalFireLocked = locked;
+            if (locked)
+            {
+                IsAiming = false;
+                UpdateAdsRequest();
+            }
+        }
+
         public void ResetAmmo()
         {
             rifleAmmo = 30;
@@ -188,6 +209,7 @@ namespace Renkai.Kurogake
             pistolAmmo = 12;
             pistolReserve = 36;
             reloading = false;
+            externalFireLocked = false;
             recoilPatternIndex = 0;
             SelectWeapon(0);
         }
@@ -224,6 +246,8 @@ namespace Renkai.Kurogake
 
         private void FireGun()
         {
+            if (playerCamera == null) return;
+
             int ammo = slot == RenkaiWeaponSlot.Rifle ? rifleAmmo : pistolAmmo;
             if (ammo <= 0)
             {
@@ -252,7 +276,7 @@ namespace Renkai.Kurogake
             Ray ray = new Ray(playerCamera.transform.position, direction);
             Vector3 end = ray.origin + ray.direction * range;
 
-            if (Physics.Raycast(ray, out RaycastHit hit, range, ~0, QueryTriggerInteraction.Collide))
+            if (KurokageCombatRayResolver.TryResolve(ray, range, transform, out RaycastHit hit))
             {
                 end = hit.point;
                 ProcessHit(hit);
@@ -267,6 +291,14 @@ namespace Renkai.Kurogake
 
         private void ProcessHit(RaycastHit hit)
         {
+            KurokageDecoyHitReceiver decoy = hit.collider.GetComponentInParent<KurokageDecoyHitReceiver>();
+            if (decoy != null)
+            {
+                decoy.Hit(hit.point, hit.normal);
+                ShowHit(false);
+                return;
+            }
+
             RenkaiRoundPlayer roundPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
             RenkaiHealth legacyHealth = hit.collider.GetComponentInParent<RenkaiHealth>();
             KurokageHitZone hitZone = hit.collider.GetComponent<KurokageHitZone>();
@@ -284,13 +316,12 @@ namespace Renkai.Kurogake
             {
                 KurokageArmor targetArmor = roundPlayer.GetComponent<KurokageArmor>();
                 bool hadArmor = targetArmor != null && targetArmor.CurrentArmor > 0f;
-                RenkaiRoundPlayer self = GetComponent<RenkaiRoundPlayer>();
 
-                if (self == null || roundPlayer.team != self.team)
+                if (selfPlayer == null || roundPlayer.team != selfPlayer.team)
                 {
                     KurokageDamageInfo info = new KurokageDamageInfo(
                         damage,
-                        self,
+                        selfPlayer,
                         hit.point,
                         hit.normal,
                         KurokageDamageType.Ballistic,
@@ -307,9 +338,14 @@ namespace Renkai.Kurogake
                     }
                     return;
                 }
+
+                // Friendly bodies still block the shot, but do not receive hit confirmation or damage.
+                if (combatVfx != null)
+                    combatVfx.SpawnBodyImpact(hit.point, hit.normal);
+                return;
             }
 
-            if (legacyHealth != null && roundPlayer == null)
+            if (legacyHealth != null)
             {
                 legacyHealth.TakeDamage(damage);
                 ShowHit(headshot);
@@ -329,17 +365,22 @@ namespace Renkai.Kurogake
         {
             bool grounded = characterController == null || characterController.isGrounded;
             float speed = characterController == null ? 0f : new Vector3(characterController.velocity.x, 0f, characterController.velocity.z).magnitude;
+            bool moving = speed > movingThreshold;
 
+            float spread;
             if (slot == RenkaiWeaponSlot.Rifle)
             {
-                if (!grounded) return rifleAirSpread;
-                if (speed > 0.2f) return rifleMovingSpread;
-                return rifleStandingSpread;
+                spread = !grounded ? rifleAirSpread : moving ? rifleMovingSpread : rifleStandingSpread;
+            }
+            else
+            {
+                spread = !grounded ? pistolAirSpread : moving ? pistolMovingSpread : pistolStandingSpread;
             }
 
-            if (!grounded) return pistolAirSpread;
-            if (speed > 0.2f) return pistolMovingSpread;
-            return pistolStandingSpread;
+            if (grounded && fpsController != null && fpsController.IsCrouching)
+                spread *= moving ? crouchMovingSpreadMultiplier : crouchStationarySpreadMultiplier;
+
+            return spread;
         }
 
         private void ApplyRecoil()
@@ -372,7 +413,7 @@ namespace Renkai.Kurogake
 
         private void StartReload()
         {
-            if (slot == RenkaiWeaponSlot.Sword || reloading) return;
+            if (externalFireLocked || slot == RenkaiWeaponSlot.Sword || reloading) return;
             if (slot == RenkaiWeaponSlot.Rifle && (rifleAmmo >= 30 || rifleReserve <= 0)) return;
             if (slot == RenkaiWeaponSlot.Pistol && (pistolAmmo >= 12 || pistolReserve <= 0)) return;
 
@@ -419,15 +460,14 @@ namespace Renkai.Kurogake
             if (Physics.SphereCast(ray, 0.85f, out RaycastHit hit, 3.2f, ~0, QueryTriggerInteraction.Collide))
             {
                 RenkaiRoundPlayer victim = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
-                RenkaiRoundPlayer self = GetComponent<RenkaiRoundPlayer>();
                 KurokageHitZone zone = hit.collider.GetComponent<KurokageHitZone>();
                 KurokageHitZoneType zoneType = zone != null ? zone.ZoneType : KurokageHitZoneType.Torso;
 
-                if (victim != null && (self == null || victim.team != self.team))
+                if (victim != null && (selfPlayer == null || victim.team != selfPlayer.team))
                 {
                     KurokageDamageInfo info = new KurokageDamageInfo(
                         55f,
-                        self,
+                        selfPlayer,
                         hit.point,
                         hit.normal,
                         KurokageDamageType.Blade,
@@ -534,6 +574,8 @@ namespace Renkai.Kurogake
                 ammoText.text = "BLADE";
             else if (reloading)
                 ammoText.text = "RELOADING " + Mathf.RoundToInt(ReloadNormalized * 100f) + "%";
+            else if (externalFireLocked)
+                ammoText.text = CurrentAmmo + " / " + CurrentReserve + "  // READYING";
             else
                 ammoText.text = CurrentAmmo + " / " + CurrentReserve;
         }
