@@ -8,7 +8,7 @@ using Renkai.Kurokage;
 public static class KurokageFinalUpgradeInstaller
 {
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "PRODUCTION_ALPHA_08";
+    private const string ProductionBuildId = "PRODUCTION_ALPHA_09";
 
     [MenuItem("Renkai/Build Production Version")]
     public static void RunAll()
@@ -39,6 +39,7 @@ public static class KurokageFinalUpgradeInstaller
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
         bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
         bool architectureOk = KurokageCompetitiveArchitecturePass.ApplySilent();
+        bool districtIdentityOk = KurokageDistrictIdentityPass.ApplySilent();
         bool ringRefineOk = KurokageEnvironmentRingRefiner.ApplySilent();
         bool zodiacArtOk = KurokageZodiacCoreArtInstaller.ApplySilent();
         bool nexusArtOk = KurokageZodiacNexusArtInstaller.ApplySilent();
@@ -72,6 +73,7 @@ public static class KurokageFinalUpgradeInstaller
         if (!environmentOk) validationReport += "\nERROR Environment art pass failed.";
         if (!brightVisualOk) validationReport += "\nERROR Bright competitive visual pass failed.";
         if (!architectureOk) validationReport += "\nERROR Competitive architecture pass failed.";
+        if (!districtIdentityOk) validationReport += "\nERROR District identity pass failed.";
         if (!ringRefineOk) validationReport += "\nERROR Environment ring refinement failed.";
         if (!zodiacArtOk) validationReport += "\nERROR Zodiac Core art pass failed.";
         if (!nexusArtOk) validationReport += "\nERROR Zodiac Nexus art pass failed.";
@@ -79,7 +81,7 @@ public static class KurokageFinalUpgradeInstaller
         if (!matchOk) validationReport += "\nERROR 5v5 install silent step failed.";
         if (!visualsOk) validationReport += "\nERROR Agent visual silent step failed.";
 
-        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && architectureOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
+        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && architectureOk && districtIdentityOk && ringRefineOk && zodiacArtOk && nexusArtOk && gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);
         return passed;
     }
