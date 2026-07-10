@@ -36,16 +36,24 @@ namespace Renkai.Kurokage
             SpawnSparkCross(point, normal, new Color(1f, 0.58f, 0.82f, 1f), headshotScale * 2.0f, headshotLife);
         }
 
+        public void SpawnArmorBreak(Vector3 point, Vector3 normal)
+        {
+            SpawnDisc("ARMOR_BREAK", point + normal * 0.03f, normal, new Color(0.40f, 0.90f, 1f, 1f), armorImpactScale * 1.45f, headshotLife, 5.2f);
+            SpawnSparkCross(point, normal, new Color(0.72f, 0.96f, 1f, 1f), armorImpactScale * 2.1f, headshotLife);
+        }
+
         private static void SpawnDisc(string name, Vector3 point, Vector3 normal, Color color, float scale, float life, float emission)
         {
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            go.name = name;
-            Object.Destroy(go.GetComponent<Collider>());
-            go.transform.position = point;
-            go.transform.rotation = Quaternion.FromToRotation(Vector3.up, normal);
-            go.transform.localScale = new Vector3(scale, 0.01f, scale);
-            ApplyEmission(go.GetComponent<Renderer>(), color, emission);
-            Object.Destroy(go, life);
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cylinder,
+                name,
+                point,
+                Quaternion.FromToRotation(Vector3.up, normal == Vector3.zero ? Vector3.up : normal),
+                new Vector3(scale, 0.01f, scale),
+                color,
+                emission,
+                life
+            );
         }
 
         private static void SpawnSparkCross(Vector3 point, Vector3 normal, Color color, float size, float life)
@@ -53,33 +61,17 @@ namespace Renkai.Kurokage
             Quaternion basis = Quaternion.LookRotation(normal == Vector3.zero ? Vector3.forward : normal);
             for (int i = 0; i < 2; i++)
             {
-                GameObject spark = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                spark.name = "IMPACT_SPARK";
-                Object.Destroy(spark.GetComponent<Collider>());
-                spark.transform.position = point;
-                spark.transform.rotation = basis * Quaternion.Euler(0f, 0f, 45f + i * 90f);
-                spark.transform.localScale = new Vector3(size, 0.015f, 0.015f);
-                ApplyEmission(spark.GetComponent<Renderer>(), color, 4.5f);
-                Object.Destroy(spark, life);
+                KurokageVfxPool.Instance.Spawn(
+                    KurokageVfxShape.Cube,
+                    "IMPACT_SPARK",
+                    point,
+                    basis * Quaternion.Euler(0f, 0f, 45f + i * 90f),
+                    new Vector3(size, 0.015f, 0.015f),
+                    color,
+                    4.5f,
+                    life
+                );
             }
-        }
-
-        private static void ApplyEmission(Renderer renderer, Color color, float emission)
-        {
-            if (renderer == null) return;
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (shader == null) shader = Shader.Find("Standard");
-            if (shader == null) shader = Shader.Find("Diffuse");
-
-            Material material = new Material(shader);
-            if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
-            if (material.HasProperty("_Color")) material.SetColor("_Color", color);
-            if (material.HasProperty("_EmissionColor"))
-            {
-                material.EnableKeyword("_EMISSION");
-                material.SetColor("_EmissionColor", color * emission);
-            }
-            renderer.sharedMaterial = material;
         }
     }
 }
