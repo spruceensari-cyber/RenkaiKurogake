@@ -1,7 +1,7 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Renkai.Kurokage;
 
 namespace Renkai.Kurogake
 {
@@ -16,8 +16,6 @@ namespace Renkai.Kurogake
 
         public RenkaiBombCore bomb;
 
-        // V2.5 installer compatibility.
-        // Eski installer bu alanları aradığı için geri eklendi.
         public Text statusText;
         public Text scoreText;
         public Text timerText;
@@ -35,10 +33,10 @@ namespace Renkai.Kurogake
         private IEnumerator NewRoundRoutine()
         {
             roundActive = false;
-
             hud = Object.FindObjectOfType<RenkaiHUDController>();
 
             SetStatus("BUY PHASE");
+            KurokageGameEvents.RaiseRoundBanner("PREPARE // ROUND " + roundNumber);
             SetScoreUI();
 
             foreach (RenkaiRoundPlayer p in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
@@ -51,8 +49,8 @@ namespace Renkai.Kurogake
 
             roundActive = true;
             roundStartTime = Time.time;
-
             SetStatus("ROUND " + roundNumber + " START");
+            KurokageGameEvents.RaiseRoundBanner("ROUND " + roundNumber + " // ENGAGE");
         }
 
         private void Update()
@@ -82,11 +80,8 @@ namespace Renkai.Kurogake
             foreach (RenkaiRoundPlayer p in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
             {
                 if (!p.isAlive) continue;
-
-                if (p.team == RenkaiTeam.Attackers)
-                    aliveAttackers++;
-                else
-                    aliveDefenders++;
+                if (p.team == RenkaiTeam.Attackers) aliveAttackers++;
+                else aliveDefenders++;
             }
 
             if (aliveAttackers <= 0)
@@ -100,14 +95,13 @@ namespace Renkai.Kurogake
             if (!roundActive) return;
 
             roundActive = false;
-
-            if (winner == RenkaiTeam.Attackers)
-                attackersScore++;
-            else
-                defendersScore++;
+            if (winner == RenkaiTeam.Attackers) attackersScore++;
+            else defendersScore++;
 
             SetStatus(winner + " WIN - " + reason);
             SetScoreUI();
+            KurokageGameEvents.RaiseRoundEnded(winner, reason);
+            KurokageGameEvents.RaiseRoundBanner((winner == RenkaiTeam.Attackers ? "ATTACKERS" : "DEFENDERS") + " // VICTORY");
 
             StartCoroutine(NextRoundRoutine());
         }
@@ -121,33 +115,22 @@ namespace Renkai.Kurogake
 
         public void SetStatus(string value)
         {
-            if (statusText != null)
-                statusText.text = value;
-
-            if (hud != null)
-                hud.SetStatus(value);
-
+            if (statusText != null) statusText.text = value;
+            if (hud != null) hud.SetStatus(value);
             Debug.Log(value);
         }
 
         private void SetTimer(string value)
         {
-            if (timerText != null)
-                timerText.text = value;
-
-            if (hud != null)
-                hud.SetTimer(value);
+            if (timerText != null) timerText.text = value;
+            if (hud != null) hud.SetTimer(value);
         }
 
         private void SetScoreUI()
         {
             string value = "ROUND " + roundNumber + "    ATK " + attackersScore + " - " + defendersScore + " DEF";
-
-            if (scoreText != null)
-                scoreText.text = value;
-
-            if (hud != null)
-                hud.SetScore(attackersScore, defendersScore, roundNumber);
+            if (scoreText != null) scoreText.text = value;
+            if (hud != null) hud.SetScore(attackersScore, defendersScore, roundNumber);
         }
     }
 }
