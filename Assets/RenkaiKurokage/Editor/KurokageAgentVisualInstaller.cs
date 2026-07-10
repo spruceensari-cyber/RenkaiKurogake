@@ -43,14 +43,17 @@ public static class KurokageAgentVisualInstaller
             if (player.isHumanPlayer)
             {
                 archetype = KurokageAgentArchetype.Kairi;
+                player.agentName = "KAIRI // RIFT-07";
             }
             else if (player.team == RenkaiTeam.Attackers)
             {
                 archetype = ResolveArchetype(attackerIndex++);
+                player.agentName = ArchetypeName(archetype) + " // " + ExtractCallSign(player.agentName);
             }
             else
             {
                 archetype = ResolveArchetype(defenderIndex++ + 1);
+                player.agentName = ArchetypeName(archetype) + " // " + ExtractCallSign(player.agentName);
             }
 
             bool applied = KurokageProceduralAgentFactory.Build(player, archetype);
@@ -75,6 +78,24 @@ public static class KurokageAgentVisualInstaller
             case 2: return KurokageAgentArchetype.Mio;
             default: return KurokageAgentArchetype.Kairi;
         }
+    }
+
+    private static string ArchetypeName(KurokageAgentArchetype archetype)
+    {
+        switch (archetype)
+        {
+            case KurokageAgentArchetype.Noa: return "NOA";
+            case KurokageAgentArchetype.Reiha: return "REIHA";
+            case KurokageAgentArchetype.Mio: return "MIO";
+            default: return "KAIRI";
+        }
+    }
+
+    private static string ExtractCallSign(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return "AGENT";
+        int split = value.LastIndexOf("//", System.StringComparison.Ordinal);
+        return split >= 0 ? value.Substring(split + 2).Trim() : value.Trim();
     }
 
     private static int ComparePlayers(RenkaiRoundPlayer a, RenkaiRoundPlayer b)
