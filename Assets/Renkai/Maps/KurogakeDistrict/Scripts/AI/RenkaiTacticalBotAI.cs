@@ -63,9 +63,11 @@ namespace Renkai.Kurogake
         private float lastSeenEnemyTime = -999f;
         private float nextFireTime;
         private float nextThinkTime;
+        private float nextRosterRefresh;
         private float stateEnteredTime;
         private RenkaiRoundPlayer target;
         private RenkaiRoundPlayer self;
+        private RenkaiRoundPlayer[] cachedPlayers;
         private CharacterController controller;
         private ZodiacCoreRuntime core;
         private int routeIndex;
@@ -86,6 +88,7 @@ namespace Renkai.Kurogake
             spawnAnchor = transform.position;
             currentGoal = spawnAnchor;
             seed = Random.Range(0f, 100f);
+            RefreshRoster();
 
             if (muzzle == null)
             {
@@ -105,6 +108,9 @@ namespace Renkai.Kurogake
             if (self == null || !self.isAlive) return;
             if (core == null) core = Object.FindObjectOfType<ZodiacCoreRuntime>();
 
+            if (Time.time >= nextRosterRefresh)
+                RefreshRoster();
+
             if (Time.time >= nextThinkTime)
             {
                 nextThinkTime = Time.time + 0.18f;
@@ -112,6 +118,12 @@ namespace Renkai.Kurogake
             }
 
             ExecuteState();
+        }
+
+        private void RefreshRoster()
+        {
+            cachedPlayers = Object.FindObjectsOfType<RenkaiRoundPlayer>(true);
+            nextRosterRefresh = Time.time + 1.0f;
         }
 
         private void Think()
@@ -371,10 +383,13 @@ namespace Renkai.Kurogake
 
         private RenkaiRoundPlayer FindVisibleEnemy()
         {
+            if (cachedPlayers == null || cachedPlayers.Length == 0)
+                RefreshRoster();
+
             RenkaiRoundPlayer best = null;
             float bestDistance = float.MaxValue;
 
-            foreach (RenkaiRoundPlayer candidate in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
+            foreach (RenkaiRoundPlayer candidate in cachedPlayers)
             {
                 if (candidate == null || !candidate.isAlive || candidate.team == team) continue;
                 float d = Vector3.Distance(transform.position, candidate.transform.position);
@@ -404,7 +419,7 @@ namespace Renkai.Kurogake
             Vector3 end = candidate.transform.position + Vector3.up * 1.1f;
             Vector3 dir = (end - start).normalized;
 
-            if (Physics.Raycast(start, dir, out RaycastHit hit, viewDistance, sightMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(start, dir, out RaycastHit hit, viewDistance, sightMask, QueryTriggerInteraction.Collide))
             {
                 RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
                 return hitPlayer != null && hitPlayer == candidate;
@@ -424,43 +439,68 @@ namespace Renkai.Kurogake
             aim += new Vector3(Random.Range(-miss, miss), Random.Range(-miss * 0.4f, miss * 0.4f), Random.Range(-miss, miss));
 
             Vector3 end = aim;
-            if (Physics.Raycast(start, (aim - start).normalized, out RaycastHit hit, fireDistance, sightMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(start, (aim - start).normalized, out RaycastHit hit, fireDistance, sightMask, QueryTriggerInteraction.Collide))
             {
                 end = hit.point;
-                RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
-                if (hitPlayer != null && hitPlayer.team != team && hitPlayer.isAlive)
-                    hitPlayer.TakeDamage(damage, self);
+
+                KurokageDecoyHitReceiver decoy = hit.collider.GetComponentInParent<KurokageDecoyHitReceiver>();
+                if (decoy != null)
+                {
+                    decoy.Hit(hit.point, hit.normal);
+                }
+                else
+                {
+                    RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
+                    if (hitPlayer != null && hitPlayer.team != team && hitPlayer.isAlive)
+                    {
+                        KurokageDamageInfo info = new KurokageDamageInfo(
+                            damage,
+                            self,
+                            hit.point,
+                            hit.normal,
+                            KurokageDamageType.Ballistic,
+                            KurokageHitZoneType.Torso,
+                            "BOT_RIFLE"
+                        );
+                        hitPlayer.ApplyDamage(info);
+                    }
+                }
             }
 
             SpawnTracer(start, end);
+            SpawnMuzzleFlash(start);
         }
 
         private void SpawnTracer(Vector3 start, Vector3 end)
         {
             if (Vector3.Distance(start, end) < 0.1f) return;
 
-            GameObject tracer = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            Object.Destroy(tracer.GetComponent<Collider>());
-            tracer.name = "Kurokage_BotTracer";
-
             Vector3 mid = (start + end) * 0.5f;
             float len = Vector3.Distance(start, end);
-            tracer.transform.position = mid;
-            tracer.transform.rotation = Quaternion.LookRotation(end - start);
-            tracer.transform.localScale = new Vector3(0.018f, 0.018f, len);
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Cube,
+                "KUROKAGE_BOT_TRACER",
+                mid,
+                Quaternion.LookRotation(end - start),
+                new Vector3(0.012f, 0.012f, len),
+                tracerColor,
+                1.8f,
+                0.05f
+            );
+        }
 
-            Shader shader = Shader.Find("Standard");
-            if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
-            Material mat = new Material(shader);
-            if (mat.HasProperty("_Color")) mat.SetColor("_Color", tracerColor);
-            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tracerColor);
-            if (mat.HasProperty("_EmissionColor"))
-            {
-                mat.EnableKeyword("_EMISSION");
-                mat.SetColor("_EmissionColor", tracerColor * 2.2f);
-            }
-            tracer.GetComponent<Renderer>().sharedMaterial = mat;
-            Object.Destroy(tracer, 0.055f);
+        private void SpawnMuzzleFlash(Vector3 position)
+        {
+            KurokageVfxPool.Instance.Spawn(
+                KurokageVfxShape.Sphere,
+                "KUROKAGE_BOT_MUZZLE",
+                position,
+                transform.rotation,
+                Vector3.one * 0.07f,
+                tracerColor,
+                2.4f,
+                0.035f
+            );
         }
 
         private void EnterState(RenkaiBotState newState)
