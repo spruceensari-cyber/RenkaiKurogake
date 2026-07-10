@@ -30,9 +30,11 @@ public static class KurokageFinalUpgradeInstaller
             "- gameplay feel and viewmodels\n" +
             "- 5v5 test match\n" +
             "- FBX agent visuals\n" +
+            "- health + armor combat pipeline\n" +
             "- elite HUD\n" +
             "- round banners and kill feed\n" +
-            "- Zodiac Core objective\n" +
+            "- centralized gameplay audio hooks\n" +
+            "- Zodiac Core objective + VFX\n" +
             "- Kairi Q/E/C/X ability kit\n" +
             "- Eclipse Blade combo combat\n" +
             "- ability cooldown HUD\n\n" +
@@ -47,6 +49,7 @@ public static class KurokageFinalUpgradeInstaller
         KurokageGameplayUpgradeInstaller.Upgrade();
         KurokageFiveVFiveInstaller.Install();
         KurokageAgentVisualInstaller.Install();
+        EnsureArmorAndAudio();
         EnsureEliteHud();
         EnsureMatchPresentationHud();
         EnsureZodiacObjective();
@@ -71,6 +74,18 @@ public static class KurokageFinalUpgradeInstaller
             buildMarker = marker.AddComponent<KurokageProductionBuildMarker>();
 
         buildMarker.SetBuildId(ProductionBuildId);
+    }
+
+    private static void EnsureArmorAndAudio()
+    {
+        foreach (RenkaiRoundPlayer player in Object.FindObjectsOfType<RenkaiRoundPlayer>(true))
+        {
+            if (player.GetComponent<KurokageArmor>() == null)
+                player.gameObject.AddComponent<KurokageArmor>();
+
+            if (player.isHumanPlayer && player.GetComponent<KurokageAudioHooks>() == null)
+                player.gameObject.AddComponent<KurokageAudioHooks>();
+        }
     }
 
     private static void EnsureEliteHud()
@@ -100,8 +115,14 @@ public static class KurokageFinalUpgradeInstaller
     private static void EnsureZodiacObjective()
     {
         GameObject coreGo = GameObject.Find("ZODIAC_CORE");
-        if (coreGo != null && coreGo.GetComponent<ZodiacCoreRuntime>() == null)
-            coreGo.AddComponent<ZodiacCoreRuntime>();
+        if (coreGo != null)
+        {
+            if (coreGo.GetComponent<ZodiacCoreRuntime>() == null)
+                coreGo.AddComponent<ZodiacCoreRuntime>();
+
+            if (coreGo.GetComponent<KurokageZodiacVfxPresenter>() == null)
+                coreGo.AddComponent<KurokageZodiacVfxPresenter>();
+        }
 
         GameObject objectiveGo = GameObject.Find("KUROKAGE_ZODIAC_OBJECTIVE");
         if (objectiveGo == null)
