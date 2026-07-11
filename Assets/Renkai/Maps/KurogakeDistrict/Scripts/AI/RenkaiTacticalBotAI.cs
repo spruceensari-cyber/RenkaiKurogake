@@ -24,6 +24,7 @@ namespace Renkai.Kurogake
         Blade
     }
 
+    [RequireComponent(typeof(RenkaiRoundPlayer))]
     public class RenkaiTacticalBotAI : MonoBehaviour
     {
         [Header("Identity")]
@@ -34,7 +35,7 @@ namespace Renkai.Kurogake
         [Header("Perception")]
         public float viewDistance = 42f;
         public float fieldOfView = 105f;
-        public float memoryTime = 5.5f;
+        public float memoryTime = 4.2f;
         public float reactionDelay = 0.22f;
         public LayerMask sightMask = ~0;
 
@@ -59,8 +60,6 @@ namespace Renkai.Kurogake
 
         private Vector3 spawnAnchor;
         private Vector3 currentGoal;
-        private Vector3 lastKnownEnemyPosition;
-        private float lastSeenEnemyTime = -999f;
         private float nextFireTime;
         private float nextThinkTime;
         private float nextRosterRefresh;
@@ -70,6 +69,7 @@ namespace Renkai.Kurogake
         private RenkaiRoundPlayer[] cachedPlayers;
         private CharacterController controller;
         private ZodiacCoreRuntime core;
+        private KurokageBotPerception perception;
         private int routeIndex;
         private float seed;
 
@@ -78,6 +78,8 @@ namespace Renkai.Kurogake
             self = GetComponent<RenkaiRoundPlayer>();
             controller = GetComponent<CharacterController>();
             core = Object.FindObjectOfType<ZodiacCoreRuntime>();
+            perception = GetComponent<KurokageBotPerception>();
+            if (perception == null) perception = gameObject.AddComponent<KurokageBotPerception>();
 
             if (self != null)
             {
@@ -89,14 +91,8 @@ namespace Renkai.Kurogake
             currentGoal = spawnAnchor;
             seed = Random.Range(0f, 100f);
             RefreshRoster();
-
-            if (muzzle == null)
-            {
-                GameObject m = new GameObject("TacticalBot_Muzzle");
-                m.transform.SetParent(transform);
-                m.transform.localPosition = new Vector3(0f, 1.35f, 0.65f);
-                muzzle = m.transform;
-            }
+            EnsureMuzzle();
+            perception.Configure(muzzle, viewDistance, fieldOfView, memoryTime, sightMask);
 
             EnterState(team == RenkaiTeam.Attackers ? RenkaiBotState.Patrol : RenkaiBotState.Hold);
             PickInitialGoal();
@@ -107,10 +103,14 @@ namespace Renkai.Kurogake
             if (self == null) self = GetComponent<RenkaiRoundPlayer>();
             if (self == null || !self.isAlive) return;
             if (core == null) core = Object.FindObjectOfType<ZodiacCoreRuntime>();
+            if (perception == null)
+            {
+                perception = GetComponent<KurokageBotPerception>();
+                if (perception == null) perception = gameObject.AddComponent<KurokageBotPerception>();
+                perception.Configure(muzzle, viewDistance, fieldOfView, memoryTime, sightMask);
+            }
 
-            if (Time.time >= nextRosterRefresh)
-                RefreshRoster();
-
+            if (Time.time >= nextRosterRefresh) RefreshRoster();
             if (Time.time >= nextThinkTime)
             {
                 nextThinkTime = Time.time + 0.18f;
@@ -120,41 +120,53 @@ namespace Renkai.Kurogake
             ExecuteState();
         }
 
+        private void EnsureMuzzle()
+        {
+            if (muzzle != null) return;
+            Transform existing = transform.Find("TacticalBot_Muzzle");
+            if (existing != null)
+            {
+                muzzle = existing;
+                return;
+            }
+
+            GameObject muzzleObject = new GameObject("TacticalBot_Muzzle");
+            muzzleObject.transform.SetParent(transform, false);
+            muzzleObject.transform.localPosition = new Vector3(0f, 1.35f, 0.65f);
+            muzzle = muzzleObject.transform;
+        }
+
         private void RefreshRoster()
         {
             cachedPlayers = Object.FindObjectsOfType<RenkaiRoundPlayer>(true);
-            nextRosterRefresh = Time.time + 1.0f;
+            nextRosterRefresh = Time.time + 1f;
         }
 
         private void Think()
         {
-            target = FindVisibleEnemy();
+            target = perception.FindBestVisibleEnemy(cachedPlayers, team);
 
             if (target != null)
             {
-                lastKnownEnemyPosition = target.transform.position;
-                lastSeenEnemyTime = Time.time;
-                if (Time.time - stateEnteredTime >= reactionDelay)
+                if (state != RenkaiBotState.Engage)
                     EnterState(RenkaiBotState.Engage);
                 return;
             }
 
-            if (core != null)
+            if (state == RenkaiBotState.Engage)
             {
-                if (core.State == ZodiacLinkState.Synchronized || core.State == ZodiacLinkState.Severing)
-                {
-                    EnterState(team == RenkaiTeam.Defenders ? RenkaiBotState.RotateToCore : RenkaiBotState.GuardLink);
-                    return;
-                }
-
-                if (core.State == ZodiacLinkState.Linking)
-                {
-                    EnterState(team == RenkaiTeam.Defenders ? RenkaiBotState.RotateToCore : RenkaiBotState.GuardLink);
-                    return;
-                }
+                target = null;
+                EnterState(perception.HasMemory ? RenkaiBotState.Investigate : DefaultIdleState());
+                return;
             }
 
-            if (Time.time - lastSeenEnemyTime < memoryTime && state != RenkaiBotState.Engage)
+            if (core != null && (core.State == ZodiacLinkState.Linking || core.State == ZodiacLinkState.Synchronized || core.State == ZodiacLinkState.Severing))
+            {
+                EnterState(team == RenkaiTeam.Defenders ? RenkaiBotState.RotateToCore : RenkaiBotState.GuardLink);
+                return;
+            }
+
+            if (perception.HasMemory)
             {
                 EnterState(RenkaiBotState.Investigate);
                 return;
@@ -162,8 +174,7 @@ namespace Renkai.Kurogake
 
             if (team == RenkaiTeam.Attackers && (state == RenkaiBotState.Hold || ReachedGoal()))
                 EnterState(RenkaiBotState.Patrol);
-
-            if (team == RenkaiTeam.Defenders && ReachedGoal())
+            else if (team == RenkaiTeam.Defenders && ReachedGoal())
                 EnterState(RenkaiBotState.Hold);
         }
 
@@ -179,10 +190,7 @@ namespace Renkai.Kurogake
                     if (ReachedGoal()) PickNextRouteGoal();
                     break;
                 case RenkaiBotState.Investigate:
-                    currentGoal = lastKnownEnemyPosition;
-                    MoveToGoal();
-                    if (ReachedGoal() || Time.time - lastSeenEnemyTime > memoryTime)
-                        EnterState(team == RenkaiTeam.Attackers ? RenkaiBotState.Patrol : RenkaiBotState.Hold);
+                    InvestigateMemory();
                     break;
                 case RenkaiBotState.Engage:
                     EngageTarget();
@@ -210,39 +218,59 @@ namespace Renkai.Kurogake
             LookTowardLikelyEnemy();
         }
 
+        private void InvestigateMemory()
+        {
+            if (!perception.HasMemory)
+            {
+                target = null;
+                EnterState(DefaultIdleState());
+                return;
+            }
+
+            currentGoal = perception.LastKnownPosition;
+            MoveToGoal();
+            if (ReachedGoal()) FacePosition(perception.LastKnownPosition);
+        }
+
         private void EngageTarget()
         {
             if (target == null || !target.isAlive)
             {
-                EnterState(Time.time - lastSeenEnemyTime < memoryTime ? RenkaiBotState.Investigate : RenkaiBotState.Hold);
+                target = null;
+                EnterState(perception.HasMemory ? RenkaiBotState.Investigate : DefaultIdleState());
+                return;
+            }
+
+            if (!perception.IsCurrentlyVisible(target))
+            {
+                target = null;
+                EnterState(perception.HasMemory ? RenkaiBotState.Investigate : DefaultIdleState());
                 return;
             }
 
             FacePosition(target.transform.position + Vector3.up * 1.1f);
             float distance = Vector3.Distance(transform.position, target.transform.position);
-
-            if (distance > fireDistance || !CanSee(target))
+            if (distance > fireDistance)
             {
-                lastKnownEnemyPosition = target.transform.position;
-                EnterState(RenkaiBotState.Investigate);
+                if (canAdvance) MoveToward(target.transform.position, moveSpeed);
                 return;
             }
 
             CombatStrafe();
-            if (Time.time >= nextFireTime) FireAtTarget(target);
+            if (Time.time >= nextFireTime && Time.time - stateEnteredTime >= reactionDelay)
+                FireAtTarget(target);
         }
 
         private void RotateToCore()
         {
             if (core == null)
             {
-                EnterState(RenkaiBotState.Hold);
+                EnterState(DefaultIdleState());
                 return;
             }
 
             currentGoal = core.transform.position + ObjectiveOffset(2.3f);
             MoveToGoal();
-
             if (Vector3.Distance(transform.position, core.transform.position) <= 4.2f)
             {
                 FacePosition(core.transform.position);
@@ -255,10 +283,9 @@ namespace Renkai.Kurogake
         {
             if (core == null)
             {
-                EnterState(RenkaiBotState.Patrol);
+                EnterState(DefaultIdleState());
                 return;
             }
-
             HoldNearCore(5.5f);
             LookTowardLikelyEnemy();
         }
@@ -279,33 +306,30 @@ namespace Renkai.Kurogake
         private void CombatStrafe()
         {
             if (target == null) return;
-
             Vector3 side = transform.right * Mathf.Sin(Time.time * 1.2f + seed) * strafeDistance;
             Vector3 desired = transform.position + side * Time.deltaTime;
-
             Vector3 away = transform.position - target.transform.position;
             away.y = 0f;
             if (away.magnitude < 5f) desired += away.normalized * 2f * Time.deltaTime;
-
             MoveToward(desired, moveSpeed);
         }
 
         private void MoveToGoal()
         {
-            Vector3 dir = currentGoal - transform.position;
-            dir.y = 0f;
-            if (dir.magnitude <= stoppingDistance) return;
+            Vector3 direction = currentGoal - transform.position;
+            direction.y = 0f;
+            if (direction.magnitude <= stoppingDistance) return;
             FacePosition(currentGoal);
             MoveToward(currentGoal, moveSpeed);
         }
 
         private void MoveToward(Vector3 goal, float speed)
         {
-            Vector3 dir = goal - transform.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude < 0.001f) return;
+            Vector3 direction = goal - transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.001f) return;
 
-            Vector3 motion = dir.normalized * speed * Time.deltaTime;
+            Vector3 motion = direction.normalized * speed * Time.deltaTime;
             if (controller != null && controller.enabled)
                 controller.Move(motion + Vector3.down * 1.5f * Time.deltaTime);
             else
@@ -330,7 +354,6 @@ namespace Renkai.Kurogake
         private void PickNextRouteGoal()
         {
             Vector3[] route;
-
             if (role == RenkaiAgentRole.Duelist || role == RenkaiAgentRole.Blade)
             {
                 route = new[]
@@ -374,96 +397,52 @@ namespace Renkai.Kurogake
 
         private void FacePosition(Vector3 position)
         {
-            Vector3 dir = position - transform.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude < 0.01f) return;
-            Quaternion rot = Quaternion.LookRotation(dir.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * rotateSpeed);
-        }
-
-        private RenkaiRoundPlayer FindVisibleEnemy()
-        {
-            if (cachedPlayers == null || cachedPlayers.Length == 0)
-                RefreshRoster();
-
-            RenkaiRoundPlayer best = null;
-            float bestDistance = float.MaxValue;
-
-            foreach (RenkaiRoundPlayer candidate in cachedPlayers)
-            {
-                if (candidate == null || !candidate.isAlive || candidate.team == team) continue;
-                float d = Vector3.Distance(transform.position, candidate.transform.position);
-                if (d > viewDistance || !InsideFov(candidate.transform.position) || !CanSee(candidate)) continue;
-                if (d < bestDistance)
-                {
-                    bestDistance = d;
-                    best = candidate;
-                }
-            }
-
-            return best;
-        }
-
-        private bool InsideFov(Vector3 point)
-        {
-            Vector3 dir = point - transform.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude <= 0.01f) return true;
-            return Vector3.Angle(transform.forward, dir.normalized) <= fieldOfView * 0.5f;
-        }
-
-        private bool CanSee(RenkaiRoundPlayer candidate)
-        {
-            if (muzzle == null || candidate == null) return false;
-            Vector3 start = muzzle.position;
-            Vector3 end = candidate.transform.position + Vector3.up * 1.1f;
-            Vector3 dir = (end - start).normalized;
-
-            if (Physics.Raycast(start, dir, out RaycastHit hit, viewDistance, sightMask, QueryTriggerInteraction.Collide))
-            {
-                RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
-                return hitPlayer != null && hitPlayer == candidate;
-            }
-
-            return false;
+            Vector3 direction = position - transform.position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.01f) return;
+            Quaternion rotation = Quaternion.LookRotation(direction.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotateSpeed);
         }
 
         private void FireAtTarget(RenkaiRoundPlayer victim)
         {
             nextFireTime = Time.time + 1f / Mathf.Max(0.1f, fireRate) + Random.Range(0f, burstCooldown);
             if (victim == null || !victim.isAlive || muzzle == null) return;
+            if (!perception.IsCurrentlyVisible(victim)) return;
 
             Vector3 start = muzzle.position;
-            Vector3 aim = victim.transform.position + Vector3.up * 1.1f;
+            Vector3 idealAim = victim.transform.position + Vector3.up * 1.1f;
             float miss = (1f - accuracy) * 2.2f;
-            aim += new Vector3(Random.Range(-miss, miss), Random.Range(-miss * 0.4f, miss * 0.4f), Random.Range(-miss, miss));
+            Vector3 finalAim = idealAim + new Vector3(
+                Random.Range(-miss, miss),
+                Random.Range(-miss * 0.4f, miss * 0.4f),
+                Random.Range(-miss, miss)
+            );
 
-            Vector3 end = aim;
-            if (Physics.Raycast(start, (aim - start).normalized, out RaycastHit hit, fireDistance, sightMask, QueryTriggerInteraction.Collide))
+            if (!perception.TryGetClearShot(victim, fireDistance, finalAim, out RaycastHit hit))
+                return;
+
+            Vector3 end = hit.point;
+            KurokageDecoyHitReceiver decoy = hit.collider.GetComponentInParent<KurokageDecoyHitReceiver>();
+            if (decoy != null)
             {
-                end = hit.point;
-
-                KurokageDecoyHitReceiver decoy = hit.collider.GetComponentInParent<KurokageDecoyHitReceiver>();
-                if (decoy != null)
+                decoy.Hit(hit.point, hit.normal);
+            }
+            else
+            {
+                RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
+                if (hitPlayer != null && hitPlayer.team != team && hitPlayer.isAlive)
                 {
-                    decoy.Hit(hit.point, hit.normal);
-                }
-                else
-                {
-                    RenkaiRoundPlayer hitPlayer = hit.collider.GetComponentInParent<RenkaiRoundPlayer>();
-                    if (hitPlayer != null && hitPlayer.team != team && hitPlayer.isAlive)
-                    {
-                        KurokageDamageInfo info = new KurokageDamageInfo(
-                            damage,
-                            self,
-                            hit.point,
-                            hit.normal,
-                            KurokageDamageType.Ballistic,
-                            KurokageHitZoneType.Torso,
-                            "BOT_RIFLE"
-                        );
-                        hitPlayer.ApplyDamage(info);
-                    }
+                    KurokageDamageInfo info = new KurokageDamageInfo(
+                        damage,
+                        self,
+                        hit.point,
+                        hit.normal,
+                        KurokageDamageType.Ballistic,
+                        KurokageHitZoneType.Torso,
+                        "BOT_RIFLE"
+                    );
+                    hitPlayer.ApplyDamage(info);
                 }
             }
 
@@ -474,15 +453,14 @@ namespace Renkai.Kurogake
         private void SpawnTracer(Vector3 start, Vector3 end)
         {
             if (Vector3.Distance(start, end) < 0.1f) return;
-
-            Vector3 mid = (start + end) * 0.5f;
-            float len = Vector3.Distance(start, end);
+            Vector3 midpoint = (start + end) * 0.5f;
+            float length = Vector3.Distance(start, end);
             KurokageVfxPool.Instance.Spawn(
                 KurokageVfxShape.Cube,
                 "KUROKAGE_BOT_TRACER",
-                mid,
+                midpoint,
                 Quaternion.LookRotation(end - start),
-                new Vector3(0.012f, 0.012f, len),
+                new Vector3(0.012f, 0.012f, length),
                 tracerColor,
                 1.8f,
                 0.05f
@@ -501,6 +479,11 @@ namespace Renkai.Kurogake
                 2.4f,
                 0.035f
             );
+        }
+
+        private RenkaiBotState DefaultIdleState()
+        {
+            return team == RenkaiTeam.Attackers ? RenkaiBotState.Patrol : RenkaiBotState.Hold;
         }
 
         private void EnterState(RenkaiBotState newState)
