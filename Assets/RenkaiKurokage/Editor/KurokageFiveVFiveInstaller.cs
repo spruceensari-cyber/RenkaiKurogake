@@ -45,14 +45,28 @@ public static class KurokageFiveVFiveInstaller
             new Vector3(42f, 1f, 34f)
         };
 
-        string[] alliedNames = { "NOA // PULSE-A2", "REIHA // VEIL-A3", "MIO // GLINT-A4", "SORA // BASTION-A5" };
-        string[] enemyNames = { "AIKO // LANCER-D1", "REN // FORGE-D2", "HANA // ORBIT-D3", "TOMA // ANCHOR-D4", "YORI // WRAITH-D5" };
+        KurokageAgentArchetype[] alliedAgents =
+        {
+            KurokageAgentArchetype.Noa,
+            KurokageAgentArchetype.Reiha,
+            KurokageAgentArchetype.Mio,
+            KurokageAgentArchetype.Sora
+        };
+
+        KurokageAgentArchetype[] enemyAgents =
+        {
+            KurokageAgentArchetype.Aiko,
+            KurokageAgentArchetype.Ren,
+            KurokageAgentArchetype.Hana,
+            KurokageAgentArchetype.Toma,
+            KurokageAgentArchetype.Yori
+        };
 
         for (int i = 0; i < alliedSpawns.Length; i++)
-            CreateBot(alliedNames[i], RenkaiTeam.Attackers, alliedSpawns[i], attackers, i);
+            CreateBot(alliedAgents[i], RenkaiTeam.Attackers, alliedSpawns[i], attackers, i);
 
         for (int i = 0; i < enemySpawns.Length; i++)
-            CreateBot(enemyNames[i], RenkaiTeam.Defenders, enemySpawns[i], defenders, i + alliedSpawns.Length);
+            CreateBot(enemyAgents[i], RenkaiTeam.Defenders, enemySpawns[i], defenders, i + alliedSpawns.Length);
 
         EnsureSingleRoundManager(root.transform);
         EnsureExactRosterOrFail(humanRound);
@@ -64,9 +78,11 @@ public static class KurokageFiveVFiveInstaller
 
     private static void ConfigureHuman(RenkaiRoundPlayer human)
     {
-        human.agentName = "KAIRI // RIFT-07";
         human.team = RenkaiTeam.Attackers;
         human.isHumanPlayer = true;
+        KurokageAgentIdentity identity = human.GetComponent<KurokageAgentIdentity>();
+        if (identity == null) identity = human.gameObject.AddComponent<KurokageAgentIdentity>();
+        identity.Configure(KurokageAgentArchetype.Kairi, true);
         human.RememberSpawn();
     }
 
@@ -107,9 +123,10 @@ public static class KurokageFiveVFiveInstaller
         return go.transform;
     }
 
-    private static void CreateBot(string identity, RenkaiTeam team, Vector3 position, Transform parent, int index)
+    private static void CreateBot(KurokageAgentArchetype archetype, RenkaiTeam team, Vector3 position, Transform parent, int index)
     {
-        GameObject bot = new GameObject("BOT_" + team + "_" + (index + 1).ToString("00"));
+        KurokageAgentDefinition definition = KurokageAgentCatalog.Get(archetype);
+        GameObject bot = new GameObject("AGENT_" + definition.DisplayName + "_" + team);
         bot.transform.SetParent(parent, true);
         bot.transform.position = position;
         bot.transform.rotation = Quaternion.LookRotation(team == RenkaiTeam.Attackers ? Vector3.forward : Vector3.back);
@@ -124,9 +141,11 @@ public static class KurokageFiveVFiveInstaller
         cc.minMoveDistance = 0f;
 
         RenkaiRoundPlayer roundPlayer = bot.AddComponent<RenkaiRoundPlayer>();
-        roundPlayer.agentName = identity;
         roundPlayer.team = team;
         roundPlayer.isHumanPlayer = false;
+
+        KurokageAgentIdentity identity = bot.AddComponent<KurokageAgentIdentity>();
+        identity.Configure(archetype, false);
         roundPlayer.RememberSpawn();
 
         RenkaiHealth health = bot.AddComponent<RenkaiHealth>();
@@ -134,7 +153,7 @@ public static class KurokageFiveVFiveInstaller
 
         RenkaiTacticalBotAI ai = bot.AddComponent<RenkaiTacticalBotAI>();
         ai.team = team;
-        ai.callSign = identity;
+        ai.callSign = definition.FullIdentity;
         ai.role = (RenkaiAgentRole)(index % 5);
         ai.viewDistance = 48f;
         ai.fireDistance = 36f;
@@ -145,6 +164,8 @@ public static class KurokageFiveVFiveInstaller
         bot.AddComponent<KurokageBotPerception>();
         bot.AddComponent<KurokageBotLocalAvoidance>();
         bot.AddComponent<KurokageCharacterCollisionGuard>();
+        bot.AddComponent<KurokageBotAutonomyMotor>();
+        bot.AddComponent<KurokageBotWeaponState>();
     }
 
     private static void EnsureSingleRoundManager(Transform parent)
@@ -181,8 +202,8 @@ public static class KurokageFiveVFiveInstaller
 
         if (humans != 1 || alliedBots != 4 || enemyBots != 5)
             throw new System.InvalidOperationException(
-                "RENKAI roster installation failed. Expected 1 human + 4 allied bots + 5 enemy bots, got " +
-                humans + " human, " + alliedBots + " allied bots, " + enemyBots + " enemy bots."
+                "RENKAI roster installation failed. Expected 1 human + 4 allied agents + 5 enemy agents, got " +
+                humans + " human, " + alliedBots + " allied agents, " + enemyBots + " enemy agents."
             );
     }
 }
