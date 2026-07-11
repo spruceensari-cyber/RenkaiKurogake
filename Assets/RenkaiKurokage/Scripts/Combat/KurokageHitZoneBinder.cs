@@ -80,13 +80,13 @@ namespace Renkai.Kurokage
             {
                 SphereCollider collider = zoneGo.AddComponent<SphereCollider>();
                 collider.radius = size.x;
-                collider.isTrigger = false;
+                collider.isTrigger = true;
             }
             else
             {
                 BoxCollider collider = zoneGo.AddComponent<BoxCollider>();
                 collider.size = size;
-                collider.isTrigger = false;
+                collider.isTrigger = true;
             }
 
             KurokageHitZone zone = zoneGo.GetComponent<KurokageHitZone>();
