@@ -39,9 +39,17 @@ public static class KurokageProductionSanitizerPass
         "PLACEHOLDER_CAPSULE"
     };
 
-    [MenuItem("Renkai/Repair Unified Visual Build")]
+    // Kept as a callable compatibility entry point for the unified production pipeline.
+    // It intentionally has no MenuItem attribute; the only normal production command is
+    // Renkai/Build Production Version.
     public static void Apply()
     {
+        if (EditorApplication.isPlayingOrWillChangePlaymode || Application.isPlaying)
+        {
+            Debug.LogWarning("RENKAI production sanitizer skipped because Unity is in Play Mode.");
+            return;
+        }
+
         bool ok = ApplySilent();
         EditorUtility.DisplayDialog(
             "Renkai Visual Repair",
@@ -54,6 +62,19 @@ public static class KurokageProductionSanitizerPass
 
     public static bool ApplySilent()
     {
+        // This class performs editor-only destructive scene and asset operations.
+        // Returning successfully during play prevents delayed editor callbacks from
+        // calling MarkSceneDirty/DestroyImmediate after the game has already started.
+        if (EditorApplication.isPlayingOrWillChangePlaymode || Application.isPlaying)
+            return true;
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (!activeScene.IsValid() || !activeScene.isLoaded)
+        {
+            Debug.LogError("Kurokage production sanitizer could not resolve a loaded active scene.");
+            return false;
+        }
+
         try
         {
             RemoveDuplicateRoots();
@@ -63,7 +84,7 @@ public static class KurokageProductionSanitizerPass
             RepairGeneratedMaterialAssets();
             EnsureSingleCameraAndAudioListener();
 
-            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            EditorSceneManager.MarkSceneDirty(activeScene);
             AssetDatabase.SaveAssets();
             return true;
         }
