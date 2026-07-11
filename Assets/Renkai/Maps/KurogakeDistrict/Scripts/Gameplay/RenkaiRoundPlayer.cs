@@ -73,6 +73,12 @@ namespace Renkai.Kurogake
             KurokageHitReactionPresenter hitReaction = GetComponent<KurokageHitReactionPresenter>();
             if (hitReaction != null) hitReaction.ResetPresentation();
 
+            KurokageProceduralAgentRig proceduralRig = GetComponentInChildren<KurokageProceduralAgentRig>(true);
+            if (proceduralRig != null) proceduralRig.ResetRigPose();
+
+            KurokageCharacterCollisionGuard collisionGuard = GetComponent<KurokageCharacterCollisionGuard>();
+            if (collisionGuard != null) collisionGuard.ResetGuard();
+
             Transform agentVisual = transform.Find("AGENT_VISUAL");
             if (agentVisual != null)
             {

@@ -10,10 +10,18 @@ namespace Renkai.Kurogake
         public float walkSpeed = 5.6f;
         public float sprintSpeed = 7.4f;
         public float crouchSpeed = 3.1f;
-        public float acceleration = 26f;
-        public float deceleration = 34f;
+        public float acceleration = 28f;
+        public float deceleration = 38f;
         public float jumpHeight = 1.1f;
         public float gravity = -24f;
+
+        [Header("Movement Response")]
+        [SerializeField] private float airAcceleration = 8.5f;
+        [SerializeField] private float airDeceleration = 2.4f;
+        [SerializeField] private float airSpeedMultiplier = 0.96f;
+        [SerializeField] private float coyoteTime = 0.105f;
+        [SerializeField] private float jumpBufferTime = 0.13f;
+        [SerializeField] private float groundedStickVelocity = -2.8f;
 
         [Header("Crouch")]
         public KeyCode crouchKey = KeyCode.C;
@@ -54,8 +62,11 @@ namespace Renkai.Kurogake
         public float PlanarSpeed => new Vector3(planarVelocity.x, 0f, planarVelocity.z).magnitude;
         public Vector3 PlanarVelocity => planarVelocity;
 
+        private readonly Collider[] standCheckHits = new Collider[16];
+
         private CharacterController controller;
         private KairiAbilityController abilityController;
+        private KurokageCharacterCollisionGuard collisionGuard;
         private Vector3 planarVelocity;
         private float verticalVelocity;
         private float pitch;
@@ -71,11 +82,14 @@ namespace Renkai.Kurogake
         private Vector2 abilityRotationImpulse;
         private float abilityRollImpulse;
         private float abilityFovImpulse;
+        private float lastGroundedTime = -999f;
+        private float lastJumpPressedTime = -999f;
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
             abilityController = GetComponent<KairiAbilityController>();
+            collisionGuard = GetComponent<KurokageCharacterCollisionGuard>();
             if (playerCamera == null)
                 playerCamera = GetComponentInChildren<Camera>();
 
@@ -98,6 +112,8 @@ namespace Renkai.Kurogake
                 return;
 
             HandleCursor();
+            CaptureJumpInput();
+            UpdateGroundMemory();
             UpdateAbilityImpulses();
             UpdateLook();
             HandleCrouch();
@@ -160,6 +176,18 @@ namespace Renkai.Kurogake
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+        }
+
+        private void CaptureJumpInput()
+        {
+            if (Input.GetButtonDown("Jump"))
+                lastJumpPressedTime = Time.time;
+        }
+
+        private void UpdateGroundMemory()
+        {
+            if (controller.isGrounded)
+                lastGroundedTime = Time.time;
         }
 
         private void UpdateLook()
@@ -236,10 +264,29 @@ namespace Renkai.Kurogake
 
         private bool CanStand()
         {
-            float radius = Mathf.Max(0.05f, controller.radius * 0.92f);
-            Vector3 bottom = transform.position + Vector3.up * radius;
-            Vector3 top = transform.position + Vector3.up * (standingHeight - radius);
-            return !Physics.CheckCapsule(bottom, top, radius, ~0, QueryTriggerInteraction.Ignore);
+            float radius = Mathf.Max(0.05f, controller.radius * 0.90f);
+            Vector3 center = transform.position + transform.rotation * new Vector3(0f, standingHeight * 0.5f, 0f);
+            float halfSegment = Mathf.Max(0f, standingHeight * 0.5f - radius);
+            Vector3 top = center + transform.up * halfSegment;
+            Vector3 bottom = center - transform.up * halfSegment;
+
+            int count = Physics.OverlapCapsuleNonAlloc(
+                bottom,
+                top,
+                radius,
+                standCheckHits,
+                ~0,
+                QueryTriggerInteraction.Ignore
+            );
+
+            for (int i = 0; i < count; i++)
+            {
+                Collider hit = standCheckHits[i];
+                if (hit == null || hit == controller) continue;
+                if (hit.transform.IsChildOf(transform) || transform.IsChildOf(hit.transform)) continue;
+                return false;
+            }
+            return true;
         }
 
         private void UpdateSprintState()
@@ -259,28 +306,44 @@ namespace Renkai.Kurogake
             float vertical = Input.GetAxisRaw("Vertical");
             Vector3 input = (transform.right * horizontal + transform.forward * vertical).normalized;
 
+            bool grounded = controller.isGrounded;
             float targetSpeed = isCrouching
                 ? crouchSpeed
                 : IsSprinting
                     ? sprintSpeed
                     : walkSpeed;
 
+            if (!grounded)
+                targetSpeed *= airSpeedMultiplier;
+
             Vector3 targetVelocity = input * targetSpeed;
-            float rate = targetVelocity.sqrMagnitude > planarVelocity.sqrMagnitude
-                ? acceleration
-                : deceleration;
+            float rate;
+            if (grounded)
+            {
+                rate = targetVelocity.sqrMagnitude > planarVelocity.sqrMagnitude
+                    ? acceleration
+                    : deceleration;
+            }
+            else
+            {
+                rate = input.sqrMagnitude > 0.01f ? airAcceleration : airDeceleration;
+            }
 
             planarVelocity = Vector3.MoveTowards(planarVelocity, targetVelocity, rate * Time.deltaTime);
 
-            if (controller.isGrounded)
-            {
-                if (verticalVelocity < 0f)
-                    verticalVelocity = -2f;
+            bool jumpBuffered = Time.time - lastJumpPressedTime <= jumpBufferTime;
+            bool canUseCoyote = Time.time - lastGroundedTime <= coyoteTime;
 
-                if (Input.GetButtonDown("Jump") && !isCrouching)
-                    verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            if (grounded && verticalVelocity < 0f)
+                verticalVelocity = groundedStickVelocity;
+
+            if (jumpBuffered && canUseCoyote && !isCrouching)
+            {
+                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                lastJumpPressedTime = -999f;
+                lastGroundedTime = -999f;
             }
-            else
+            else if (!grounded)
             {
                 verticalVelocity += gravity * Time.deltaTime;
             }
@@ -292,7 +355,7 @@ namespace Renkai.Kurogake
         {
             planarVelocity = Vector3.MoveTowards(planarVelocity, Vector3.zero, deceleration * Time.deltaTime);
             if (controller.isGrounded && verticalVelocity < 0f)
-                verticalVelocity = -2f;
+                verticalVelocity = groundedStickVelocity;
         }
 
         private void SafetyRespawnCheck()
@@ -333,8 +396,12 @@ namespace Renkai.Kurogake
             abilityRollImpulse = 0f;
             abilityFovImpulse = 0f;
             IsSprinting = false;
+            lastGroundedTime = Time.time;
+            lastJumpPressedTime = -999f;
 
             controller.enabled = true;
+            if (collisionGuard == null) collisionGuard = GetComponent<KurokageCharacterCollisionGuard>();
+            if (collisionGuard != null) collisionGuard.ResetGuard();
             Debug.Log("Renkai player respawned.");
         }
     }
