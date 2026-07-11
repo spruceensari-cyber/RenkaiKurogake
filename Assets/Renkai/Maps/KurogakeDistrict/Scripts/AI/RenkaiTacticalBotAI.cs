@@ -58,6 +58,9 @@ namespace Renkai.Kurogake
         public RenkaiBotState state = RenkaiBotState.Hold;
         public Transform muzzle;
 
+        public bool IsReloading => weaponState != null && weaponState.IsReloading;
+        public int MagazineAmmo => weaponState != null ? weaponState.MagazineAmmo : 0;
+
         private Vector3 spawnAnchor;
         private Vector3 currentGoal;
         private float nextFireTime;
@@ -70,6 +73,9 @@ namespace Renkai.Kurogake
         private CharacterController controller;
         private ZodiacCoreRuntime core;
         private KurokageBotPerception perception;
+        private KurokageBotAutonomyMotor autonomy;
+        private KurokageBotWeaponState weaponState;
+        private KurokageBotWeaponPose weaponPose;
         private int routeIndex;
         private float seed;
 
@@ -80,6 +86,11 @@ namespace Renkai.Kurogake
             core = Object.FindObjectOfType<ZodiacCoreRuntime>();
             perception = GetComponent<KurokageBotPerception>();
             if (perception == null) perception = gameObject.AddComponent<KurokageBotPerception>();
+            autonomy = GetComponent<KurokageBotAutonomyMotor>();
+            if (autonomy == null) autonomy = gameObject.AddComponent<KurokageBotAutonomyMotor>();
+            weaponState = GetComponent<KurokageBotWeaponState>();
+            if (weaponState == null) weaponState = gameObject.AddComponent<KurokageBotWeaponState>();
+            weaponPose = GetComponent<KurokageBotWeaponPose>();
 
             if (self != null)
             {
@@ -109,6 +120,9 @@ namespace Renkai.Kurogake
                 if (perception == null) perception = gameObject.AddComponent<KurokageBotPerception>();
                 perception.Configure(muzzle, viewDistance, fieldOfView, memoryTime, sightMask);
             }
+            if (autonomy == null) autonomy = GetComponent<KurokageBotAutonomyMotor>();
+            if (weaponState == null) weaponState = GetComponent<KurokageBotWeaponState>();
+            if (weaponPose == null) weaponPose = GetComponent<KurokageBotWeaponPose>();
 
             if (Time.time >= nextRosterRefresh) RefreshRoster();
             if (Time.time >= nextThinkTime)
@@ -118,6 +132,19 @@ namespace Renkai.Kurogake
             }
 
             ExecuteState();
+        }
+
+        public void ResetCombatState()
+        {
+            target = null;
+            nextFireTime = 0f;
+            nextThinkTime = 0f;
+            routeIndex = 0;
+            currentGoal = spawnAnchor;
+            if (weaponState != null) weaponState.ResetState();
+            if (autonomy != null) autonomy.ResetMotor();
+            EnterState(team == RenkaiTeam.Attackers ? RenkaiBotState.Patrol : RenkaiBotState.Hold);
+            PickInitialGoal();
         }
 
         private void EnsureMuzzle()
@@ -329,9 +356,11 @@ namespace Renkai.Kurogake
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.001f) return;
 
-            Vector3 motion = direction.normalized * speed * Time.deltaTime;
+            Vector3 planarDirection = direction.normalized;
+            if (autonomy != null) planarDirection = autonomy.AdjustPlanarDirection(planarDirection);
+            Vector3 motion = planarDirection * speed * Time.deltaTime;
             if (controller != null && controller.enabled)
-                controller.Move(motion + Vector3.down * 1.5f * Time.deltaTime);
+                controller.Move(motion);
             else
                 transform.position += motion;
         }
@@ -406,10 +435,15 @@ namespace Renkai.Kurogake
 
         private void FireAtTarget(RenkaiRoundPlayer victim)
         {
-            nextFireTime = Time.time + 1f / Mathf.Max(0.1f, fireRate) + Random.Range(0f, burstCooldown);
             if (victim == null || !victim.isAlive || muzzle == null) return;
             if (!perception.IsCurrentlyVisible(victim)) return;
+            if (weaponState != null && !weaponState.TryConsumeRound())
+            {
+                nextFireTime = Time.time + 0.12f;
+                return;
+            }
 
+            nextFireTime = Time.time + 1f / Mathf.Max(0.1f, fireRate) + Random.Range(0f, burstCooldown);
             Vector3 start = muzzle.position;
             Vector3 idealAim = victim.transform.position + Vector3.up * 1.1f;
             float miss = (1f - accuracy) * 2.2f;
@@ -448,6 +482,7 @@ namespace Renkai.Kurogake
 
             SpawnTracer(start, end);
             SpawnMuzzleFlash(start);
+            if (weaponPose != null) weaponPose.AddRecoil();
         }
 
         private void SpawnTracer(Vector3 start, Vector3 end)
