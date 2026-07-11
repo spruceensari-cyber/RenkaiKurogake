@@ -93,7 +93,7 @@ public static class KurokageCollisionIntegrityPass
             Renderer renderer = pulse.GetComponent<Renderer>();
             if (renderer == null) continue;
             if (!IsInPlayableBounds(renderer.bounds)) continue;
-            if (!IntersectsPlayerHeight(renderer.bounds)) continue;
+            if (!IntersectsMovementEnvelope(renderer.bounds)) continue;
             if (ContainsNeverSolidToken(pulse.gameObject.name)) continue;
 
             EnsureCollider(pulse.gameObject, true);
@@ -113,7 +113,7 @@ public static class KurokageCollisionIntegrityPass
             string n = renderer.gameObject.name.ToLowerInvariant();
             bool namedMovingSolid = n.Contains("marble") || n.Contains("moving_orb") || n.Contains("kinetic_orb") || n.Contains("moving_sphere");
             if (!namedMovingSolid) continue;
-            if (!IsInPlayableBounds(renderer.bounds) || !IntersectsPlayerHeight(renderer.bounds)) continue;
+            if (!IsInPlayableBounds(renderer.bounds) || !IntersectsMovementEnvelope(renderer.bounds)) continue;
 
             EnsureCollider(renderer.gameObject, true);
             Rigidbody body = renderer.GetComponent<Rigidbody>();
@@ -216,5 +216,10 @@ public static class KurokageCollisionIntegrityPass
     private static bool IntersectsPlayerHeight(Bounds bounds)
     {
         return bounds.max.y >= -0.15f && bounds.min.y <= 2.15f;
+    }
+
+    private static bool IntersectsMovementEnvelope(Bounds bounds)
+    {
+        return bounds.max.y >= -0.15f && bounds.min.y <= 3.35f;
     }
 }
