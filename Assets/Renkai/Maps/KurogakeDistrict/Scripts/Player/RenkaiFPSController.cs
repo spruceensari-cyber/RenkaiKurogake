@@ -59,6 +59,7 @@ namespace Renkai.Kurogake
         public bool IsGrounded => controller != null && controller.enabled && controller.isGrounded;
         public bool IsCrouching => isCrouching;
         public bool IsSprinting { get; private set; }
+        public bool InputLocked { get; private set; }
         public float PlanarSpeed => new Vector3(planarVelocity.x, 0f, planarVelocity.z).magnitude;
         public Vector3 PlanarVelocity => planarVelocity;
 
@@ -111,6 +112,16 @@ namespace Renkai.Kurogake
             if (controller == null || !controller.enabled || !gameObject.activeInHierarchy)
                 return;
 
+            if (InputLocked)
+            {
+                IsSprinting = false;
+                requestedSprintFovBonus = 0f;
+                planarVelocity = Vector3.MoveTowards(planarVelocity, Vector3.zero, deceleration * Time.deltaTime);
+                UpdateAbilityImpulses();
+                UpdateFov();
+                return;
+            }
+
             HandleCursor();
             CaptureJumpInput();
             UpdateGroundMemory();
@@ -129,6 +140,24 @@ namespace Renkai.Kurogake
 
             UpdateFov();
             SafetyRespawnCheck();
+        }
+
+        public void SetInputLocked(bool locked)
+        {
+            InputLocked = locked;
+            IsSprinting = false;
+            requestedSprintFovBonus = 0f;
+            lastJumpPressedTime = -999f;
+
+            if (locked)
+            {
+                planarVelocity = Vector3.zero;
+                recoilTarget = Vector2.zero;
+            }
+            else
+            {
+                LockCursor();
+            }
         }
 
         public void AddRecoil(float pitchKick, float yawKick)
@@ -396,6 +425,7 @@ namespace Renkai.Kurogake
             abilityRollImpulse = 0f;
             abilityFovImpulse = 0f;
             IsSprinting = false;
+            InputLocked = false;
             lastGroundedTime = Time.time;
             lastJumpPressedTime = -999f;
 
