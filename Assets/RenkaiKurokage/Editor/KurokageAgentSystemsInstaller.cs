@@ -25,6 +25,8 @@ public static class KurokageAgentSystemsInstaller
                     player.gameObject.AddComponent<KurokageAgentSelectionScreen>();
                 if (player.GetComponent<KairiAbilityController>() == null)
                     player.gameObject.AddComponent<KairiAbilityController>();
+                if (player.GetComponent<KurokageSprayController>() == null)
+                    player.gameObject.AddComponent<KurokageSprayController>();
             }
             else
             {
