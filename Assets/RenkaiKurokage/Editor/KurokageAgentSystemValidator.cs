@@ -47,6 +47,8 @@ public static class KurokageAgentSystemValidator
                 Require<KurokageSprayController>(player, ref errors, report, "wall spray controller");
                 Require<KurokageVoiceSubtitleOverlay>(player, ref errors, report, "Japanese subtitle overlay");
                 Require<KurokageJapaneseVoicePresenter>(player, ref errors, report, "Japanese voice presenter");
+                Require<KurokageSelectedAgentHudBridge>(player, ref errors, report, "selected-agent HUD bridge");
+                Require<KurokageRuntimeAgentVisualSwitcher>(player, ref errors, report, "runtime silhouette switcher");
             }
             else
             {
