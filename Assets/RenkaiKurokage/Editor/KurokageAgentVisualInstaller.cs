@@ -28,25 +28,6 @@ public static class KurokageAgentVisualInstaller
 
     private static readonly Dictionary<string, Material> MaterialCache = new Dictionary<string, Material>();
 
-    [MenuItem("Renkai/Install Code-Built Agent Visuals")]
-    public static void Install()
-    {
-        if (EditorApplication.isPlaying)
-        {
-            EditorUtility.DisplayDialog("Renkai", "Play modundan çıkıp tekrar çalıştır.", "OK");
-            return;
-        }
-
-        bool ok = InstallSilent();
-        EditorUtility.DisplayDialog(
-            "Renkai",
-            ok
-                ? "Kod tabanlı özgün agent roster, PBR yüzeyler ve collision katmanı kuruldu."
-                : "Agent kurulumu tamamlanamadı. Console ve validation raporunu kontrol et.",
-            ok ? "OK" : "REVIEW"
-        );
-    }
-
     public static bool InstallSilent()
     {
         RenkaiRoundPlayer[] players = UnityEngine.Object.FindObjectsOfType<RenkaiRoundPlayer>(true);
@@ -60,8 +41,20 @@ public static class KurokageAgentVisualInstaller
         for (int i = 0; i < players.Length; i++)
         {
             RenkaiRoundPlayer player = players[i];
-            AgentProfile profile = player.isHumanPlayer ? Roster[0] : Roster[i % Roster.Length];
-            player.agentName = profile.DisplayName + " // " + profile.Callsign;
+            KurokageAgentIdentity identity = player.GetComponent<KurokageAgentIdentity>();
+            KurokageAgentArchetype fallback = player.isHumanPlayer
+                ? KurokageAgentArchetype.Kairi
+                : Roster[Mathf.Clamp(i, 1, Roster.Length - 1)].Archetype;
+
+            if (identity == null)
+            {
+                identity = player.gameObject.AddComponent<KurokageAgentIdentity>();
+                identity.Configure(fallback, player.isHumanPlayer);
+            }
+
+            AgentProfile profile = FindProfile(identity.Archetype);
+            KurokageAgentDefinition definition = KurokageAgentCatalog.Get(profile.Archetype);
+            player.agentName = definition.FullIdentity;
 
             if (!BuildVisual(player, profile)) visualsOk = false;
 
@@ -77,6 +70,13 @@ public static class KurokageAgentVisualInstaller
         AssetDatabase.SaveAssets();
         Selection.activeGameObject = players[0].gameObject;
         return visualsOk && surfaceOk && qualityOk && collisionOk;
+    }
+
+    private static AgentProfile FindProfile(KurokageAgentArchetype archetype)
+    {
+        foreach (AgentProfile profile in Roster)
+            if (profile.Archetype == archetype) return profile;
+        return Roster[0];
     }
 
     private static bool BuildVisual(RenkaiRoundPlayer player, AgentProfile profile)
