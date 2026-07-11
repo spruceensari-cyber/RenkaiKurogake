@@ -33,6 +33,8 @@ public static class KurokageAgentSystemsInstaller
                     player.gameObject.AddComponent<KurokageSprayController>();
                 if (player.GetComponent<KurokageVoiceSubtitleOverlay>() == null)
                     player.gameObject.AddComponent<KurokageVoiceSubtitleOverlay>();
+                if (player.GetComponent<KurokageSelectedAgentHudBridge>() == null)
+                    player.gameObject.AddComponent<KurokageSelectedAgentHudBridge>();
             }
             else
             {
