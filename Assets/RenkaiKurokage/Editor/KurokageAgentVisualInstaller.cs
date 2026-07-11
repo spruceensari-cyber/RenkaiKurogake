@@ -20,7 +20,7 @@ public static class KurokageAgentVisualInstaller
         EditorUtility.DisplayDialog(
             "Renkai",
             ok
-                ? "Kod tabanlı agent roster, PBR yüzey detayları ve collision integrity katmanı kuruldu."
+                ? "Kod tabanlı agent roster, PBR yüzey detayları, reflection capture ve collision integrity katmanı kuruldu."
                 : "Kurulum tamamlanamadı. Console ve production validation raporunu kontrol et.",
             ok ? "OK" : "REVIEW"
         );
@@ -34,6 +34,7 @@ public static class KurokageAgentVisualInstaller
         System.Array.Sort(players, ComparePlayers);
 
         bool surfaceOk = KurokageSurfaceDetailPass.ApplySilent();
+        bool qualityOk = KurokageHighFidelityQualityPass.ApplySilent();
         bool allAgentsOk = true;
         int attackerIndex = 0;
         int defenderIndex = 0;
@@ -72,7 +73,7 @@ public static class KurokageAgentVisualInstaller
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         AssetDatabase.SaveAssets();
         Selection.activeGameObject = players[0].gameObject;
-        return allAgentsOk && surfaceOk && collisionOk;
+        return allAgentsOk && surfaceOk && qualityOk && collisionOk;
     }
 
     private static KurokageAgentArchetype ResolveArchetype(int index)
