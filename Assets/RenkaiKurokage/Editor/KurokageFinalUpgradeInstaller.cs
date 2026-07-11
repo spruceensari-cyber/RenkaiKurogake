@@ -9,7 +9,7 @@ public static class KurokageFinalUpgradeInstaller
 {
     public const string MainCompetitiveScenePath = "Assets/RenkaiKurokage/Scenes/Renkai_Kurogake_Competitive.unity";
     private const string ProductionMarkerName = "RENKAI_KUROKAGE_PRODUCTION_BUILD";
-    private const string ProductionBuildId = "KUROKAGE_COMPETITIVE_UNIFIED_01";
+    private const string ProductionBuildId = "KUROKAGE_COMPETITIVE_UNIFIED_02";
 
     [MenuItem("Renkai/Build Production Version", priority = 0)]
     public static void RunAll()
@@ -46,15 +46,14 @@ public static class KurokageFinalUpgradeInstaller
             return false;
         }
 
-        // Gameplay topology first. Presentation must never create an alternate gameplay scene.
         bool hierarchyBeforeOk = KurokageUnifiedHierarchyPass.ApplySilent();
         bool collisionBeforeOk = KurokageCollisionIntegrityPass.ApplySilent();
         bool gameplayOk = KurokageGameplayUpgradeInstaller.UpgradeSilent();
         bool matchOk = KurokageFiveVFiveInstaller.InstallSilent();
         bool visualsOk = KurokageAgentVisualInstaller.InstallSilent();
+        bool botWeaponsOk = KurokageBotWeaponVisualInstaller.InstallSilent();
         bool collisionAfterPlayersOk = KurokageCollisionIntegrityPass.ApplySilent();
 
-        // Environment and presentation decorate the canonical gameplay geometry.
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
         bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
         bool cinematicDistrictOk = KurokageCinematicDistrictPass.ApplySilent();
@@ -77,8 +76,6 @@ public static class KurokageFinalUpgradeInstaller
         EnsureProductionMarker();
         EnsureUnifiedPresentation();
 
-        // Sanitizer must run after every generator, otherwise a later pass can recreate capsules,
-        // duplicate roots, unsupported materials, cameras, or AudioListeners.
         bool hierarchyAfterOk = KurokageUnifiedHierarchyPass.ApplySilent();
         bool sanitizerOk = KurokageProductionSanitizerPass.ApplySilent();
         bool finalCollisionOk = KurokageCollisionIntegrityPass.ApplySilent();
@@ -97,8 +94,9 @@ public static class KurokageFinalUpgradeInstaller
         AppendStepFailure(ref validationReport, hierarchyBeforeOk && hierarchyAfterOk, "Unified hierarchy");
         AppendStepFailure(ref validationReport, collisionBeforeOk && collisionAfterPlayersOk && finalCollisionOk, "Collision integrity");
         AppendStepFailure(ref validationReport, gameplayOk, "Gameplay installation");
-        AppendStepFailure(ref validationReport, matchOk, "5v5 installation");
+        AppendStepFailure(ref validationReport, matchOk, "Exact 1+4 versus 5 roster installation");
         AppendStepFailure(ref validationReport, visualsOk, "Single code-built agent visual installation");
+        AppendStepFailure(ref validationReport, botWeaponsOk, "Visible held weapons for nine tactical bots");
         AppendStepFailure(ref validationReport, environmentOk, "Environment art");
         AppendStepFailure(ref validationReport, brightVisualOk, "Bright competitive visual pass");
         AppendStepFailure(ref validationReport, cinematicDistrictOk, "Cinematic district pass");
@@ -112,7 +110,7 @@ public static class KurokageFinalUpgradeInstaller
 
         bool passed = structurePassed && sceneOk && hierarchyBeforeOk && hierarchyAfterOk &&
                       collisionBeforeOk && collisionAfterPlayersOk && finalCollisionOk &&
-                      gameplayOk && matchOk && visualsOk && environmentOk && brightVisualOk &&
+                      gameplayOk && matchOk && visualsOk && botWeaponsOk && environmentOk && brightVisualOk &&
                       cinematicDistrictOk && architectureOk && districtIdentityOk && siteLightingOk &&
                       ringRefineOk && zodiacArtOk && nexusArtOk && sanitizerOk;
 
