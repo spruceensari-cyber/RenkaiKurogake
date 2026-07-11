@@ -31,6 +31,8 @@ namespace Renkai.Kurokage
         private void ShowSubtitle(string japanese, string romanized, float duration)
         {
             EnsureUi();
+            if (japaneseText == null || romanizedText == null || group == null) return;
+
             japaneseText.text = japanese;
             romanizedText.text = romanized;
             hideAt = Time.time + Mathf.Max(0.5f, duration);
@@ -40,7 +42,12 @@ namespace Renkai.Kurokage
         private void EnsureUi()
         {
             if (canvas != null) return;
-            Font font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            Font font = KurokageUiFont.Default;
+            if (font == null)
+            {
+                Debug.LogError("RENKAI subtitle UI could not resolve a runtime font.");
+                return;
+            }
 
             GameObject root = new GameObject("KUROKAGE_VOICE_SUBTITLES");
             canvas = root.AddComponent<Canvas>();
