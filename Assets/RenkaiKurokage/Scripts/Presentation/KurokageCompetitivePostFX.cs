@@ -10,18 +10,18 @@ namespace Renkai.Kurokage
         [SerializeField] private Shader gradeShader;
 
         [Header("Competitive Grade")]
-        [SerializeField, Range(-1f, 1f)] private float exposure = 0.05f;
-        [SerializeField, Range(0.8f, 1.4f)] private float contrast = 1.14f;
-        [SerializeField, Range(0.7f, 1.4f)] private float saturation = 0.98f;
+        [SerializeField, Range(-1f, 1f)] private float exposure = 0.02f;
+        [SerializeField, Range(0.8f, 1.4f)] private float contrast = 1.18f;
+        [SerializeField, Range(0.7f, 1.4f)] private float saturation = 1.05f;
 
         [Header("Highlight Energy")]
-        [SerializeField, Range(0f, 1.5f)] private float bloomStrength = 0.18f;
-        [SerializeField, Range(0f, 2f)] private float bloomThreshold = 0.92f;
-        [SerializeField, Range(0f, 1f)] private float sharpness = 0.20f;
+        [SerializeField, Range(0f, 1.5f)] private float bloomStrength = 0.34f;
+        [SerializeField, Range(0f, 2f)] private float bloomThreshold = 0.86f;
+        [SerializeField, Range(0f, 1f)] private float sharpness = 0.27f;
 
         [Header("Framing")]
-        [SerializeField, Range(0f, 0.5f)] private float vignette = 0.08f;
-        [SerializeField, Range(0f, 2f)] private float coolShadowStrength = 0.18f;
+        [SerializeField, Range(0f, 0.5f)] private float vignette = 0.11f;
+        [SerializeField, Range(0f, 2f)] private float coolShadowStrength = 0.24f;
 
         private const string ShaderName = "Hidden/Renkai/CompetitiveGrade";
         private Material material;
@@ -69,14 +69,14 @@ namespace Renkai.Kurokage
                 ReleaseMaterial();
             }
 
-            exposure = 0.05f;
-            contrast = 1.14f;
-            saturation = 0.98f;
-            bloomStrength = 0.18f;
-            bloomThreshold = 0.92f;
-            sharpness = 0.20f;
-            vignette = 0.08f;
-            coolShadowStrength = 0.18f;
+            exposure = 0.02f;
+            contrast = 1.18f;
+            saturation = 1.05f;
+            bloomStrength = 0.34f;
+            bloomThreshold = 0.86f;
+            sharpness = 0.27f;
+            vignette = 0.11f;
+            coolShadowStrength = 0.24f;
         }
 
         private bool EnsureMaterial()

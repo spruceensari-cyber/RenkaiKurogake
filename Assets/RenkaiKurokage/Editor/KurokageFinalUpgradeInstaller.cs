@@ -39,6 +39,7 @@ public static class KurokageFinalUpgradeInstaller
         bool sceneOk = EnsureActiveCompetitiveScene();
         bool environmentOk = KurokageEnvironmentArtPass.ApplySilent();
         bool brightVisualOk = KurokageBrightCompetitiveVisualPass.ApplySilent();
+        bool cinematicDistrictOk = KurokageCinematicDistrictPass.ApplySilent();
         bool architectureOk = KurokageCompetitiveArchitecturePass.ApplySilent();
         bool districtIdentityOk = KurokageDistrictIdentityPass.ApplySilent();
         bool siteLightingOk = KurokageSiteReadabilityLightingPass.ApplySilent();
@@ -71,6 +72,7 @@ public static class KurokageFinalUpgradeInstaller
         AppendStepFailure(ref validationReport, sceneOk, "Unified scene silent build");
         AppendStepFailure(ref validationReport, environmentOk, "Environment art pass");
         AppendStepFailure(ref validationReport, brightVisualOk, "Bright competitive visual pass");
+        AppendStepFailure(ref validationReport, cinematicDistrictOk, "Cinematic district presentation pass");
         AppendStepFailure(ref validationReport, architectureOk, "Competitive architecture pass");
         AppendStepFailure(ref validationReport, districtIdentityOk, "District identity pass");
         AppendStepFailure(ref validationReport, siteLightingOk, "Site readability lighting pass");
@@ -81,7 +83,7 @@ public static class KurokageFinalUpgradeInstaller
         AppendStepFailure(ref validationReport, matchOk, "5v5 install silent step");
         AppendStepFailure(ref validationReport, visualsOk, "Code-built agent visual step");
 
-        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && architectureOk &&
+        bool passed = structurePassed && sceneOk && environmentOk && brightVisualOk && cinematicDistrictOk && architectureOk &&
                       districtIdentityOk && siteLightingOk && ringRefineOk && zodiacArtOk && nexusArtOk &&
                       gameplayOk && matchOk && visualsOk;
         Debug.Log(validationReport);

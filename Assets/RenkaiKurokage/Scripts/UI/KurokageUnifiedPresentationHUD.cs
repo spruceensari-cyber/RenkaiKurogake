@@ -243,7 +243,7 @@ namespace Renkai.Kurokage
                 armorFill.fillAmount = 0f;
             }
 
-            agentText.text = player != null ? player.agentName : "KAIRI";
+            agentText.text = player != null ? AgentDisplayName(player.agentName) : "KAIRI";
         }
 
         private void UpdateWeapon()
@@ -475,14 +475,17 @@ namespace Renkai.Kurokage
 
         private void BuildTopBar(Color panel, Color white, Color cyan, Color violet)
         {
-            GameObject root = CreatePanel("TOP_MATCH", transform, new Vector2(0.5f, 1f), new Vector2(0f, -39f), new Vector2(720f, 70f), panel);
-            locationText = CreateText("Location", root.transform, new Vector2(-330f, 12f), new Vector2(180f, 38f), 12, TextAnchor.MiddleLeft, cyan);
-            roundText = CreateText("Round", root.transform, new Vector2(0f, 15f), new Vector2(150f, 26f), 18, TextAnchor.MiddleCenter, white);
-            timerText = CreateText("Timer", root.transform, new Vector2(0f, -15f), new Vector2(150f, 31f), 28, TextAnchor.MiddleCenter, white);
-            attackersScoreText = CreateText("AttackersScore", root.transform, new Vector2(-145f, -3f), new Vector2(60f, 48f), 38, TextAnchor.MiddleCenter, cyan);
-            defendersScoreText = CreateText("DefendersScore", root.transform, new Vector2(145f, -3f), new Vector2(60f, 48f), 38, TextAnchor.MiddleCenter, violet);
-            attackersAliveText = CreateText("AttackersAlive", root.transform, new Vector2(-215f, -27f), new Vector2(140f, 18f), 12, TextAnchor.MiddleCenter, cyan);
-            defendersAliveText = CreateText("DefendersAlive", root.transform, new Vector2(215f, -27f), new Vector2(140f, 18f), 12, TextAnchor.MiddleCenter, violet);
+            GameObject root = CreatePanel("TOP_MATCH", transform, new Vector2(0.5f, 1f), new Vector2(0f, -44f), new Vector2(820f, 84f), panel);
+            CreateImage("AlphaRail", root.transform, new Vector2(-255f, -37f), new Vector2(186f, 3f), cyan);
+            CreateImage("OmegaRail", root.transform, new Vector2(255f, -37f), new Vector2(186f, 3f), violet);
+            CreateImage("CenterDivider", root.transform, new Vector2(0f, -4f), new Vector2(2f, 55f), new Color(0.48f, 0.58f, 0.72f, 0.46f));
+            locationText = CreateText("Location", root.transform, new Vector2(-365f, 22f), new Vector2(190f, 20f), 11, TextAnchor.MiddleLeft, cyan);
+            roundText = CreateText("Round", root.transform, new Vector2(0f, 23f), new Vector2(170f, 22f), 16, TextAnchor.MiddleCenter, white);
+            timerText = CreateText("Timer", root.transform, new Vector2(0f, -9f), new Vector2(150f, 36f), 32, TextAnchor.MiddleCenter, white);
+            attackersScoreText = CreateText("AttackersScore", root.transform, new Vector2(-204f, -2f), new Vector2(74f, 52f), 42, TextAnchor.MiddleCenter, cyan);
+            defendersScoreText = CreateText("DefendersScore", root.transform, new Vector2(204f, -2f), new Vector2(74f, 52f), 42, TextAnchor.MiddleCenter, violet);
+            attackersAliveText = CreateText("AttackersAlive", root.transform, new Vector2(-274f, -25f), new Vector2(170f, 18f), 12, TextAnchor.MiddleCenter, cyan);
+            defendersAliveText = CreateText("DefendersAlive", root.transform, new Vector2(274f, -25f), new Vector2(170f, 18f), 12, TextAnchor.MiddleCenter, violet);
         }
 
         private void BuildRadar(Color panel, Color cyan, Color violet)
@@ -518,46 +521,47 @@ namespace Renkai.Kurokage
 
         private void BuildVitals(Color panel, Color white, Color cyan)
         {
-            GameObject root = CreatePanel("PLAYER_VITALS", transform, Vector2.zero, new Vector2(42f, 72f), new Vector2(360f, 126f), panel, Vector2.zero);
-            Image emblem = CreateImage("KairiEmblem", root.transform, new Vector2(-136f, 10f), new Vector2(70f, 70f), new Color(0.10f, 0.22f, 0.40f, 1f));
-            CreateText("K", emblem.transform, Vector2.zero, new Vector2(70f, 70f), 32, TextAnchor.MiddleCenter, cyan).text = "K";
-            agentText = CreateText("Agent", root.transform, new Vector2(-26f, 40f), new Vector2(180f, 22f), 18, TextAnchor.MiddleLeft, white);
-            healthText = CreateText("Health", root.transform, new Vector2(-64f, 4f), new Vector2(72f, 42f), 38, TextAnchor.MiddleCenter, white);
-            armorText = CreateText("Armor", root.transform, new Vector2(30f, 2f), new Vector2(52f, 28f), 20, TextAnchor.MiddleCenter, cyan);
-            CreateText("HealthLabel", root.transform, new Vector2(100f, 34f), new Vector2(130f, 16f), 12, TextAnchor.MiddleLeft, cyan).text = "VITAL LINK";
-            GameObject healthBack = CreatePanel("HealthBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(68f, 0f), new Vector2(160f, 12f), new Color(0.07f, 0.12f, 0.19f, 1f));
+            GameObject root = CreatePanel("PLAYER_VITALS", transform, Vector2.zero, new Vector2(42f, 72f), new Vector2(400f, 138f), panel, Vector2.zero);
+            Image emblem = CreateImage("KairiEmblem", root.transform, new Vector2(-150f, 10f), new Vector2(78f, 78f), new Color(0.10f, 0.22f, 0.40f, 1f));
+            CreateText("K", emblem.transform, Vector2.zero, new Vector2(78f, 78f), 36, TextAnchor.MiddleCenter, cyan).text = "K";
+            agentText = CreateText("Agent", root.transform, new Vector2(-25f, 44f), new Vector2(190f, 22f), 20, TextAnchor.MiddleLeft, white);
+            healthText = CreateText("Health", root.transform, new Vector2(-62f, 4f), new Vector2(84f, 46f), 42, TextAnchor.MiddleCenter, white);
+            armorText = CreateText("Armor", root.transform, new Vector2(39f, 2f), new Vector2(58f, 30f), 22, TextAnchor.MiddleCenter, cyan);
+            CreateText("HealthLabel", root.transform, new Vector2(104f, 37f), new Vector2(140f, 16f), 12, TextAnchor.MiddleLeft, cyan).text = "VITAL LINK";
+            GameObject healthBack = CreatePanel("HealthBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(76f, 0f), new Vector2(178f, 12f), new Color(0.07f, 0.12f, 0.19f, 1f));
             healthFill = CreateFill("HealthFill", healthBack.transform, cyan);
-            GameObject armorBack = CreatePanel("ArmorBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(68f, -27f), new Vector2(160f, 7f), new Color(0.07f, 0.12f, 0.19f, 1f));
+            GameObject armorBack = CreatePanel("ArmorBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(76f, -28f), new Vector2(178f, 7f), new Color(0.07f, 0.12f, 0.19f, 1f));
             armorFill = CreateFill("ArmorFill", armorBack.transform, new Color(0.42f, 0.82f, 1f, 1f));
         }
 
         private void BuildWeapon(Color panel, Color white, Color cyan)
         {
-            GameObject root = CreatePanel("WEAPON_STATE", transform, Vector2.one, new Vector2(-42f, -74f), new Vector2(360f, 122f), panel, Vector2.one);
-            weaponText = CreateText("Weapon", root.transform, new Vector2(-126f, 36f), new Vector2(235f, 22f), 16, TextAnchor.MiddleLeft, cyan);
-            ammoText = CreateText("Ammo", root.transform, new Vector2(-88f, -4f), new Vector2(120f, 52f), 43, TextAnchor.MiddleCenter, white);
-            reserveText = CreateText("Reserve", root.transform, new Vector2(30f, -5f), new Vector2(90f, 30f), 21, TextAnchor.MiddleCenter, new Color(0.72f, 0.80f, 0.91f, 1f));
-            reloadText = CreateText("Reload", root.transform, new Vector2(77f, 34f), new Vector2(165f, 18f), 13, TextAnchor.MiddleLeft, cyan);
-            GameObject reloadBack = CreatePanel("ReloadBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(58f, -36f), new Vector2(190f, 6f), new Color(0.07f, 0.12f, 0.19f, 1f));
+            GameObject root = CreatePanel("WEAPON_STATE", transform, Vector2.one, new Vector2(-42f, -74f), new Vector2(416f, 138f), panel, Vector2.one);
+            weaponText = CreateText("Weapon", root.transform, new Vector2(-145f, 41f), new Vector2(260f, 22f), 18, TextAnchor.MiddleLeft, cyan);
+            ammoText = CreateText("Ammo", root.transform, new Vector2(-102f, -4f), new Vector2(132f, 56f), 48, TextAnchor.MiddleCenter, white);
+            reserveText = CreateText("Reserve", root.transform, new Vector2(35f, -5f), new Vector2(96f, 30f), 23, TextAnchor.MiddleCenter, new Color(0.72f, 0.80f, 0.91f, 1f));
+            reloadText = CreateText("Reload", root.transform, new Vector2(91f, 39f), new Vector2(178f, 18f), 13, TextAnchor.MiddleLeft, cyan);
+            GameObject reloadBack = CreatePanel("ReloadBack", root.transform, new Vector2(0.5f, 0.5f), new Vector2(68f, -41f), new Vector2(212f, 6f), new Color(0.07f, 0.12f, 0.19f, 1f));
             reloadFill = CreateFill("ReloadFill", reloadBack.transform, cyan);
             reloadText.gameObject.SetActive(false);
         }
 
         private void BuildAbilities(Color panel, Color white, Color cyan, Color violet)
         {
-            GameObject root = CreatePanel("KAIRI_PROTOCOL", transform, new Vector2(0.5f, 0f), new Vector2(0f, 52f), new Vector2(520f, 72f), panel, new Vector2(0.5f, 0f));
+            GameObject root = CreatePanel("KAIRI_PROTOCOL", transform, new Vector2(0.5f, 0f), new Vector2(0f, 54f), new Vector2(620f, 88f), panel, new Vector2(0.5f, 0f));
             string[] keys = { "Q", "E", "C", "X" };
             string[] labels = { "RIFT", "DECOY", "LEAP", "ECLIPSE" };
             abilityFills = new Image[4];
             abilityLabels = new Text[4];
             for (int i = 0; i < 4; i++)
             {
-                float x = -180f + i * 120f;
-                Image plate = CreateImage("AbilityPlate", root.transform, new Vector2(x, 5f), new Vector2(92f, 56f), new Color(0.06f, 0.12f, 0.22f, 1f));
+                float x = -210f + i * 140f;
+                Image plate = CreateImage("AbilityPlate", root.transform, new Vector2(x, 5f), new Vector2(108f, 68f), new Color(0.06f, 0.12f, 0.22f, 1f));
                 abilityFills[i] = CreateFill("AbilityCharge", plate.transform, i == 3 ? violet : cyan);
-                abilityLabels[i] = CreateText("AbilityKey", plate.transform, new Vector2(0f, 9f), new Vector2(60f, 24f), 20, TextAnchor.MiddleCenter, white);
+                CreateImage("AbilityRail", plate.transform, new Vector2(0f, -30f), new Vector2(84f, 3f), i == 3 ? violet : cyan);
+                abilityLabels[i] = CreateText("AbilityKey", plate.transform, new Vector2(0f, 11f), new Vector2(60f, 26f), 24, TextAnchor.MiddleCenter, white);
                 abilityLabels[i].text = keys[i];
-                CreateText("AbilityName", plate.transform, new Vector2(0f, -16f), new Vector2(84f, 16f), 10, TextAnchor.MiddleCenter, cyan).text = labels[i];
+                CreateText("AbilityName", plate.transform, new Vector2(0f, -16f), new Vector2(96f, 16f), 11, TextAnchor.MiddleCenter, cyan).text = labels[i];
             }
         }
 
@@ -675,6 +679,13 @@ namespace Renkai.Kurokage
             seconds = Mathf.Max(0f, seconds);
             int total = Mathf.CeilToInt(seconds);
             return (total / 60).ToString("00") + ":" + (total % 60).ToString("00");
+        }
+
+        private static string AgentDisplayName(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return "KAIRI";
+            int separator = value.IndexOf("//", StringComparison.Ordinal);
+            return separator > 0 ? value.Substring(0, separator).Trim() : value;
         }
     }
 }

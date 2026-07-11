@@ -129,8 +129,38 @@ public static class KurokageGameplayUpgradeInstaller
         Part("SightBase", holder.transform, new Vector3(0f, 0.158f, 0.23f), new Vector3(0.12f, 0.05f, 0.14f), navy);
         PrimitivePart("SightRing", holder.transform, PrimitiveType.Cylinder, new Vector3(0f, 0.215f, 0.23f), new Vector3(0.075f, 0.018f, 0.075f), dark, new Vector3(90f, 0f, 0f));
         Part("SightGlass", holder.transform, new Vector3(0f, 0.218f, 0.242f), new Vector3(0.055f, 0.052f, 0.012f), accent);
+        BuildRifleHands(holder.transform, dark, navy, accent, light);
 
         return holder;
+    }
+
+    private static void BuildRifleHands(Transform root, Material glove, Material armor, Material accent, Material palm)
+    {
+        Transform rightForearm = new GameObject("RIGHT_FOREARM").transform;
+        rightForearm.SetParent(root, false);
+        rightForearm.localPosition = new Vector3(0.24f, -0.22f, 0.02f);
+        rightForearm.localRotation = Quaternion.Euler(18f, -8f, -22f);
+        PrimitivePart("RIGHT_FOREARM_SLEEVE", rightForearm, PrimitiveType.Capsule, new Vector3(0f, 0f, 0.10f), new Vector3(0.105f, 0.24f, 0.105f), glove, new Vector3(90f, 0f, 0f));
+        PrimitivePart("RIGHT_WRIST_ARMOR", rightForearm, PrimitiveType.Cube, new Vector3(-0.01f, 0.015f, 0.22f), new Vector3(0.16f, 0.12f, 0.12f), armor, Vector3.zero);
+        PrimitivePart("RIGHT_GLOVE", rightForearm, PrimitiveType.Sphere, new Vector3(-0.04f, 0.01f, 0.33f), new Vector3(0.15f, 0.10f, 0.17f), palm, new Vector3(0f, 0f, -12f));
+        PrimitivePart("RIGHT_GLOVE_PANEL", rightForearm, PrimitiveType.Cube, new Vector3(-0.04f, 0.06f, 0.35f), new Vector3(0.11f, 0.025f, 0.12f), accent, new Vector3(0f, 0f, -12f));
+        for (int i = 0; i < 3; i++)
+        {
+            PrimitivePart("RIGHT_FINGER_" + i, rightForearm, PrimitiveType.Capsule, new Vector3(-0.055f + i * 0.04f, -0.035f, 0.43f), new Vector3(0.024f, 0.07f, 0.024f), glove, new Vector3(86f, 0f, 0f));
+        }
+
+        Transform leftForearm = new GameObject("LEFT_FOREARM").transform;
+        leftForearm.SetParent(root, false);
+        leftForearm.localPosition = new Vector3(-0.26f, -0.24f, 0.40f);
+        leftForearm.localRotation = Quaternion.Euler(16f, 8f, 24f);
+        PrimitivePart("LEFT_FOREARM_SLEEVE", leftForearm, PrimitiveType.Capsule, new Vector3(0f, 0f, 0.11f), new Vector3(0.11f, 0.27f, 0.11f), glove, new Vector3(90f, 0f, 0f));
+        PrimitivePart("LEFT_WRIST_ARMOR", leftForearm, PrimitiveType.Cube, new Vector3(0.01f, 0.015f, 0.24f), new Vector3(0.17f, 0.12f, 0.13f), armor, Vector3.zero);
+        PrimitivePart("LEFT_GLOVE", leftForearm, PrimitiveType.Sphere, new Vector3(0.05f, 0.01f, 0.37f), new Vector3(0.16f, 0.10f, 0.18f), palm, new Vector3(0f, 0f, 12f));
+        PrimitivePart("LEFT_GLOVE_PANEL", leftForearm, PrimitiveType.Cube, new Vector3(0.05f, 0.06f, 0.39f), new Vector3(0.12f, 0.025f, 0.13f), accent, new Vector3(0f, 0f, 12f));
+        for (int i = 0; i < 3; i++)
+        {
+            PrimitivePart("LEFT_FINGER_" + i, leftForearm, PrimitiveType.Capsule, new Vector3(0.060f - i * 0.04f, -0.035f, 0.47f), new Vector3(0.024f, 0.07f, 0.024f), glove, new Vector3(86f, 0f, 0f));
+        }
     }
 
     private static GameObject BuildPistolView(Transform root)
@@ -226,11 +256,7 @@ public static class KurokageGameplayUpgradeInstaller
 
     private static Material MakeMaterial(Color color, float smoothness, float emission)
     {
-        bool srpActive = GraphicsSettings.currentRenderPipeline != null;
-        Shader shader = srpActive ? Shader.Find("Universal Render Pipeline/Lit") : Shader.Find("Standard");
-        if (shader == null) shader = Shader.Find("Standard");
-        if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
-        if (shader == null) shader = Shader.Find("Diffuse");
+        Shader shader = ResolveViewmodelShader();
         if (shader == null) return null;
 
         Material mat = new Material(shader);
@@ -244,5 +270,27 @@ public static class KurokageGameplayUpgradeInstaller
             mat.SetColor("_EmissionColor", color * emission);
         }
         return mat;
+    }
+
+    private static Shader ResolveViewmodelShader()
+    {
+        RenderPipelineAsset pipeline = GraphicsSettings.currentRenderPipeline;
+        string typeName = pipeline != null ? pipeline.GetType().FullName : string.Empty;
+        if (!string.IsNullOrEmpty(typeName) && typeName.IndexOf("Universal", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            Shader urp = Shader.Find("Universal Render Pipeline/Lit");
+            if (urp != null && urp.isSupported) return urp;
+        }
+        if (!string.IsNullOrEmpty(typeName) && typeName.IndexOf("HDRenderPipeline", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            Shader hdrp = Shader.Find("HDRP/Lit");
+            if (hdrp != null && hdrp.isSupported) return hdrp;
+        }
+
+        Shader standard = Shader.Find("Standard");
+        if (standard != null && standard.isSupported) return standard;
+        Shader diffuse = Shader.Find("Legacy Shaders/Diffuse");
+        if (diffuse != null && diffuse.isSupported) return diffuse;
+        return Shader.Find("Unlit/Color");
     }
 }

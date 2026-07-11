@@ -166,6 +166,7 @@ public static class KurokageProductionValidator
         {
             "KUROKAGE_ENVIRONMENT_ART",
             "KUROKAGE_BRIGHT_VISUAL_PASS",
+            "KUROKAGE_CINEMATIC_PRESENTATION",
             "KUROKAGE_COMPETITIVE_ARCHITECTURE",
             "KUROKAGE_DISTRICT_IDENTITY",
             "KUROKAGE_SITE_READABILITY_LIGHTING",

@@ -248,12 +248,24 @@ public static class KurokageEnvironmentArtPass
 
     private static Shader ResolveShader()
     {
-        bool srp = GraphicsSettings.currentRenderPipeline != null;
-        Shader shader = srp ? Shader.Find("Universal Render Pipeline/Lit") : Shader.Find("Standard");
-        if (shader == null) shader = Shader.Find("Standard");
-        if (shader == null) shader = Shader.Find("Universal Render Pipeline/Lit");
-        if (shader == null) shader = Shader.Find("Diffuse");
-        return shader;
+        RenderPipelineAsset pipeline = GraphicsSettings.currentRenderPipeline;
+        string typeName = pipeline != null ? pipeline.GetType().FullName : string.Empty;
+        if (!string.IsNullOrEmpty(typeName) && typeName.IndexOf("Universal", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            Shader urp = Shader.Find("Universal Render Pipeline/Lit");
+            if (urp != null && urp.isSupported) return urp;
+        }
+        if (!string.IsNullOrEmpty(typeName) && typeName.IndexOf("HDRenderPipeline", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            Shader hdrp = Shader.Find("HDRP/Lit");
+            if (hdrp != null && hdrp.isSupported) return hdrp;
+        }
+
+        Shader standard = Shader.Find("Standard");
+        if (standard != null && standard.isSupported) return standard;
+        Shader diffuse = Shader.Find("Legacy Shaders/Diffuse");
+        if (diffuse != null && diffuse.isSupported) return diffuse;
+        return Shader.Find("Unlit/Color");
     }
 
     private static Transform Group(Transform parent, string name)
