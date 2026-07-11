@@ -15,6 +15,10 @@ public static class KurokageAgentSystemsInstaller
 
             KurokageAgentIdentity identity = player.GetComponent<KurokageAgentIdentity>();
             if (identity == null) identity = player.gameObject.AddComponent<KurokageAgentIdentity>();
+            if (player.GetComponent<AudioSource>() == null)
+                player.gameObject.AddComponent<AudioSource>();
+            if (player.GetComponent<KurokageJapaneseVoicePresenter>() == null)
+                player.gameObject.AddComponent<KurokageJapaneseVoicePresenter>();
 
             if (player.isHumanPlayer)
             {
