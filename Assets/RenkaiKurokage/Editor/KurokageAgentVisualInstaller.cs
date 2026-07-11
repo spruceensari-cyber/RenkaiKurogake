@@ -20,7 +20,7 @@ public static class KurokageAgentVisualInstaller
         EditorUtility.DisplayDialog(
             "Renkai",
             ok
-                ? "Kod tabanlı agent roster, PBR yüzey detayları, reflection capture ve collision integrity katmanı kuruldu."
+                ? "Kod tabanlı agent roster, PBR yüzey detayları, reflection capture, bot avoidance ve collision integrity katmanı kuruldu."
                 : "Kurulum tamamlanamadı. Console ve production validation raporunu kontrol et.",
             ok ? "OK" : "REVIEW"
         );
@@ -60,6 +60,9 @@ public static class KurokageAgentVisualInstaller
             bool built = KurokageProceduralAgentFactory.Build(player, archetype);
             if (built)
                 built = KurokageProceduralAgentDetailPass.Apply(player, archetype);
+
+            if (!player.isHumanPlayer && player.GetComponent<KurokageBotLocalAvoidance>() == null)
+                player.gameObject.AddComponent<KurokageBotLocalAvoidance>();
 
             if (!built)
             {
