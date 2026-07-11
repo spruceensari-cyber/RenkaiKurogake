@@ -24,6 +24,7 @@ namespace Renkai.Kurokage
         private Text roleText;
         private Text voiceText;
         private Text abilityText;
+        private Text selectionHintText;
         private Image accentLine;
         private Button confirmButton;
         private readonly List<Button> agentButtons = new List<Button>();
@@ -59,7 +60,8 @@ namespace Renkai.Kurokage
                 if (Input.GetKeyDown(key)) Preview((KurokageAgentArchetype)i);
             }
 
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) ConfirmSelection();
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                ConfirmSelection();
         }
 
         public void OpenSelection()
@@ -92,6 +94,7 @@ namespace Renkai.Kurokage
         {
             if (fps != null) fps.enabled = enabled;
             if (weapon != null) weapon.enabled = enabled;
+
             if (enabled)
             {
                 if (kairi != null) kairi.enabled = identity.Archetype == KurokageAgentArchetype.Kairi;
@@ -121,12 +124,16 @@ namespace Renkai.Kurokage
             abilityText.text = abilities;
             accentLine.color = definition.Accent;
 
+            if (selectionHintText != null)
+                selectionHintText.text = "1–0 PREVIEW   •   ENTER ESTABLISH LINK   •   SELECTED: " + definition.DisplayName;
+
             for (int i = 0; i < agentButtons.Count; i++)
             {
                 ColorBlock colors = agentButtons[i].colors;
                 colors.normalColor = i == (int)archetype
-                    ? Color.Lerp(definition.Accent, Color.white, 0.15f)
+                    ? Color.Lerp(definition.Accent, Color.white, 0.16f)
                     : new Color(0.10f, 0.14f, 0.22f, 0.96f);
+                colors.selectedColor = colors.highlightedColor;
                 agentButtons[i].colors = colors;
             }
         }
@@ -147,89 +154,102 @@ namespace Renkai.Kurokage
             canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 500;
+
             CanvasScaler scaler = root.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.5f;
             root.AddComponent<GraphicRaycaster>();
 
-            Image background = CreateImage("BACKDROP", root.transform, new Color(0.015f, 0.025f, 0.055f, 0.96f));
+            Image background = CreateImage("BACKDROP", root.transform, new Color(0.012f, 0.022f, 0.050f, 0.76f));
             Stretch(background.rectTransform);
 
-            RectTransform header = CreatePanel("HEADER", root.transform, new Vector2(120f, -55f), new Vector2(-120f, -170f));
+            Image topGlow = CreateImage("TOP_GLOW", root.transform, new Color(0.08f, 0.34f, 0.72f, 0.14f));
+            SetAnchors(topGlow.rectTransform, new Vector2(0f, 0.80f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+
+            RectTransform header = CreatePanel(
+                "HEADER",
+                root.transform,
+                new Vector2(0.055f, 0.835f),
+                new Vector2(0.945f, 0.955f),
+                new Color(0.025f, 0.045f, 0.085f, 0.97f));
+
             Text headerLabel = CreateText("HEADER_TEXT", header, font, 34, TextAnchor.MiddleLeft, Color.white);
             headerLabel.text = "SELECT RESONANT AGENT";
             headerLabel.rectTransform.offsetMin = new Vector2(30f, 0f);
+            headerLabel.rectTransform.offsetMax = new Vector2(-500f, 0f);
+
             Text sub = CreateText("HEADER_SUB", header, font, 16, TextAnchor.MiddleRight, new Color(0.55f, 0.72f, 1f));
             sub.text = "RENKAI COMBAT LINK // エージェント選択";
+            sub.rectTransform.offsetMin = new Vector2(500f, 0f);
             sub.rectTransform.offsetMax = new Vector2(-30f, 0f);
 
-            RectTransform roster = CreatePanel("ROSTER", root.transform, new Vector2(120f, -200f), new Vector2(780f, -900f));
+            RectTransform roster = CreatePanel(
+                "ROSTER",
+                root.transform,
+                new Vector2(0.055f, 0.135f),
+                new Vector2(0.435f, 0.800f),
+                new Color(0.030f, 0.050f, 0.090f, 0.97f));
+
             GridLayoutGroup grid = roster.gameObject.AddComponent<GridLayoutGroup>();
             grid.padding = new RectOffset(24, 24, 24, 24);
-            grid.cellSize = new Vector2(295f, 112f);
-            grid.spacing = new Vector2(16f, 16f);
+            grid.cellSize = new Vector2(295f, 106f);
+            grid.spacing = new Vector2(16f, 14f);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = 2;
+            grid.childAlignment = TextAnchor.UpperCenter;
 
             IReadOnlyList<KurokageAgentDefinition> agents = KurokageAgentCatalog.All;
             for (int i = 0; i < agents.Count; i++)
             {
                 int index = i;
-                Button button = CreateButton("AGENT_" + agents[i].DisplayName, roster, font, agents[i].DisplayName + "\n" + agents[i].Role);
+                string hotkey = i == 9 ? "0" : (i + 1).ToString();
+                Button button = CreateButton(
+                    "AGENT_" + agents[i].DisplayName,
+                    roster,
+                    font,
+                    hotkey + "   " + agents[i].DisplayName + "\n     " + agents[i].Role);
                 button.onClick.AddListener(() => Preview((KurokageAgentArchetype)index));
                 agentButtons.Add(button);
             }
 
-            RectTransform detail = CreatePanel("DETAIL", root.transform, new Vector2(815f, -200f), new Vector2(-120f, -900f));
+            RectTransform detail = CreatePanel(
+                "DETAIL",
+                root.transform,
+                new Vector2(0.455f, 0.135f),
+                new Vector2(0.945f, 0.800f),
+                new Color(0.030f, 0.050f, 0.090f, 0.97f));
+
             titleText = CreateText("AGENT_TITLE", detail, font, 42, TextAnchor.UpperLeft, Color.white);
-            titleText.rectTransform.anchorMin = new Vector2(0f, 0.78f);
-            titleText.rectTransform.anchorMax = new Vector2(1f, 0.98f);
-            titleText.rectTransform.offsetMin = new Vector2(38f, 0f);
-            titleText.rectTransform.offsetMax = new Vector2(-38f, 0f);
+            SetAnchors(titleText.rectTransform, new Vector2(0f, 0.77f), new Vector2(1f, 0.97f), new Vector2(38f, 0f), new Vector2(-38f, 0f));
 
             roleText = CreateText("ROLE", detail, font, 18, TextAnchor.UpperLeft, new Color(0.58f, 0.76f, 1f));
-            roleText.rectTransform.anchorMin = new Vector2(0f, 0.68f);
-            roleText.rectTransform.anchorMax = new Vector2(1f, 0.79f);
-            roleText.rectTransform.offsetMin = new Vector2(38f, 0f);
-            roleText.rectTransform.offsetMax = new Vector2(-38f, 0f);
+            SetAnchors(roleText.rectTransform, new Vector2(0f, 0.67f), new Vector2(1f, 0.79f), new Vector2(38f, 0f), new Vector2(-38f, 0f));
 
             accentLine = CreateImage("ACCENT", detail, Color.cyan);
-            accentLine.rectTransform.anchorMin = new Vector2(0f, 0.645f);
-            accentLine.rectTransform.anchorMax = new Vector2(1f, 0.655f);
-            accentLine.rectTransform.offsetMin = new Vector2(38f, 0f);
-            accentLine.rectTransform.offsetMax = new Vector2(-38f, 0f);
+            SetAnchors(accentLine.rectTransform, new Vector2(0f, 0.635f), new Vector2(1f, 0.645f), new Vector2(38f, 0f), new Vector2(-38f, 0f));
 
             abilityText = CreateText("ABILITIES", detail, font, 22, TextAnchor.UpperLeft, Color.white);
-            abilityText.rectTransform.anchorMin = new Vector2(0f, 0.31f);
-            abilityText.rectTransform.anchorMax = new Vector2(1f, 0.63f);
-            abilityText.rectTransform.offsetMin = new Vector2(38f, 0f);
-            abilityText.rectTransform.offsetMax = new Vector2(-38f, 0f);
+            SetAnchors(abilityText.rectTransform, new Vector2(0f, 0.31f), new Vector2(1f, 0.61f), new Vector2(38f, 0f), new Vector2(-38f, 0f));
             abilityText.lineSpacing = 1.35f;
 
             voiceText = CreateText("VOICE", detail, font, 18, TextAnchor.UpperLeft, new Color(0.74f, 0.79f, 0.90f));
-            voiceText.rectTransform.anchorMin = new Vector2(0f, 0.13f);
-            voiceText.rectTransform.anchorMax = new Vector2(1f, 0.30f);
-            voiceText.rectTransform.offsetMin = new Vector2(38f, 0f);
-            voiceText.rectTransform.offsetMax = new Vector2(-38f, 0f);
+            SetAnchors(voiceText.rectTransform, new Vector2(0f, 0.13f), new Vector2(1f, 0.29f), new Vector2(38f, 0f), new Vector2(-38f, 0f));
 
             confirmButton = CreateButton("CONFIRM", detail, font, "ESTABLISH LINK  [ENTER]");
             RectTransform confirmRect = confirmButton.GetComponent<RectTransform>();
-            confirmRect.anchorMin = new Vector2(0.52f, 0.025f);
-            confirmRect.anchorMax = new Vector2(0.96f, 0.115f);
-            confirmRect.offsetMin = Vector2.zero;
-            confirmRect.offsetMax = Vector2.zero;
+            SetAnchors(confirmRect, new Vector2(0.52f, 0.025f), new Vector2(0.96f, 0.115f), Vector2.zero, Vector2.zero);
             confirmButton.onClick.AddListener(ConfirmSelection);
+
+            selectionHintText = CreateText("SELECTION_HINT", root.transform, font, 16, TextAnchor.MiddleCenter, new Color(0.62f, 0.78f, 1f));
+            SetAnchors(selectionHintText.rectTransform, new Vector2(0.10f, 0.035f), new Vector2(0.90f, 0.095f), Vector2.zero, Vector2.zero);
         }
 
-        private static RectTransform CreatePanel(string name, Transform parent, Vector2 min, Vector2 max)
+        private static RectTransform CreatePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Color color)
         {
-            Image image = CreateImage(name, parent, new Color(0.035f, 0.055f, 0.095f, 0.94f));
-            RectTransform rect = image.rectTransform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(1f, 1f);
-            rect.offsetMin = min;
-            rect.offsetMax = max;
-            return rect;
+            Image image = CreateImage(name, parent, color);
+            SetAnchors(image.rectTransform, anchorMin, anchorMax, Vector2.zero, Vector2.zero);
+            return image.rectTransform;
         }
 
         private static Image CreateImage(string name, Transform parent, Color color)
@@ -251,6 +271,8 @@ namespace Renkai.Kurokage
             text.alignment = anchor;
             text.color = color;
             text.supportRichText = true;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
             Stretch(text.rectTransform);
             return text;
         }
@@ -279,6 +301,14 @@ namespace Renkai.Kurokage
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
+        }
+
+        private static void SetAnchors(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax)
+        {
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
         }
 
         private static void EnsureEventSystem()
