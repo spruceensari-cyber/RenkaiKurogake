@@ -14,9 +14,6 @@ public sealed class KurokageProductionBuildPreprocessor : IPreprocessBuildWithRe
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new BuildFailedException("RENKAI production preparation cannot run while Unity is in Play Mode.");
 
-        Scene previousScene = SceneManager.GetActiveScene();
-        string previousPath = previousScene.IsValid() ? previousScene.path : string.Empty;
-
         Scene productionScene = EditorSceneManager.OpenScene(
             KurokageFinalUpgradeInstaller.MainCompetitiveScenePath,
             OpenSceneMode.Single
@@ -25,8 +22,11 @@ public sealed class KurokageProductionBuildPreprocessor : IPreprocessBuildWithRe
         if (!productionScene.IsValid() || !productionScene.isLoaded)
             throw new BuildFailedException("RENKAI canonical competitive scene could not be opened.");
 
-        bool passed = KurokageFinalUpgradeInstaller.PrepareProduction(true, out string validationReport);
-        if (!passed)
+        bool productionPassed = KurokageFinalUpgradeInstaller.PrepareProduction(true, out string validationReport);
+        bool rosterPassed = KurokageRosterWeaponValidator.ValidateSilent(out string rosterReport);
+        validationReport += "\n\n" + rosterReport;
+
+        if (!productionPassed || !rosterPassed)
         {
             Debug.LogError(validationReport);
             throw new BuildFailedException(
@@ -34,9 +34,8 @@ public sealed class KurokageProductionBuildPreprocessor : IPreprocessBuildWithRe
             );
         }
 
-        EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
         bool canonicalEnabled = false;
-        foreach (EditorBuildSettingsScene scene in scenes)
+        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
         {
             if (scene.path == KurokageFinalUpgradeInstaller.MainCompetitiveScenePath && scene.enabled)
             {
@@ -53,8 +52,6 @@ public sealed class KurokageProductionBuildPreprocessor : IPreprocessBuildWithRe
 
         AssetDatabase.SaveAssets();
         EditorSceneManager.SaveOpenScenes();
-
-        // Do not reopen another scene before the build; the validated canonical scene stays active.
         Debug.Log("RENKAI production pre-build validation passed.\n" + validationReport);
     }
 }
