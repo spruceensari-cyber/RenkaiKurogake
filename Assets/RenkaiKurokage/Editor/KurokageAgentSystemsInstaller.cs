@@ -40,6 +40,7 @@ public static class KurokageAgentSystemsInstaller
             }
         }
 
-        return humans == 1 && autonomousAgents == 9;
+        bool kurogateIdentityOk = KurokageKurogateDistrictPass.ApplySilent();
+        return humans == 1 && autonomousAgents == 9 && kurogateIdentityOk;
     }
 }
