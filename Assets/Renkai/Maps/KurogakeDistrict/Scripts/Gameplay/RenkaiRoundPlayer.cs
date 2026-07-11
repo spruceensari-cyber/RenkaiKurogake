@@ -109,11 +109,24 @@ namespace Renkai.Kurogake
             KairiAbilityController kairi = GetComponent<KairiAbilityController>();
             if (kairi != null) kairi.ResetAbilityState(true);
 
+            KurokageAgentAbilityController agentAbilities = GetComponent<KurokageAgentAbilityController>();
+            if (agentAbilities != null) agentAbilities.ResetAbilityState(true);
+
             KurokageEclipseProtocolPresenter eclipse = GetComponent<KurokageEclipseProtocolPresenter>();
             if (eclipse != null) eclipse.ResetPresentation();
 
+            KurokageBotWeaponState botWeaponState = GetComponent<KurokageBotWeaponState>();
+            if (botWeaponState != null) botWeaponState.ResetState();
+
+            KurokageBotAutonomyMotor autonomy = GetComponent<KurokageBotAutonomyMotor>();
+            if (autonomy != null) autonomy.ResetMotor();
+
             RenkaiTacticalBotAI tacticalBot = GetComponent<RenkaiTacticalBotAI>();
-            if (tacticalBot != null) tacticalBot.enabled = !isHumanPlayer;
+            if (tacticalBot != null)
+            {
+                tacticalBot.enabled = !isHumanPlayer;
+                tacticalBot.ResetCombatState();
+            }
 
             RenkaiBotAI legacyBot = GetComponent<RenkaiBotAI>();
             if (legacyBot != null) legacyBot.enabled = tacticalBot == null && !isHumanPlayer;
