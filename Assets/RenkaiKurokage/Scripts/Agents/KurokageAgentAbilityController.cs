@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Renkai.Kurogake;
 
@@ -12,14 +13,18 @@ namespace Renkai.Kurokage
         private KurokageAgentIdentity identity;
         private RenkaiRoundPlayer roundPlayer;
         private RenkaiFPSController fps;
-        private RenkaiWeaponController weapon;
+        private RenkaiTacticalBotAI tacticalBot;
         private CharacterController controller;
         private KurokageArmor armor;
+        private KurokageJapaneseVoicePresenter voice;
         private Coroutine movementRoutine;
         private Coroutine buffRoutine;
         private float baseWalk;
         private float baseSprint;
         private float baseCrouch;
+        private float baseBotMove;
+        private Vector3 requestedDirection;
+        private bool hasRequestedDirection;
 
         public float Cooldown01(int slot)
         {
@@ -29,14 +34,20 @@ namespace Renkai.Kurokage
             return Mathf.Clamp01((nextUse[slot] - Time.time) / ability.Cooldown);
         }
 
+        public bool IsReady(int slot)
+        {
+            return slot >= 0 && slot < 4 && Time.time >= nextUse[slot];
+        }
+
         private void Awake()
         {
             identity = GetComponent<KurokageAgentIdentity>();
             roundPlayer = GetComponent<RenkaiRoundPlayer>();
             fps = GetComponent<RenkaiFPSController>();
-            weapon = GetComponent<RenkaiWeaponController>();
+            tacticalBot = GetComponent<RenkaiTacticalBotAI>();
             controller = GetComponent<CharacterController>();
             armor = GetComponent<KurokageArmor>();
+            voice = GetComponent<KurokageJapaneseVoicePresenter>();
 
             if (fps != null)
             {
@@ -44,6 +55,7 @@ namespace Renkai.Kurokage
                 baseSprint = fps.sprintSpeed;
                 baseCrouch = fps.crouchSpeed;
             }
+            if (tacticalBot != null) baseBotMove = tacticalBot.moveSpeed;
         }
 
         private void OnDisable()
@@ -53,13 +65,27 @@ namespace Renkai.Kurokage
 
         private void Update()
         {
-            if (roundPlayer != null && !roundPlayer.isAlive) return;
+            if (roundPlayer != null && (!roundPlayer.isAlive || !roundPlayer.isHumanPlayer)) return;
             if (identity == null || identity.Archetype == KurokageAgentArchetype.Kairi) return;
 
-            if (Input.GetKeyDown(KeyCode.Q)) TryActivate(0);
-            if (Input.GetKeyDown(KeyCode.E)) TryActivate(1);
-            if (Input.GetKeyDown(KeyCode.C)) TryActivate(2);
-            if (Input.GetKeyDown(KeyCode.X)) TryActivate(3);
+            if (Input.GetKeyDown(KeyCode.Q)) TryActivateSlot(0);
+            if (Input.GetKeyDown(KeyCode.E)) TryActivateSlot(1);
+            if (Input.GetKeyDown(KeyCode.C)) TryActivateSlot(2);
+            if (Input.GetKeyDown(KeyCode.X)) TryActivateSlot(3);
+        }
+
+        public bool TryActivateSlot(int slot)
+        {
+            hasRequestedDirection = false;
+            return TryActivate(slot);
+        }
+
+        public bool TryActivateSlot(int slot, Vector3 desiredDirection)
+        {
+            requestedDirection = desiredDirection;
+            requestedDirection.y = 0f;
+            hasRequestedDirection = requestedDirection.sqrMagnitude > 0.01f;
+            return TryActivate(slot);
         }
 
         public void ResetAbilityState(bool resetCooldowns = true)
@@ -68,6 +94,7 @@ namespace Renkai.Kurokage
             if (buffRoutine != null) StopCoroutine(buffRoutine);
             movementRoutine = null;
             buffRoutine = null;
+            hasRequestedDirection = false;
 
             if (fps != null)
             {
@@ -75,6 +102,8 @@ namespace Renkai.Kurokage
                 fps.sprintSpeed = baseSprint;
                 fps.crouchSpeed = baseCrouch;
             }
+            if (tacticalBot != null && baseBotMove > 0f)
+                tacticalBot.moveSpeed = baseBotMove;
 
             if (resetCooldowns)
             {
@@ -82,12 +111,15 @@ namespace Renkai.Kurokage
             }
         }
 
-        private void TryActivate(int slot)
+        private bool TryActivate(int slot)
         {
-            if (slot < 0 || slot >= 4 || Time.time < nextUse[slot]) return;
+            if (identity == null || slot < 0 || slot >= 4 || Time.time < nextUse[slot]) return false;
             KurokageAbilityDefinition ability = identity.Definition.Abilities[slot];
             nextUse[slot] = Time.time + ability.Cooldown;
+            if (voice == null) voice = GetComponent<KurokageJapaneseVoicePresenter>();
+            if (voice != null) voice.PlayAbility(slot);
             Execute(ability);
+            return true;
         }
 
         private void Execute(KurokageAbilityDefinition ability)
@@ -98,6 +130,7 @@ namespace Renkai.Kurokage
 
             switch (ability.Action)
             {
+                case KurokageAbilityAction.DirectionalDash:
                 case KurokageAbilityAction.PhaseStep:
                 case KurokageAbilityAction.BladeLunge:
                 case KurokageAbilityAction.BulwarkStep:
@@ -108,6 +141,7 @@ namespace Renkai.Kurokage
                     StartMovement(StepRoutine(ability.Strength, Mathf.Max(0.10f, ability.Duration), color));
                     break;
 
+                case KurokageAbilityAction.MomentumLeap:
                 case KurokageAbilityAction.VaultStrike:
                 case KurokageAbilityAction.HeavyLeap:
                     StartMovement(LeapRoutine(ability.Strength, ability.Strength * 0.82f, Mathf.Max(0.45f, ability.Duration), color));
@@ -191,21 +225,18 @@ namespace Renkai.Kurokage
         private IEnumerator StepRoutine(float distance, float duration, Color color)
         {
             if (controller == null || !controller.enabled) yield break;
-            Vector3 input = transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
-            if (input.sqrMagnitude < 0.01f) input = transform.forward;
-            input.y = 0f;
-            input.Normalize();
-
+            Vector3 direction = ResolveMovementDirection();
             float elapsed = 0f;
             float speed = distance / Mathf.Max(0.01f, duration);
             while (elapsed < duration)
             {
-                CollisionFlags flags = controller.Move(input * speed * Time.deltaTime);
+                CollisionFlags flags = controller.Move(direction * speed * Time.deltaTime);
                 SpawnTrail(transform.position + Vector3.up * 0.7f, color);
                 if ((flags & CollisionFlags.Sides) != 0) break;
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+            hasRequestedDirection = false;
             movementRoutine = null;
         }
 
@@ -213,7 +244,7 @@ namespace Renkai.Kurokage
         {
             if (controller == null || !controller.enabled) yield break;
             float elapsed = 0f;
-            Vector3 forward = transform.forward;
+            Vector3 forward = ResolveMovementDirection();
             float vertical = upSpeed;
             while (elapsed < duration)
             {
@@ -225,15 +256,31 @@ namespace Renkai.Kurokage
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+            hasRequestedDirection = false;
             movementRoutine = null;
+        }
+
+        private Vector3 ResolveMovementDirection()
+        {
+            Vector3 input = hasRequestedDirection
+                ? requestedDirection
+                : transform.right * Input.GetAxisRaw("Horizontal") + transform.forward * Input.GetAxisRaw("Vertical");
+            if (input.sqrMagnitude < 0.01f) input = transform.forward;
+            input.y = 0f;
+            return input.normalized;
         }
 
         private IEnumerator TemporarySpeedBuff(float multiplier, float duration, Color color)
         {
-            if (fps == null) yield break;
-            fps.walkSpeed = baseWalk * Mathf.Max(1f, multiplier);
-            fps.sprintSpeed = baseSprint * Mathf.Max(1f, multiplier);
-            fps.crouchSpeed = baseCrouch * Mathf.Lerp(1f, multiplier, 0.55f);
+            multiplier = Mathf.Max(1f, multiplier);
+            if (fps != null)
+            {
+                fps.walkSpeed = baseWalk * multiplier;
+                fps.sprintSpeed = baseSprint * multiplier;
+                fps.crouchSpeed = baseCrouch * Mathf.Lerp(1f, multiplier, 0.55f);
+            }
+            if (tacticalBot != null)
+                tacticalBot.moveSpeed = Mathf.Max(0.1f, baseBotMove) * multiplier;
 
             float end = Time.time + Mathf.Max(0.2f, duration);
             while (Time.time < end)
@@ -242,9 +289,14 @@ namespace Renkai.Kurokage
                 yield return new WaitForSeconds(0.12f);
             }
 
-            fps.walkSpeed = baseWalk;
-            fps.sprintSpeed = baseSprint;
-            fps.crouchSpeed = baseCrouch;
+            if (fps != null)
+            {
+                fps.walkSpeed = baseWalk;
+                fps.sprintSpeed = baseSprint;
+                fps.crouchSpeed = baseCrouch;
+            }
+            if (tacticalBot != null && baseBotMove > 0f)
+                tacticalBot.moveSpeed = baseBotMove;
             buffRoutine = null;
         }
 
@@ -291,10 +343,11 @@ namespace Renkai.Kurokage
         {
             if (roundPlayer == null) return;
             Collider[] hits = Physics.OverlapSphere(transform.position, radius, ~0, QueryTriggerInteraction.Collide);
+            HashSet<RenkaiRoundPlayer> processed = new HashSet<RenkaiRoundPlayer>();
             foreach (Collider hit in hits)
             {
                 RenkaiRoundPlayer enemy = hit.GetComponentInParent<RenkaiRoundPlayer>();
-                if (enemy == null || !enemy.isAlive || enemy.team == roundPlayer.team) continue;
+                if (enemy == null || !enemy.isAlive || enemy.team == roundPlayer.team || !processed.Add(enemy)) continue;
                 KurokageDamageInfo info = new KurokageDamageInfo(
                     amount,
                     roundPlayer,
@@ -346,7 +399,7 @@ namespace Renkai.Kurokage
                 Destroy(collider);
 
             KurokageVisualDecoy decoy = clone.AddComponent<KurokageVisualDecoy>();
-            decoy.Configure(transform.forward, speed, duration, color);
+            decoy.Configure(ResolveMovementDirection(), speed, duration, color);
         }
 
         private void SpawnBurst(Vector3 position, Color color, float size, float lifetime)
