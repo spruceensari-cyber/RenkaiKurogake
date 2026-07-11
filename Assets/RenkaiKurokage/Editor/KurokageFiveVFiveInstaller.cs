@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -72,7 +70,6 @@ public static class KurokageFiveVFiveInstaller
         EnsureExactRosterOrFail(humanRound);
 
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-        Selection.activeGameObject = root;
         return true;
     }
 
