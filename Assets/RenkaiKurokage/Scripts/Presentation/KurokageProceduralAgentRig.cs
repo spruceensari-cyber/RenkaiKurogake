@@ -18,6 +18,8 @@ namespace Renkai.Kurokage
         private RenkaiRoundPlayer owner;
         private CharacterController controller;
         private RenkaiFPSController fps;
+        private RenkaiTacticalBotAI tacticalBot;
+        private KurokageBotWeaponState botWeaponState;
 
         private Transform modelRoot;
         private Transform pelvis;
@@ -68,15 +70,14 @@ namespace Renkai.Kurokage
 
         private void Awake()
         {
-            owner = GetComponentInParent<RenkaiRoundPlayer>();
-            controller = GetComponentInParent<CharacterController>();
-            fps = GetComponentInParent<RenkaiFPSController>();
+            CacheOwners();
             CacheRig();
             previousForward = transform.forward;
         }
 
         private void OnEnable()
         {
+            CacheOwners();
             if (!cached) CacheRig();
         }
 
@@ -90,6 +91,8 @@ namespace Renkai.Kurokage
             float normalizedSpeed = Mathf.Clamp01(speed / 7.4f);
             bool grounded = controller == null || controller.isGrounded;
             bool crouching = fps != null && fps.IsCrouching;
+            bool engaging = tacticalBot != null && tacticalBot.state == RenkaiBotState.Engage;
+            bool reloading = botWeaponState != null && botWeaponState.IsReloading;
 
             float frequency = Mathf.Lerp(gaitFrequency * 0.72f, gaitFrequency * 1.18f, normalizedSpeed);
             gaitPhase += Time.deltaTime * frequency * Mathf.Lerp(0.45f, 1f, normalizedSpeed);
@@ -103,15 +106,18 @@ namespace Renkai.Kurokage
                 modelRoot.localPosition = modelBasePosition + Vector3.up * (breath + bob - (crouching ? 0.22f : 0f));
 
             float yawVelocity = SignedTurnVelocity();
+            float combatLean = engaging ? -4.5f : 0f;
+            float reloadLean = reloading ? 5f : 0f;
             SetLocalRotation(pelvis, pelvisBaseRotation, new Vector3(0f, yawVelocity * 0.22f, -yawVelocity * 0.08f));
-            SetLocalRotation(chest, chestBaseRotation, new Vector3(-normalizedSpeed * 2.2f, -yawVelocity * 0.36f, yawVelocity * 0.16f));
-            SetLocalRotation(head, headBaseRotation, new Vector3(0f, yawVelocity * 0.18f, -yawVelocity * 0.08f));
+            SetLocalRotation(chest, chestBaseRotation, new Vector3(-normalizedSpeed * 2.2f + combatLean + reloadLean, -yawVelocity * 0.36f, yawVelocity * 0.16f));
+            SetLocalRotation(head, headBaseRotation, new Vector3(engaging ? 1.5f : 0f, yawVelocity * 0.18f, -yawVelocity * 0.08f));
 
-            float armSwingScale = archetype == KurokageAgentArchetype.Reiha ? 0.78f : 1f;
-            SetLocalRotation(leftUpperArm, leftUpperArmBaseRotation, new Vector3(opposite * swing * armSwingScale, 0f, 0f));
-            SetLocalRotation(rightUpperArm, rightUpperArmBaseRotation, new Vector3(stride * swing * armSwingScale, 0f, 0f));
-            SetLocalRotation(leftLowerArm, leftLowerArmBaseRotation, new Vector3(Mathf.Max(0f, stride) * 11f * normalizedSpeed, 0f, 0f));
-            SetLocalRotation(rightLowerArm, rightLowerArmBaseRotation, new Vector3(Mathf.Max(0f, opposite) * 11f * normalizedSpeed, 0f, 0f));
+            if (reloading)
+                ApplyReloadPose();
+            else if (engaging)
+                ApplyWeaponReadyPose(normalizedSpeed);
+            else
+                ApplyLocomotionArms(stride, opposite, swing, normalizedSpeed);
 
             if (grounded)
             {
@@ -157,6 +163,35 @@ namespace Renkai.Kurokage
             Restore(coatRight, coatRightBaseRotation);
         }
 
+        private void ApplyLocomotionArms(float stride, float opposite, float swing, float normalizedSpeed)
+        {
+            float armSwingScale = archetype == KurokageAgentArchetype.Reiha ? 0.78f : 1f;
+            SetLocalRotation(leftUpperArm, leftUpperArmBaseRotation, new Vector3(opposite * swing * armSwingScale, 0f, 0f));
+            SetLocalRotation(rightUpperArm, rightUpperArmBaseRotation, new Vector3(stride * swing * armSwingScale, 0f, 0f));
+            SetLocalRotation(leftLowerArm, leftLowerArmBaseRotation, new Vector3(Mathf.Max(0f, stride) * 11f * normalizedSpeed, 0f, 0f));
+            SetLocalRotation(rightLowerArm, rightLowerArmBaseRotation, new Vector3(Mathf.Max(0f, opposite) * 11f * normalizedSpeed, 0f, 0f));
+        }
+
+        private void ApplyWeaponReadyPose(float normalizedSpeed)
+        {
+            float breathing = Mathf.Sin(Time.time * 3.1f) * 1.1f;
+            float movementDip = normalizedSpeed * 3f;
+            SetLocalRotation(leftUpperArm, leftUpperArmBaseRotation, new Vector3(-55f + movementDip, -12f, -34f + breathing));
+            SetLocalRotation(rightUpperArm, rightUpperArmBaseRotation, new Vector3(-48f + movementDip, 12f, 29f - breathing));
+            SetLocalRotation(leftLowerArm, leftLowerArmBaseRotation, new Vector3(-72f, 5f, -8f));
+            SetLocalRotation(rightLowerArm, rightLowerArmBaseRotation, new Vector3(-58f, -4f, 7f));
+        }
+
+        private void ApplyReloadPose()
+        {
+            float normalized = botWeaponState != null ? botWeaponState.Reload01 : 0f;
+            float lift = Mathf.Sin(normalized * Mathf.PI);
+            SetLocalRotation(leftUpperArm, leftUpperArmBaseRotation, new Vector3(-18f - lift * 34f, -24f, -45f));
+            SetLocalRotation(rightUpperArm, rightUpperArmBaseRotation, new Vector3(-35f + lift * 12f, 18f, 31f));
+            SetLocalRotation(leftLowerArm, leftLowerArmBaseRotation, new Vector3(-88f + lift * 18f, 8f, -12f));
+            SetLocalRotation(rightLowerArm, rightLowerArmBaseRotation, new Vector3(-42f, -8f, 12f));
+        }
+
         private void AnimateSecondaryMotion(float normalizedSpeed, float yawVelocity)
         {
             float tailWave = Mathf.Sin(Time.time * 4.1f + gaitPhase * 0.35f) * (4f + normalizedSpeed * 9f);
@@ -195,12 +230,18 @@ namespace Renkai.Kurokage
             return Mathf.Clamp(signed * 0.02f, -turnLean, turnLean);
         }
 
-        private void CacheRig()
+        private void CacheOwners()
         {
             owner = GetComponentInParent<RenkaiRoundPlayer>();
             controller = GetComponentInParent<CharacterController>();
             fps = GetComponentInParent<RenkaiFPSController>();
+            tacticalBot = GetComponentInParent<RenkaiTacticalBotAI>();
+            botWeaponState = GetComponentInParent<KurokageBotWeaponState>();
+        }
 
+        private void CacheRig()
+        {
+            CacheOwners();
             modelRoot = FindDeep(transform, "PROCEDURAL_AGENT_ROOT");
             pelvis = FindDeep(transform, "pelvis");
             chest = FindDeep(transform, "chest");
