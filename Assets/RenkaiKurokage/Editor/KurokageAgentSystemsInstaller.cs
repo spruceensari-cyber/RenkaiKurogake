@@ -35,6 +35,8 @@ public static class KurokageAgentSystemsInstaller
                     player.gameObject.AddComponent<KurokageVoiceSubtitleOverlay>();
                 if (player.GetComponent<KurokageSelectedAgentHudBridge>() == null)
                     player.gameObject.AddComponent<KurokageSelectedAgentHudBridge>();
+                if (player.GetComponent<KurokageRuntimeAgentVisualSwitcher>() == null)
+                    player.gameObject.AddComponent<KurokageRuntimeAgentVisualSwitcher>();
             }
             else
             {
