@@ -42,6 +42,10 @@ public static class KurokageAgentSystemsInstaller
                     player.gameObject.AddComponent<KurokageBotWeaponState>();
                 if (player.GetComponent<KurokageBotPerception>() == null)
                     player.gameObject.AddComponent<KurokageBotPerception>();
+                if (player.GetComponent<KurokageAgentAbilityController>() == null)
+                    player.gameObject.AddComponent<KurokageAgentAbilityController>();
+                if (player.GetComponent<KurokageBotAgentAbilityBrain>() == null)
+                    player.gameObject.AddComponent<KurokageBotAgentAbilityBrain>();
                 autonomousAgents++;
             }
         }
