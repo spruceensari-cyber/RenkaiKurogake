@@ -16,9 +16,11 @@ namespace Renkai.Kurokage
             : 0f;
 
         private float reloadStartedAt;
+        private KurokageJapaneseVoicePresenter voice;
 
         private void Awake()
         {
+            voice = GetComponent<KurokageJapaneseVoicePresenter>();
             ResetState();
         }
 
@@ -54,6 +56,8 @@ namespace Renkai.Kurokage
             if (IsReloading || ReserveAmmo <= 0 || MagazineAmmo >= magazineSize) return false;
             IsReloading = true;
             reloadStartedAt = Time.time;
+            if (voice == null) voice = GetComponent<KurokageJapaneseVoicePresenter>();
+            if (voice != null) voice.PlayReload();
             return true;
         }
 
