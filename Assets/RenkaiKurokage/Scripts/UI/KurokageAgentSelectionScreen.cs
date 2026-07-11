@@ -65,9 +65,11 @@ namespace Renkai.Kurokage
         public void OpenSelection()
         {
             if (open) return;
-            open = true;
             previewArchetype = identity != null ? identity.Archetype : KurokageAgentArchetype.Kairi;
             BuildCanvasIfNeeded();
+            if (canvas == null) return;
+
+            open = true;
             canvas.gameObject.SetActive(true);
             SetGameplayEnabled(false);
             Cursor.lockState = CursorLockMode.None;
@@ -104,6 +106,9 @@ namespace Renkai.Kurokage
 
         private void Preview(KurokageAgentArchetype archetype)
         {
+            if (titleText == null || roleText == null || voiceText == null || abilityText == null || accentLine == null)
+                return;
+
             previewArchetype = archetype;
             KurokageAgentDefinition definition = KurokageAgentCatalog.Get(archetype);
             titleText.text = definition.DisplayName + "  //  " + definition.Callsign;
@@ -131,7 +136,13 @@ namespace Renkai.Kurokage
             if (canvas != null) return;
             EnsureEventSystem();
 
-            Font font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            Font font = KurokageUiFont.Default;
+            if (font == null)
+            {
+                Debug.LogError("RENKAI agent selection could not resolve a runtime font.");
+                return;
+            }
+
             GameObject root = new GameObject("KUROKAGE_AGENT_SELECTION");
             canvas = root.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;

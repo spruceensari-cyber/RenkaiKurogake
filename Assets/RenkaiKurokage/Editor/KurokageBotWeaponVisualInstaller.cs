@@ -44,7 +44,7 @@ public static class KurokageBotWeaponVisualInstaller
             GameObject weapon = new GameObject("BOT_WORLD_WEAPON");
             weapon.transform.SetParent(grip, false);
             weapon.transform.localPosition = new Vector3(0.02f, -0.02f, 0.08f);
-            weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            weapon.transform.localRotation = Quaternion.identity;
             weapon.transform.localScale = Vector3.one;
 
             BuildRifle(weapon.transform, dark, light, player.team == RenkaiTeam.Attackers ? blue : violet);
@@ -55,8 +55,10 @@ public static class KurokageBotWeaponVisualInstaller
             muzzle.transform.localRotation = Quaternion.identity;
             ai.muzzle = muzzle.transform;
 
-            KurokageBotWeaponPose pose = player.GetComponent<KurokageBotWeaponPose>();
-            if (pose == null) pose = player.gameObject.AddComponent<KurokageBotWeaponPose>();
+            Renkai.Kurokage.KurokageBotWeaponPose pose =
+                player.GetComponent<Renkai.Kurokage.KurokageBotWeaponPose>();
+            if (pose == null)
+                pose = player.gameObject.AddComponent<Renkai.Kurokage.KurokageBotWeaponPose>();
             pose.Configure(weapon.transform, muzzle.transform);
             installed++;
         }
