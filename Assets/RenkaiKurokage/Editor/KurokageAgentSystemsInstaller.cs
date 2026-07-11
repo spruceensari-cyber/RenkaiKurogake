@@ -51,6 +51,8 @@ public static class KurokageAgentSystemsInstaller
         }
 
         bool kurogateIdentityOk = KurokageKurogateDistrictPass.ApplySilent();
-        return humans == 1 && autonomousAgents == 9 && kurogateIdentityOk;
+        bool agentValidationOk = KurokageAgentSystemValidator.ValidateSilent(out string report);
+        if (!agentValidationOk) Debug.LogError(report);
+        return humans == 1 && autonomousAgents == 9 && kurogateIdentityOk && agentValidationOk;
     }
 }
