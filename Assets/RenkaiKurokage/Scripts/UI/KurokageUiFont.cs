@@ -10,13 +10,8 @@ namespace Renkai.Kurokage
         {
             get
             {
-                if (cached != null) return cached;
-
-#if UNITY_6000_0_OR_NEWER
-                cached = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-#else
-                cached = Resources.GetBuiltinResource<Font>("Arial.ttf");
-#endif
+                if (cached == null)
+                    cached = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 return cached;
             }
         }
