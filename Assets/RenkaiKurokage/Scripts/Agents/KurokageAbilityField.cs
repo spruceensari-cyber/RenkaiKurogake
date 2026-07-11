@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Renkai.Kurogake;
 
@@ -5,6 +6,7 @@ namespace Renkai.Kurokage
 {
     public sealed class KurokageAbilityField : MonoBehaviour
     {
+        private readonly HashSet<RenkaiRoundPlayer> processed = new HashSet<RenkaiRoundPlayer>();
         private RenkaiRoundPlayer owner;
         private float radius;
         private float duration;
@@ -54,11 +56,12 @@ namespace Renkai.Kurokage
                 0.32f
             );
 
+            processed.Clear();
             Collider[] hits = Physics.OverlapSphere(transform.position, radius, ~0, QueryTriggerInteraction.Collide);
             foreach (Collider hit in hits)
             {
                 RenkaiRoundPlayer player = hit.GetComponentInParent<RenkaiRoundPlayer>();
-                if (player == null || !player.isAlive || owner == null) continue;
+                if (player == null || !player.isAlive || owner == null || !processed.Add(player)) continue;
 
                 if (player.team != owner.team && damagePerTick > 0f)
                 {
