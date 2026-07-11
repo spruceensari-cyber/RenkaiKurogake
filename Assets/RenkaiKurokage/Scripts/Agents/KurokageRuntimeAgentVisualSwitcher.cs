@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -15,6 +16,7 @@ namespace Renkai.Kurokage
             "YORI_MASK", "COAT_PANEL_L", "COAT_PANEL_R"
         };
 
+        private readonly List<GameObject> runtimeObjects = new List<GameObject>();
         private KurokageAgentIdentity identity;
         private Transform visualRoot;
         private Transform modelRoot;
@@ -61,18 +63,37 @@ namespace Renkai.Kurokage
             if (visualRoot == null || modelRoot == null) return;
 
             HideStaticSignatures();
-            if (runtimeSignature != null) Destroy(runtimeSignature.gameObject);
+            ClearRuntimeSignature();
 
             if (definition.Archetype == KurokageAgentArchetype.Kairi)
+            {
                 SetStaticSignatureActive("PONYTAIL_ROOT", true);
+                SetStaticSignatureActive("KAIRI_BLADE_SHEATH", true);
+                SetStaticSignatureActive("COAT_PANEL_L", true);
+                SetStaticSignatureActive("COAT_PANEL_R", true);
+            }
             else
+            {
                 BuildRuntimeSignature(definition.Archetype);
+            }
 
             ApplyAccent(definition.Accent);
             ApplyProportions(definition.Archetype);
 
             KurokageProceduralAgentRig rig = visualRoot.GetComponent<KurokageProceduralAgentRig>();
             if (rig != null) rig.Configure(definition.Archetype);
+        }
+
+        private void ClearRuntimeSignature()
+        {
+            for (int i = runtimeObjects.Count - 1; i >= 0; i--)
+            {
+                GameObject runtimeObject = runtimeObjects[i];
+                if (runtimeObject != null) UnityEngine.Object.Destroy(runtimeObject);
+            }
+            runtimeObjects.Clear();
+            if (runtimeSignature != null) UnityEngine.Object.Destroy(runtimeSignature.gameObject);
+            runtimeSignature = null;
         }
 
         private void HideStaticSignatures()
@@ -91,6 +112,7 @@ namespace Renkai.Kurokage
         private void BuildRuntimeSignature(KurokageAgentArchetype archetype)
         {
             GameObject root = new GameObject("RUNTIME_AGENT_SIGNATURE");
+            runtimeObjects.Add(root);
             runtimeSignature = root.transform;
             runtimeSignature.SetParent(modelRoot, false);
 
@@ -190,24 +212,26 @@ namespace Renkai.Kurokage
             Part("COAT_MESH_R", PrimitiveType.Cube, right, new Vector3(0f, -0.20f, 0f), new Vector3(0.12f, 0.30f, 0.035f), fabricMaterial, new Vector3(0f, 0f, -8f));
         }
 
-        private static Transform Pivot(string name, Transform parent, Vector3 localPosition)
+        private Transform Pivot(string name, Transform parent, Vector3 localPosition)
         {
             GameObject go = new GameObject(name);
+            runtimeObjects.Add(go);
             go.transform.SetParent(parent, false);
             go.transform.localPosition = localPosition;
             return go.transform;
         }
 
-        private static GameObject Part(string name, PrimitiveType type, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? rotation = null)
+        private GameObject Part(string name, PrimitiveType type, Transform parent, Vector3 position, Vector3 scale, Material material, Vector3? rotation = null)
         {
             GameObject go = GameObject.CreatePrimitive(type);
+            runtimeObjects.Add(go);
             go.name = name;
             go.transform.SetParent(parent, false);
             go.transform.localPosition = position;
             go.transform.localRotation = Quaternion.Euler(rotation ?? Vector3.zero);
             go.transform.localScale = scale;
             Collider collider = go.GetComponent<Collider>();
-            if (collider != null) Destroy(collider);
+            if (collider != null) UnityEngine.Object.Destroy(collider);
             Renderer renderer = go.GetComponent<Renderer>();
             if (renderer != null)
             {
