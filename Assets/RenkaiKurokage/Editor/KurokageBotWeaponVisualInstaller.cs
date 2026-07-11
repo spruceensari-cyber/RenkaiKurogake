@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Renkai.Kurogake;
+using Renkai.Kurokage;
 
 public static class KurokageBotWeaponVisualInstaller
 {
