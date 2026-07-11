@@ -3,14 +3,6 @@ using Renkai.Kurogake;
 
 namespace Renkai.Kurokage
 {
-    public enum KurokageAgentArchetype
-    {
-        Kairi,
-        Noa,
-        Reiha,
-        Mio
-    }
-
     public sealed class KurokageProceduralAgentRig : MonoBehaviour
     {
         [SerializeField] private KurokageAgentArchetype archetype;
