@@ -31,6 +31,8 @@ public static class KurokageAgentSystemsInstaller
                     player.gameObject.AddComponent<KairiAbilityController>();
                 if (player.GetComponent<KurokageSprayController>() == null)
                     player.gameObject.AddComponent<KurokageSprayController>();
+                if (player.GetComponent<KurokageVoiceSubtitleOverlay>() == null)
+                    player.gameObject.AddComponent<KurokageVoiceSubtitleOverlay>();
             }
             else
             {
