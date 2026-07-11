@@ -41,11 +41,13 @@ public static class KurokageProductionSanitizerAutoHook
             GameObject.Find("RENKAI_KUROKAGE_PRODUCTION_BUILD") == null)
             return;
 
-        if (KurokageProductionSanitizerPass.ApplySilent())
+        bool hierarchyOk = KurokageUnifiedHierarchyPass.ApplySilent();
+        bool sanitizerOk = KurokageProductionSanitizerPass.ApplySilent();
+        if (hierarchyOk && sanitizerOk)
         {
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveOpenScenes();
-            Debug.Log("Renkai production visual sanitizer applied automatically.");
+            Debug.Log("Renkai single production hierarchy consolidated and visual sanitizer applied automatically.");
         }
     }
 }
